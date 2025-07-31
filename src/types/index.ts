@@ -47,3 +47,13 @@ export const isFileNode = (node: DirectoryNode | FileNode): node is FileNode =>
 export const isDirectoryNode = (
   node: DirectoryNode | FileNode,
 ): node is DirectoryNode => "children" in node;
+
+export interface BlogPost {
+  slug: string;
+  title: string;
+  date: string;
+  excerpt: string;
+  tags: string[];
+  content: string;
+  html?: string;
+}

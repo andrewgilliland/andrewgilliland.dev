@@ -18,6 +18,7 @@ src/
 ├── app/                    # Next.js App Router pages
 │   ├── about/             # About page
 │   ├── articles/          # Blog articles
+│   ├── blog/              # Blog posts (markdown-based)
 │   ├── notes/             # Personal notes
 │   ├── pixel-art/         # Pixel art showcase
 │   ├── resume/            # Resume page
@@ -80,17 +81,34 @@ src/
 
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
 - **MDX Support**: Write content with React components
+- **Markdown Blog**: File-based blog system with frontmatter support
 - **Interactive Tools**: Custom tools and utilities
 - **Pixel Art Gallery**: Showcase of pixel art creations
 - **Performance Optimized**: Built with Next.js best practices
 
 ## 📝 Content Management
 
-Content is managed through MDX files in the `markdown/` directory:
+Content is managed through multiple systems:
 
-- Articles: Long-form blog posts
-- Notes: Quick thoughts and learning notes
-- Resume: Professional experience and skills
+- **Blog Posts**: Markdown files in `content/blog/` with frontmatter metadata
+- **Articles**: Long-form blog posts (legacy system)
+- **Notes**: Quick thoughts and learning notes in MDX format
+- **Resume**: Professional experience and skills
+
+### Blog Post Format
+
+Blog posts use markdown with YAML frontmatter:
+
+```markdown
+---
+title: "Your Post Title"
+date: "2025-01-15"
+excerpt: "A brief description of your post"
+tags: ["tag1", "tag2", "tag3"]
+---
+
+Your markdown content here...
+```
 
 ## 🚀 Deployment
 
