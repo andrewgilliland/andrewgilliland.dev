@@ -11,7 +11,7 @@ const Footer = () => (
       </div>
       <div className="mt-6 flex items-center gap-10 lg:mt-0">
         {socialLinks.map(({ Icon, href, color }, index) => (
-          <a key={index} href={href}>
+          <a key={index} href={href} target="_blank" rel="noopener noreferrer">
             <Block
               backgroundColor={`bg-${color}-500`}
               height="12"
