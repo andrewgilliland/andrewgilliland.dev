@@ -5,76 +5,73 @@ import Block from "@/components/Block";
 const AboutPage = () => {
   return (
     <div className="relative mx-auto w-full max-w-3xl overflow-hidden bg-black">
-      {/* <GridPattern /> */}
       <div className="relative px-8 py-14">
         <h1 className="stroke-black text-3xl font-bold text-white md:mx-0 md:text-4xl">
           About
         </h1>
 
         <section className="mt-10">
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <Image
-              src="/andy-4.png"
+              src="/hannah-andrew-1.jpeg"
               width={1200}
               height={500}
               alt="Andrew Gilliland"
-              className="border-2 border-white bg-purple-700 object-cover"
+              className="rounded border-2 border-white bg-purple-700 object-cover"
             />
             <Image
-              src="/hank-landing-1.jpeg"
+              src="/hank-kitchen-1.jpeg"
               width={800}
               height={500}
               alt="Hank the Dog"
               className="rounded border-2 border-white object-cover"
             />
             <Image
-              src="/bernie-kitchen-1.jpeg"
+              src="/gus-christmas-1.jpeg"
               width={800}
               height={500}
-              alt="Bernie in the Cat"
+              alt="Gus the Cat"
               className="rounded border-2 border-white object-cover"
             />
             <Image
-              src="/andy-4.png"
+              src="/bernie-kitchen-1.jpeg"
               width={800}
               height={500}
-              alt="Andrew Gilliland"
+              alt="Bernie in Cat"
               className="rounded border-2 border-white bg-purple-700 object-cover"
             />
           </div>
 
-          <div className="mt-10 grid gap-4 sm:gap-8">
-            <div className="rounded-lg border-2 border-white bg-black p-4 text-base font-semibold text-white">
-              <p>
-                I&apos;m a community-taught full stack developer who loves
-                building tools to solve business problems. I believe development
-                is a team sport and thrive in collaborative environments that
-                encourage creative growth, the best ideas can come from anyone.
-                My mission is to help teams create exceptional web and mobile
-                applications that reach their full potential.
-              </p>
-            </div>
-            <div className="rounded-lg border-2 border-white bg-black p-4 text-base font-semibold text-white">
-              <p>
-                I thrive on building engaging and interactive user experiences
-                and am comfortable working in both front-end and back-end
-                development. For mobile applications, I enjoy working in
-                TypeScript, Swift, React Native, and Expo. For web applications,
-                my go-to tools are TypeScript, React, Next.js, and Astro.
-                I&apos;m always eager to learn and work with new technologies.
-              </p>
-            </div>
-            <div className="rounded-lg border-2 border-white bg-black p-4 text-base font-semibold text-white">
-              <p>
-                Outside of programming, I love fitness, exercise, and nutrition.
-                Having worked as a personal trainer for several years, I
-                thoroughly enjoy sharing my knowledge with others. My other
-                interests include woodworking, reading, drawing, grilling, and
-                tackling various home projects. When it&apos;s time to relax,
-                you&apos;ll find me hanging out with my dog Hank, my cats Gus
-                and Bernie, while enjoying some Yacht Rock.
-              </p>
-            </div>
+          <div className="mt-10 grid gap-4 text-base font-semibold text-white sm:gap-8">
+            <p>
+              Andrew is a community-taught full stack developer with a passion
+              for continuous learning, strategic thinking, and thoughtful
+              collaboration. He thrives in environments where he can explore new
+              ideas, tackle complex challenges, and refine processes for lasting
+              impact. Whether mentoring teammates, evaluating technical
+              solutions, or building from scratch, he brings a reflective
+              mindset and commitment to helping both people and systems grow
+              together.
+            </p>
+
+            <p>
+              I thrive on building engaging and interactive user experiences and
+              am comfortable working in both front-end and back-end development.
+              For mobile applications, I enjoy working in TypeScript, Swift,
+              React Native, and Expo. For web applications, my go-to tools are
+              TypeScript, React, Next.js, and Astro. I&apos;m always eager to
+              learn and work with new technologies.
+            </p>
+
+            <p>
+              Outside of programming, I love fitness, exercise, and nutrition.
+              Having worked as a personal trainer for several years, I
+              thoroughly enjoy sharing my knowledge with others. My other
+              interests include woodworking, reading, drawing, grilling, and
+              tackling various home projects. When it&apos;s time to relax,
+              you&apos;ll find me hanging out with my dog Hank, my cats Gus and
+              Bernie, while enjoying some Yacht Rock.
+            </p>
           </div>
 
           <div className="mt-10 flex flex-col items-center gap-4 rounded-lg bg-black p-4 text-white">
