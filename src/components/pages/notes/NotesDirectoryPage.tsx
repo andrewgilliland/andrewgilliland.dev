@@ -14,7 +14,7 @@ const NotesDirectoryPage: FC<NotesDirectoryPageProps> = async ({
   const direct = await getNotesFileTree(pagePath);
 
   return (
-    <div className="">
+    <div className="px-8">
       {directory === "" && (
         <section className="mx-auto mt-20 max-w-[60ch]">
           <h2 className="stroke-white text-3xl font-bold capitalize text-gray-100 md:text-4xl">

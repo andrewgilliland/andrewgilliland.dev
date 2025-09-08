@@ -11,7 +11,7 @@ const AboutPage = () => {
   ];
 
   return (
-    <div>
+    <div className="px-8">
       <section className="mx-auto mb-10 mt-20 max-w-[60ch]">
         <h1 className="stroke-white text-3xl font-bold capitalize text-gray-100 md:text-4xl">
           About
