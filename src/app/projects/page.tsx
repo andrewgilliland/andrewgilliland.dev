@@ -13,7 +13,7 @@ export default function ProjectsPage() {
     {
       title: "blono.dev",
       description:
-        "Website for Bloomington-Normal Developers. Built with Next.js and Tailwind CSS.",
+        "blono.dev is a website for Bloomington-Normal Developers, a local developer community in Central Illinois. Built with Next.js and Tailwind CSS.",
       href: "/projects/blono-dev",
       logo: "/projects/blono-dev-icon-1.svg",
     },

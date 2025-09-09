@@ -5,6 +5,14 @@ export default function ProjectPage() {
   const title = "SmartScout";
   const description =
     "Precision Planting SmartScout is a mobile app that uses machine vision and augmented reality to automatically assess emergence and plant spacing in a 3D space. SmartScout is built with React Native and Swift for Native Modules, and deployed on iOS and iPadOS.";
+
+  const images = [
+    "/projects/smartscout-1.webp",
+    "/projects/smartscout-2.webp",
+    "/projects/smartscout-3.webp",
+    "/projects/smartscout-4.webp",
+  ];
+
   return (
     <div className="px-8">
       <section className="mx-auto mt-20 max-w-[60ch]">
@@ -22,30 +30,15 @@ export default function ProjectPage() {
           href="https://apps.apple.com/us/app/precision-planting-smartscout/id1672094173"
           className="grid grid-cols-4 gap-2"
         >
-          <Image
-            src="/projects/smartscout-1.webp"
-            alt="SmartScout"
-            width={500}
-            height={300}
-          />
-          <Image
-            src="/projects/smartscout-2.webp"
-            alt="SmartScout"
-            width={500}
-            height={300}
-          />
-          <Image
-            src="/projects/smartscout-3.webp"
-            alt="SmartScout"
-            width={500}
-            height={300}
-          />
-          <Image
-            src="/projects/smartscout-4.webp"
-            alt="SmartScout"
-            width={500}
-            height={300}
-          />
+          {images.map((src, index) => (
+            <Image
+              key={index}
+              src={src}
+              alt={`SmartScout ${index + 1}`}
+              width={500}
+              height={300}
+            />
+          ))}
         </a>
       </section>
       <section className="mx-auto mt-10 max-w-[60ch]">

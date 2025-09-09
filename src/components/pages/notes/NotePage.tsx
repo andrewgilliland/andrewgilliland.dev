@@ -1,13 +1,6 @@
-// "use client";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import ColorDivider from "../../ColorDivider";
 import { transformMarkdown } from "@/lib/actions/markdown";
-import BackButton from "@/components/BackButton";
-// import { useRouter } from "next/navigation";
-// import BackButton from "../../BackButton";
-// import { HeadingElement, Note } from "@/types";
-// import BlogOutlineCard from "@/components/BlogOutlineCard";
-// ! Todo: Remove marked
 
 type NotePageProps = {
   pagePath: string;
@@ -23,31 +16,9 @@ const NotePage: FC<NotePageProps> = async ({ pagePath }) => {
     day: "numeric",
   });
 
-  // const router = useRouter();
-  // const [headingElements, setHeadingElements] = useState<HeadingElement[]>([]);
-
-  // useEffect(() => {
-  //   const childElements = document.querySelector(".prose").children;
-  //   const elements = [];
-
-  //   for (const element of childElements) {
-  //     const typedElement = element as HTMLElement;
-  //     if (typedElement.id) {
-  //       elements.push({
-  //         id: typedElement.id,
-  //         text: typedElement.textContent,
-  //         tag: typedElement.tagName,
-  //       });
-  //     }
-  //   }
-
-  //   setHeadingElements(elements);
-  // }, []);
-
   return (
     <div className="mx-auto mt-12 min-h-screen px-[10%] md:w-[40em] md:p-0">
       <div>
-        {/* <BackButton back={() => {}} /> */}
         <h1 className="mt-8 text-4xl text-white md:text-5xl lg:text-7xl">
           {title}
         </h1>
