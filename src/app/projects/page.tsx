@@ -1,6 +1,24 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function ProjectsPage() {
+  const projects = [
+    {
+      title: "SmartScout",
+      description:
+        "Precision Planting SmartScout is an app that uses machine vision and augmented reality to automatically assess emergence and plant spacing in a 3D space.",
+      href: "/projects/smartscout",
+      logo: "/projects/smartscout-icon-1.webp",
+    },
+    {
+      title: "blono.dev",
+      description:
+        "Website for Bloomington-Normal Developers. Built with Next.js and Tailwind CSS.",
+      href: "/projects/blono-dev",
+      logo: "/projects/blono-dev-icon-1.svg",
+    },
+  ];
+
   return (
     <div className="px-8">
       <section className="mx-auto mt-20 max-w-[60ch]">
@@ -12,32 +30,32 @@ export default function ProjectsPage() {
         </p>
       </section>
 
-      <section className="mx-auto mt-20 max-w-[60ch]">
-        <ul className="space-y-6">
-          <li className="rounded-lg border p-4 transition">
+      <section className="mx-auto mt-10 max-w-[60ch]">
+        <div className="grid gap-3">
+          {projects.map(({ href, title, description, logo }) => (
             <Link
-              className="text-xl font-semibold text-blue-600 hover:underline"
-              href="/projects/project-1"
+              key={title}
+              className="group relative min-w-[240px]"
+              href={href}
+              title={title}
             >
-              SmartScout
+              <div className="absolute bottom-0 h-full w-full rounded border-2 border-white bg-black" />
+              <div className="transform-gpu rounded border-2 border-white bg-black p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1">
+                {logo && (
+                  <Image
+                    src={logo}
+                    alt={`${title} logo`}
+                    className="mb-4 h-12 w-12 rounded-sm object-contain"
+                    width={48}
+                    height={48}
+                  />
+                )}
+                <h4 className="font-bold text-white">{title}</h4>
+                <p className="mt-2 text-gray-300">{description}</p>
+              </div>
             </Link>
-            <p className="mt-2 text-gray-300">
-              A brief description of Project One.
-            </p>
-          </li>
-          <li className="rounded-lg border p-4 transition hover:shadow-lg">
-            <Link
-              className="text-xl font-semibold text-blue-600 hover:underline"
-              href="/projects/project-2"
-            >
-              blono.dev
-            </Link>
-            <p className="mt-2 text-gray-300">
-              A brief description of blono.dev.
-            </p>
-          </li>
-          {/* Add more projects as needed */}
-        </ul>
+          ))}
+        </div>
       </section>
     </div>
   );
