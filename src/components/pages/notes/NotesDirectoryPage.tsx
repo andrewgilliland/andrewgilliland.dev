@@ -14,13 +14,13 @@ const NotesDirectoryPage: FC<NotesDirectoryPageProps> = async ({
   const direct = await getNotesFileTree(pagePath);
 
   return (
-    <div className="mx-auto mt-14 w-full max-w-3xl">
+    <div className="px-8">
       {directory === "" && (
-        <section className="mx-4 my-10 md:mx-0">
+        <section className="mx-auto mt-20 max-w-[60ch]">
           <h2 className="stroke-white text-3xl font-bold capitalize text-gray-100 md:text-4xl">
             Notes
           </h2>
-          <p className="mt-4 text-gray-300">
+          <p className="mt-10 text-gray-300">
             A collection of notes on various topics. My notes may be code
             snippets, info that comes directly from docs, or what I have
             learned. I will add resources to give due credit where info comes
@@ -29,7 +29,7 @@ const NotesDirectoryPage: FC<NotesDirectoryPageProps> = async ({
         </section>
       )}
 
-      <section className="mx-4 my-10 md:mx-0">
+      <section className="mx-auto mt-20 max-w-[60ch]">
         <FileViewWindow directory={direct} />
       </section>
     </div>

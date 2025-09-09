@@ -1,114 +1,115 @@
 import Image from "next/image";
 import Link from "next/link";
-import GridPattern from "@/components/patterns/GridPattern";
 import Block from "@/components/Block";
 
 const AboutPage = () => {
+  const images = [
+    { src: "/hannah-andrew-1.jpeg", alt: "Hannah and Andrew" },
+    { src: "/hank-kitchen-1.jpeg", alt: "Hank the Dog" },
+    { src: "/gus-christmas-1.jpeg", alt: "Gus the Cat" },
+    { src: "/bernie-kitchen-1.jpeg", alt: "Bernie in Cat" },
+  ];
+
   return (
-    <div className="relative mx-auto w-full max-w-3xl overflow-hidden bg-emerald-300">
-      <GridPattern />
-      <div className="relative px-8 py-14">
-        <h1 className="stroke-black text-3xl font-bold text-white md:mx-0 md:text-4xl">
+    <div className="px-8">
+      <section className="mx-auto mb-10 mt-20 max-w-[60ch]">
+        <h1 className="stroke-white text-3xl font-bold capitalize text-gray-100 md:text-4xl">
           About
         </h1>
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {images.map((image) => (
+            <Image
+              className="border-2 border-white object-cover"
+              key={image.src}
+              src={image.src}
+              width={200}
+              height={250}
+              alt={image.alt}
+            />
+          ))}
+        </div>
 
-        <section className="mt-10 grid grid-rows-3 gap-4 sm:grid-cols-2 sm:gap-10">
-          <div className="grid justify-items-center overflow-hidden rounded-lg border-2 border-black bg-emerald-950 py-4">
-            <div className="flex items-center">
-              <Image
-                src="/andy-4.png"
-                width={800}
-                height={500}
-                alt="Andrew Gilliland"
-                className="h-20 w-20 rounded-full border-2 border-black bg-purple-700 object-cover object-left-top"
-              />
-              <div className="ml-4 text-sm text-white">
-                <div className="font-bold">Andrew Gilliland</div>
-                <div className="mt-2 font-thin">Full Stack Developer</div>
-              </div>
-            </div>
+        <div className="mt-10 grid gap-4 text-base text-white sm:gap-8">
+          <p>
+            Andrew is a community-taught full stack developer with a passion for
+            continuous learning, strategic thinking, and thoughtful
+            collaboration. He thrives in environments where he can explore new
+            ideas, tackle complex challenges, and refine processes for lasting
+            impact. In his spare time he helps organize meetups for{" "}
+            <a
+              className="text-emerald-400 hover:underline"
+              href="https://www.blono.dev/"
+            >
+              Bloomington-Normal Developers
+            </a>
+            .
+          </p>
 
-            <Link className="mt-4" href="/resume">
-              <Block
-                backgroundColor="bg-pink-500"
-                height="12"
-                width="24"
-                theme="light"
-              >
-                Resume
-              </Block>
-            </Link>
+          <p>
+            Outside of software development, he enjoys fitness, nutrition,
+            reading, drawing, grilling, woodworking, and tackling various home
+            projects. When it&apos;s time to relax, you&apos;ll find him hanging
+            out with his girlfriend Hannah, dog Hank, and cats Gus and Bernie,
+            enjoying some Yacht Rock.
+          </p>
+        </div>
+
+        <div className="mt-10 text-white">
+          <h3 className="bg-white px-2 py-1 font-bold text-black">
+            Technologies
+          </h3>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-4 font-mono text-sm sm:justify-between">
+            <ul>
+              <li>HTML5</li>
+              <li>CSS3</li>
+              <li>JavaScript</li>
+              <li>React</li>
+              <li>Node.js</li>
+            </ul>
+            <ul>
+              <li>Astro</li>
+              <li>Next.js</li>
+              <li>React Native</li>
+              <li>Expo</li>
+              <li>Bun</li>
+            </ul>
+            <ul>
+              <li>AWS</li>
+              <li>Vercel</li>
+              <li>Cloudflare</li>
+              <li>Netlify</li>
+              <li>Fly.io</li>
+            </ul>
+            <ul>
+              <li>MySQL</li>
+              <li>PostgreSQL</li>
+              <li>SQLite</li>
+              <li>DynamoDB</li>
+              <li>MongoDB</li>
+            </ul>
+            <ul>
+              <li>Swift</li>
+              <li>UIKit</li>
+              <li>SwiftUI</li>
+              <li>CoreML</li>
+              <li>ARKit</li>
+              <li>RealityKit</li>
+            </ul>
           </div>
-          <div className="grid justify-items-center gap-4 rounded-lg border-2 border-black bg-yellow-300 p-4 text-base font-semibold text-black">
-            <p>
-              I&apos;m a self-taught full stack developer who loves building
-              tools to solve business problems. I believe development is a team
-              sport and thrive in collaborative environments that encourage
-              creative growth—after all, the best ideas can come from anyone. My
-              mission is to help teams create exceptional web and mobile
-              applications that reach their full potential.
-            </p>
-          </div>
-          <div className="grid justify-items-center gap-4 rounded-lg border-2 border-black bg-yellow-300 p-4 text-base font-semibold text-black">
-            <p>
-              I thrive on building engaging and interactive user experiences and
-              am comfortable working in both front-end and back-end development.
-              For mobile applications, I prefer working with TypeScript, React
-              Native, and Expo. For web applications, my go-to tools are
-              TypeScript, React, and Next.js. I&apos;m always eager to learn and
-              work with new technologies.
-            </p>
-          </div>
-          <div className="grid justify-items-center gap-4 rounded-lg border-2 border-black bg-yellow-300 p-4 text-base font-semibold text-black">
-            <p>
-              Outside of programming, I love fitness, exercise, and nutrition.
-              Having worked as a personal trainer for several years, I
-              thoroughly enjoy sharing my knowledge with others. My other
-              interests include woodworking, reading, drawing, grilling, and
-              tackling various home projects. When it&apos;s time to relax,
-              you&apos;ll find me hanging out with my dog Hank, my cats Gus and
-              Bernie, while enjoying some Yacht Rock.
-            </p>
-          </div>
-          <div className="flex flex-col items-center gap-4 rounded-lg border-2 border-black bg-pink-300 p-4 text-black">
-            <h3 className="rounded-lg border-2 border-black bg-white px-2 py-1 font-bold">
-              Technologies
-            </h3>
-            <div className="flex list-disc gap-2 text-sm font-semibold">
-              <ul className="min-w-fit">
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>JavaScript</li>
-                <li>React</li>
-                <li>Next.js</li>
-                <li>React Native</li>
-                <li>Expo</li>
-                <li>Node.js</li>
-                <li>Bun</li>
-              </ul>
-              <ul className="">
-                <li>AWS</li>
-                <li>Vercel</li>
-                <li>Fly.io</li>
-                <li>Netlify</li>
-                <li>MySQL</li>
-                <li>PostgreSQL</li>
-                <li>SQLite</li>
-                <li>DynamoDB</li>
-                <li>MongoDB</li>
-              </ul>
-              <ul className="">
-                <li>Swift</li>
-                <li>UIKit</li>
-                <li>SwiftUI</li>
-                <li>CoreML</li>
-                <li>ARKit</li>
-                <li>RealityKit</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-      </div>
+
+          <Link href="/resume">
+            <Block
+              className="mt-8 inline-block"
+              backgroundColor="bg-pink-500"
+              height="12"
+              width="24"
+              theme="dark"
+            >
+              Resume
+            </Block>
+          </Link>
+        </div>
+      </section>
     </div>
   );
 };
