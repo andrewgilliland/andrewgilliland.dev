@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function ProjectPage() {
   const title = "SmartScout";
   const description =
-    "Precision Planting SmartScout is an app that uses machine vision and augmented reality to automatically assess emergence and plant spacing in a 3D space.";
+    "Precision Planting SmartScout is a mobile app that uses machine vision and augmented reality to automatically assess emergence and plant spacing in a 3D space. SmartScout is built with React Native and Swift for Native Modules, and deployed on iOS and iPadOS.";
   return (
     <div className="px-8">
       <section className="mx-auto mt-20 max-w-[60ch]">
@@ -70,13 +70,13 @@ export default function ProjectPage() {
       <section className="mx-auto mt-10 max-w-[60ch]">
         <h2 className="text-2xl font-bold text-gray-100">Tech Stack</h2>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-gray-300">
+          <li>TypeScript</li>
           <li>React Native</li>
-          <li>Expo</li>
           <li>Swift</li>
+          <li>SwiftUI</li>
           <li>ARKit</li>
           <li>CoreML</li>
           <li>AWS</li>
-          <li>EAS</li>
         </ul>
       </section>
     </div>

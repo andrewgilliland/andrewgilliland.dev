@@ -31,7 +31,7 @@ export default function ProjectsPage() {
       </section>
 
       <section className="mx-auto mt-10 max-w-[60ch]">
-        <div className="grid gap-3">
+        <div className="grid gap-6">
           {projects.map(({ href, title, description, logo }) => (
             <Link
               key={title}
