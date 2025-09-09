@@ -5,20 +5,16 @@ export default function ProjectPage() {
   const title = "blono.dev";
   const description =
     "blono.dev is a website for Bloomington-Normal Developers, a local developer community in Central Illinois. Built with Next.js and Tailwind CSS.";
-
-  const images = ["/projects/blono-dev-1.png"];
   const link = "https://blono.dev";
-
+  const images = ["/projects/blono-dev-1.png"];
   const overview =
     "blono.dev is a website for Bloomington-Normal Developers, a local developer community in Central Illinois. It serves as a hub for sharing resources, collaborating on projects, and fostering connections among developers in the area. The site is built with Next.js and Tailwind CSS, ensuring a modern and responsive design.";
-
   const features = [
     "Resource sharing and collaboration",
     "Event announcements and meetups",
     "Project showcases and portfolios",
     "Community forums and discussions",
   ];
-
   const techStack = [
     "TypeScript",
     "React",

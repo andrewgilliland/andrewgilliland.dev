@@ -26,7 +26,7 @@ export default function ProjectsPage() {
           My Projects
         </h1>
         <p className="mt-10 text-gray-300">
-          Explore some of the work I've built and contributed to.
+          Explore some of the work I&apos;ve built and contributed to.
         </p>
       </section>
 
