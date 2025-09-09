@@ -39,6 +39,17 @@ export type DirectoryNode = {
   children?: (DirectoryNode | FileNode)[];
 };
 
+export type Project = {
+  title: string;
+  description: string;
+  href: string;
+  logo?: string;
+  overview?: string;
+  features?: string[];
+  techStack?: string[];
+  images?: string[];
+};
+
 // Type guard to check if a node is of type FileNode
 export const isFileNode = (node: DirectoryNode | FileNode): node is FileNode =>
   "path" in node;
