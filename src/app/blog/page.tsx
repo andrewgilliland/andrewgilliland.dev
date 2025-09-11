@@ -2,21 +2,7 @@ import Link from "next/link";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-
-interface BlogPostFrontmatter {
-  title: string;
-  date: string;
-  description?: string;
-  author?: string;
-  tags?: string[];
-  coverImage?: string;
-}
-
-interface BlogPost {
-  frontmatter: BlogPostFrontmatter;
-  content: string;
-  slug: string;
-}
+import { BlogPost, BlogPostFrontmatter } from "@/types";
 
 export default async function BlogPage() {
   const blogDir = path.join(process.cwd(), "content/blog");
