@@ -1,8 +1,8 @@
-import Link from "next/link";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { BlogPost, BlogPostFrontmatter } from "@/types";
+import BlogCard from "@/components/BlogCard";
 
 export default async function BlogPage() {
   const blogDir = path.join(process.cwd(), "content/blog");
@@ -33,22 +33,11 @@ export default async function BlogPage() {
       <section className="mx-auto mt-10 max-w-[60ch]">
         <div className="grid gap-6">
           {posts?.map(({ frontmatter, slug }) => (
-            <Link
+            <BlogCard
               key={frontmatter.title}
-              className="group relative min-w-[240px]"
-              href={`/blog/${slug}`}
-              title={frontmatter.title}
-            >
-              <>
-                <div className="absolute bottom-0 h-full w-full rounded border-2 border-white bg-black" />
-                <div className="transform-gpu rounded border-2 border-white bg-black p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1">
-                  <h4 className="font-bold text-white">{frontmatter.title}</h4>
-                  <p className="mt-2 text-gray-300">
-                    {frontmatter.description}
-                  </p>
-                </div>
-              </>
-            </Link>
+              frontmatter={frontmatter}
+              slug={slug}
+            />
           ))}
         </div>
       </section>
