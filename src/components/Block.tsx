@@ -1,18 +1,38 @@
+import { ReactNode } from "react";
+
 type BlockProps = {
   className?: string;
-  color: string;
-  Icon: JSX.Element;
+  children?: ReactNode;
+  backgroundColor?: string;
+  size?: string;
+  height?: string;
+  width?: string;
+  theme?: "dark" | "light";
 };
 
-const Block = ({ className, color, Icon }: BlockProps) => (
-  <div className={`relative ${className} animate-rotate-reverse`}>
-    <div
-      className={`absolute flex justify-center items-center bg-${color}-100 h-16 w-16 rounded-lg right-1 bottom-1`}
-    >
-      {Icon}
+const Block = ({
+  className,
+  children,
+  backgroundColor,
+  size = "16",
+  height = "16",
+  width = "16",
+  theme = "light",
+}: BlockProps) => {
+  const themeOptions = { dark: "white", light: "black" };
+
+  return (
+    <div className={`group relative ${className}`}>
+      <div
+        className={`absolute top-0 bg-${themeOptions[theme]} h-${height} w-${width} translate-x-1 translate-y-1 rounded-lg`}
+      />
+      <div
+        className={`relative flex items-center justify-center text-white h-${height} w-${width} border-2 border-${themeOptions[theme]} rounded-lg transition-transform group-hover:translate-x-1 group-hover:translate-y-1 ${backgroundColor}`}
+      >
+        {children}
+      </div>
     </div>
-    <div className="bg-black h-16 w-16 rounded-lg" />
-  </div>
-);
+  );
+};
 
 export default Block;

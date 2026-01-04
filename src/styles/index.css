@@ -17,6 +17,21 @@
   }
 }
 
+::-moz-selection {
+  /* Code for Firefox */
+  color: theme("colors.white");
+  background: theme("colors.pink.600");
+}
+
+::selection {
+  color: theme("colors.white");
+  background: theme("colors.pink.600");
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -27,18 +42,15 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-.language-javascript {
-  @apply text-cyan-300;
-}
-
-.language-swift {
-  @apply text-red-300;
-}
-
-.header-title {
+.header-heading {
   color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
+}
+
+.header-heading:hover {
+  animation: spring-bounce 900ms ease forwards;
+  will-change: transform;
 }
 
 .stroke-black {
@@ -65,10 +77,10 @@ body {
 }
 
 @keyframes rotate {
-  from {
+  0% {
     transform: rotate(0deg);
   }
-  to {
+  100% {
     transform: rotate(360deg);
   }
 }
@@ -80,4 +92,118 @@ body {
   to {
     transform: rotate(-360deg);
   }
+}
+
+@keyframes spring-bounce {
+  0% {
+    transform: scale3d(0.96, 0.96, 1);
+  }
+  20% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+  40% {
+    transform: scale3d(0.98, 0.98, 1);
+  }
+  60% {
+    transform: scale3d(1.05, 1.05, 1);
+  }
+  80% {
+    transform: scale3d(1.01, 1.01, 1);
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+#drawer-nav[popover] {
+  background-color: black;
+  color: white;
+  transition:
+    display 0.3s allow-discrete,
+    overlay 0.5s allow-discrete,
+    opacity 0.3s,
+    translate 0.3s;
+  transition-timing-function: ease-in;
+  translate: 100%;
+  margin: 0;
+  block-size: 100vb;
+  inline-size: 50vi;
+  inset-inline-start: unset;
+  inset-inline-end: 0;
+  border-left: 2px solid white;
+
+  &:popover-open {
+    translate: 0;
+    transition-timing-function: ease-out;
+  }
+
+  @starting-style {
+    &:popover-open {
+      translate: 100%;
+    }
+  }
+}
+
+/* ! These selectors are needed for syntax highlighting using shiki  */
+pre {
+  tab-size: 2;
+  overflow: hidden; /* Ensure the element has overflow hidden */
+  position: relative; /* Ensure the element is positioned relative for pseudo-elements */
+  /* white-space: pre-wrap; /* Wrap text  */
+
+  /* Firefox */
+  scrollbar-width: thin; /* Thin scrollbar */
+  scrollbar-color: theme("colors.cyan.500") theme("colors.white"); /* Thumb color and track color */
+}
+
+.highlighted {
+  background-color: theme("colors.gray.950");
+}
+
+.line {
+  counter-increment: count;
+  display: flex;
+  padding-right: 1em;
+}
+
+.line::before {
+  content: counter(count);
+  padding-right: 0.75em;
+  opacity: 0.4;
+  width: 2em; /* Make the counter have a fixed width */
+  text-align: right; /* Align the text to the right */
+}
+
+/* WebKit browsers (Chrome, Safari) */
+pre::-webkit-scrollbar {
+  height: 8px; /* Height of the horizontal scrollbar */
+}
+
+pre::-webkit-scrollbar-track {
+  background: theme(
+    "colors.emerald.300"
+  ); /* Background of the scrollbar track */
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: theme("colors.yellow.300"); /* Color of the scrollbar thumb */
+  border-radius: 0px; /* Rounded corners for the scrollbar thumb */
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: theme(
+    "colors.pink.300"
+  ); /* Color of the scrollbar thumb on hover */
+}
+
+.prose a {
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
+    backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.prose a:hover {
+  color: theme("colors.cyan.500");
 }
