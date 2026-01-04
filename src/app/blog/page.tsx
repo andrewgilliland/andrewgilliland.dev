@@ -25,8 +25,8 @@ export default async function BlogPage() {
           Blog
         </h1>
         <p className="mt-10 text-gray-300">
-          Welcome to my blog! Here you'll find articles, tutorials, and insights
-          on web development, design, and technology.
+          Welcome to my blog! Here you&apos;ll find articles, tutorials, and
+          insights on web development, design, and technology.
         </p>
       </section>
 
