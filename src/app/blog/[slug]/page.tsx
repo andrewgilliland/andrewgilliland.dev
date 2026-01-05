@@ -13,10 +13,13 @@ export default async function ArticlePage({ params }) {
   return (
     <main className="flex flex-col items-center px-4 py-12">
       <article className="prose w-full max-w-2xl">
-        <h1 className="mb-4 text-4xl font-bold">
+        <h1 className="mb-4 text-4xl font-bold text-white">
           {data.title || slug.replace(/-/g, " ")}
         </h1>
-        <div dangerouslySetInnerHTML={{ __html: html }} />
+        <div
+          className="prose prose-h2:text-neutral-100 prose-p:text-neutral-200"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       </article>
     </main>
   );
