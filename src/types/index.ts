@@ -50,6 +50,21 @@ export type Project = {
   images?: string[];
 };
 
+export type BlogPostFrontmatter = {
+  title: string;
+  date: string;
+  description?: string;
+  author?: string;
+  tags?: string[];
+  coverImage?: string;
+};
+
+export type BlogPost = {
+  frontmatter: BlogPostFrontmatter;
+  content: string;
+  slug: string;
+};
+
 // Type guard to check if a node is of type FileNode
 export const isFileNode = (node: DirectoryNode | FileNode): node is FileNode =>
   "path" in node;

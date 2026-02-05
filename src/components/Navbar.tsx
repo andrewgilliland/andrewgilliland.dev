@@ -4,6 +4,7 @@ import DesktopNavbar from "./DesktopNavbar";
 const Navbar = () => {
   const pages = [
     { href: "/", title: "Home" },
+    { href: "/blog", title: "Blog" },
     { href: "/projects", title: "Projects" },
     { href: "/notes", title: "Notes" },
     { href: "/about", title: "About" },
