@@ -8,9 +8,15 @@
 # testing
 /coverage
 
-# next.js
+# next.js (old)
 /.next/
 /out/
+/src/app/
+/src/_old_nextjs_app/
+
+# astro
+.astro
+/dist/
 
 # production
 /build
@@ -34,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# build caches
+.swc

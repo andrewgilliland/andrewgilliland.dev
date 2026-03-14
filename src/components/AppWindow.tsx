@@ -14,14 +14,22 @@ const AppWindow = () => {
 
   return (
     <div className="relative h-32 w-48">
-      <div className="absolute bg-black h-32 w-48 border-2 border-black rounded transform translate-x-1 translate-y-1" />
-      <div className="absolute bg-pink-300 h-32 w-48 border-2 border-black rounded">
-        <div className="flex justify-end bg-black border-b-2 border-black p-1">
+      <div className="absolute h-32 w-48 translate-x-1 translate-y-1 transform rounded border-2 border-black bg-black" />
+      <div className="absolute h-32 w-48 rounded border-2 border-black bg-pink-300">
+        <div className="flex justify-end border-b-2 border-black bg-black p-1">
           <div className="flex gap-1">
             {[
-              { color: "cyan", Icon: PaintBrushIcon, window: "paint" },
-              { color: "yellow", Icon: Square2StackIcon, window: "app" },
-              { color: "pink", Icon: Cog6ToothIcon, window: "settings" },
+              { color: "cyan", Icon: PaintBrushIcon, window: "paint" as const },
+              {
+                color: "yellow",
+                Icon: Square2StackIcon,
+                window: "app" as const,
+              },
+              {
+                color: "pink",
+                Icon: Cog6ToothIcon,
+                window: "settings" as const,
+              },
             ].map(({ color, Icon, window }, index) => (
               <div
                 onClick={() => {
@@ -31,7 +39,7 @@ const AppWindow = () => {
                   });
                 }}
                 key={index}
-                className="h-3 w-3 rounded-full cursor-pointer"
+                className="h-3 w-3 cursor-pointer rounded-full"
               >
                 <Icon className={`text-${color}-400`} />
               </div>
@@ -40,49 +48,13 @@ const AppWindow = () => {
         </div>
         <div className="relative p-4">
           <div
-            className={`absolute 
-            border-2
-            border-black 
-            bg-cyan-300
-            rounded 
-            w-24 
-            h-16
-            transition-transform
-            transform
-            origin-top
-            scale-${windowsOpen["paint"] ? "100" : "0"}
-            `}
+            className={`absolute h-16 w-24 origin-top transform rounded border-2 border-black bg-cyan-300 transition-transform scale-${windowsOpen["paint"] ? "100" : "0"} `}
           />
           <div
-            className={`absolute
-            left-10
-            top-6
-            border-2
-            border-black 
-            bg-yellow-300 
-            rounded 
-            w-24 
-            h-16
-            transition-transform
-            transform
-            scale-${windowsOpen["app"] ? "100" : "0"}
-            `}
+            className={`absolute left-10 top-6 h-16 w-24 transform rounded border-2 border-black bg-yellow-300 transition-transform scale-${windowsOpen["app"] ? "100" : "0"} `}
           />
           <div
-            className={`absolute
-            left-20
-            top-8
-            border-2
-            border-black 
-            bg-emerald-300 
-            rounded 
-            w-24 
-            h-16
-            transition-transform
-            transform
-            origin-bottom
-            scale-${windowsOpen["settings"] ? "100" : "0"}
-            `}
+            className={`absolute left-20 top-8 h-16 w-24 origin-bottom transform rounded border-2 border-black bg-emerald-300 transition-transform scale-${windowsOpen["settings"] ? "100" : "0"} `}
           />
         </div>
       </div>

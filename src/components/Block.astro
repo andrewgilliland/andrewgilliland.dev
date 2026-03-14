@@ -1,0 +1,34 @@
+---
+interface Props {
+  className?: string;
+  backgroundColor?: string;
+  size?: string;
+  height?: string;
+  width?: string;
+  theme?: 'dark' | 'light';
+}
+
+const {
+  className = '',
+  backgroundColor = '',
+  size = '16',
+  height = size,
+  width = size,
+  theme = 'light',
+} = Astro.props;
+
+const themeOptions: Record<'dark' | 'light', string> = { dark: 'white', light: 'black' };
+const themeColor = themeOptions[theme];
+---
+
+<div class={`group relative ${className}`}>
+  <div
+    class={`absolute top-0 h-${height} w-${width} translate-x-1 translate-y-1 rounded-lg bg-${themeColor}`}
+  >
+  </div>
+  <div
+    class={`relative flex h-${height} w-${width} items-center justify-center rounded-lg border-2 border-${themeColor} text-white transition-transform group-hover:translate-x-1 group-hover:translate-y-1 ${backgroundColor}`}
+  >
+    <slot />
+  </div>
+</div>

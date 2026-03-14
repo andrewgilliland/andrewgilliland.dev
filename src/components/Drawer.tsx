@@ -1,3 +1,11 @@
+declare module "react" {
+  interface HTMLAttributes<T> {
+    popover?: string;
+    popoverTarget?: string;
+    popoverTargetAction?: "hide" | "show" | "toggle";
+  }
+}
+
 export const Drawer = () => {
   return (
     <div>

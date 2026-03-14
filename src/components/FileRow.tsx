@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { FileNode } from "@/types";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
 
 type FileRowProps = {
   fileNode: FileNode;
@@ -11,7 +10,7 @@ type FileRowProps = {
 
 const FileRow: FC<FileRowProps> = ({ fileNode, depth = 1 }) => {
   return (
-    <Link
+    <a
       href={`/notes${fileNode.path}`}
       title={fileNode.title}
       className="flex border-b border-gray-800 py-3 pr-4 transition-colors hover:bg-gray-900"
@@ -25,7 +24,7 @@ const FileRow: FC<FileRowProps> = ({ fileNode, depth = 1 }) => {
           {fileNode.title}
         </span>
       </div>
-    </Link>
+    </a>
   );
 };
 

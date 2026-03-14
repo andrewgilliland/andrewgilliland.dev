@@ -1,0 +1,14 @@
+---
+import PageHeading from '../typography/PageHeading.astro';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<div class="mx-auto mt-14 min-h-screen w-full max-w-3xl">
+  <PageHeading className="ml-8 mt-10">{title}</PageHeading>
+  <slot />
+</div>

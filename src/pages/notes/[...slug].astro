@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageLayout from '@/components/layouts/PageLayout.astro';
+
+// TODO: Implement dynamic note rendering
+// This will use content collections to load and render markdown notes
+// For now, this is a placeholder
+
+const { slug } = Astro.params;
+
+export async function getStaticPaths() {
+  // TODO: Generate paths from content collection
+  // For now, return empty array
+  return [];
+}
+---
+
+<BaseLayout title={`Note - Andrew Gilliland`}>
+  <PageLayout title="Note">
+    <div class="p-8">
+      <p class="text-white">Note rendering will be implemented here.</p>
+      <p class="mt-4 text-white">Slug: {slug}</p>
+    </div>
+  </PageLayout>
+</BaseLayout>

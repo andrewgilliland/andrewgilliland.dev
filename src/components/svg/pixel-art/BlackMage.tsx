@@ -3,8 +3,32 @@ import { BattleState } from "@/components/Battle";
 import { FC } from "react";
 import colors from "tailwindcss/colors";
 
+type TailwindColor =
+  | "slate"
+  | "gray"
+  | "zinc"
+  | "neutral"
+  | "stone"
+  | "red"
+  | "orange"
+  | "amber"
+  | "yellow"
+  | "lime"
+  | "green"
+  | "emerald"
+  | "teal"
+  | "cyan"
+  | "sky"
+  | "blue"
+  | "indigo"
+  | "violet"
+  | "purple"
+  | "fuchsia"
+  | "pink"
+  | "rose";
+
 type BlackMageProps = {
-  color?: string;
+  color?: TailwindColor;
   state?: BattleState;
 };
 

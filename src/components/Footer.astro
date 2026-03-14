@@ -1,0 +1,25 @@
+---
+import Block from './Block.astro';
+import ColorDivider from './ColorDivider.astro';
+import { socialLinks } from '@/lib/utils/social';
+
+const currentYear = new Date().getFullYear();
+---
+
+<ColorDivider className="h-6 w-full border-b-2 border-t-2 border-white" />
+<footer
+  class="flex flex-col items-center justify-center bg-black px-[10%] py-8 lg:flex-row lg:justify-between"
+>
+  <div class="text-white">ⓒ {currentYear} Andrew Gilliland</div>
+  <div class="mt-6 flex items-center gap-10 lg:mt-0">
+    {
+      socialLinks.map(({ Icon, href, color }) => (
+        <a href={href}>
+          <Block backgroundColor={`bg-${color}-500`} height="12" width="12" theme="dark">
+            <Icon className="h-5 w-5 fill-white" />
+          </Block>
+        </a>
+      ))
+    }
+  </div>
+</footer>

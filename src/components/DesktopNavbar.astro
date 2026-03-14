@@ -1,0 +1,40 @@
+---
+import Container from './Container.astro';
+import HeaderHeading from './HeaderHeading.astro';
+import type { Page } from '@/types';
+
+interface Props {
+  pages: Page[];
+}
+
+const { pages } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<div class="hidden border-b-2 border-white px-[10%] py-6 md:block">
+  <Container>
+    <div class="items-center justify-between md:flex">
+      <HeaderHeading />
+
+      <div class="flex">
+        {
+          pages.map(({ href, title }) => (
+            <a
+              class="group mr-4"
+              href={href}
+              aria-current={currentPath === href ? 'page' : undefined}
+            >
+              <div class="text-white">{title}</div>
+              <div
+                class:list={[
+                  'h-[2px] rounded-full bg-pink-300 transition-all group-hover:w-full',
+                  currentPath === href ? 'w-full' : 'w-[0%]',
+                ]}
+              />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </Container>
+</div>

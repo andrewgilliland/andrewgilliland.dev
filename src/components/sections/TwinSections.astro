@@ -1,0 +1,25 @@
+---
+// Twin sections layout with two colored sections side by side (mobile stacked)
+interface Props {
+  sectionOneColor?: string;
+  sectionTwoColor?: string;
+}
+
+const {
+  sectionOneColor = 'bg-pink-300',
+  sectionTwoColor = 'bg-cyan-300',
+} = Astro.props;
+---
+
+<section class="flex flex-col border-b-2 border-white md:flex-row">
+  <div
+    class={`flex flex-1 flex-col items-center justify-center border-b-2 border-white ${sectionOneColor} px-[6.5vw] py-16 md:border-b-0 md:border-r-2`}
+  >
+    <slot name="section-one" />
+  </div>
+  <div
+    class={`flex flex-1 flex-col items-center justify-center ${sectionTwoColor} px-[6.5vw] py-16`}
+  >
+    <slot name="section-two" />
+  </div>
+</section>
