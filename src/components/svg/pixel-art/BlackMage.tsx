@@ -1,6 +1,6 @@
 "use client";
-import { BattleState } from "@/components/Battle";
-import { FC } from "react";
+import type { BattleState } from "@/components/Battle";
+import type { FC } from "react";
 import colors from "tailwindcss/colors";
 
 type TailwindColor =

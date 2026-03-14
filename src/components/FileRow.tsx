@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { FileNode } from "@/types";
+import type { FC } from "react";
+import type { FileNode } from "@/types";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 type FileRowProps = {

@@ -1,5 +1,5 @@
 "use server";
-import { DirectoryNode, Note, NoteFrontmatter } from "@/types";
+import type { DirectoryNode, Note, NoteFrontmatter } from "@/types";
 import fs from "fs";
 import matter from "gray-matter";
 import { getFilesPaths } from "../utils/fs";

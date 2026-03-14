@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import colors from "tailwindcss/colors";
 
 type MegaManProps = {

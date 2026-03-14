@@ -1,7 +1,7 @@
-import { FC, MouseEvent, useState } from "react";
+import { type FC, type MouseEvent, useState } from "react";
 import { FolderPlusIcon, FolderMinusIcon } from "@heroicons/react/24/outline";
 import FileRow from "./FileRow";
-import { DirectoryNode, FileNode, isDirectoryNode } from "@/types";
+import { type DirectoryNode, type FileNode, isDirectoryNode } from "@/types";
 
 type FileTreeProps = {
   mainDirectory: string;

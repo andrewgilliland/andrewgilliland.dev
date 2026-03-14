@@ -1,11 +1,11 @@
 "use client";
 
-import { FC, useState } from "react";
+import { type FC, useState } from "react";
 import FileTree from "./FileTree";
 import { FolderIcon } from "@heroicons/react/24/outline";
 
 import FileRow from "./FileRow";
-import { DirectoryNode, FileNode, isDirectoryNode, isFileNode } from "@/types";
+import { type DirectoryNode, type FileNode, isDirectoryNode, isFileNode } from "@/types";
 
 type FileViewWindowProps = {
   directory: DirectoryNode;
