@@ -1,6 +1,5 @@
 import GitHubIcon from "../../components/svg/GitHubIcon";
 import LinkedInIcon from "../../components/svg/LinkedInIcon";
-import TwitterIcon from "../../components/svg/TwitterIcon";
 import BlueskyIcon from "../../components/svg/BlueskyIcon";
 
 export const socialLinks = [

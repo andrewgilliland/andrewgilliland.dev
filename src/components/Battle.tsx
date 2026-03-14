@@ -28,20 +28,6 @@ const Battle = () => {
     dead: "dead",
   };
 
-  const initialBattleStore = {
-    characters: [
-      "fighter",
-      "blackMage",
-      "whiteMage",
-      "thief",
-      "redMage",
-      "monk",
-    ],
-    activeCharacter: "fighter",
-    battleState: battleState.ready,
-    enemy: { name: "Garland", health: 1000 },
-  };
-
   const [blackMage, setBlackMage] = useState<BattleState>("ready");
 
   const cast = () => {
@@ -62,17 +48,17 @@ const Battle = () => {
 
   return (
     <div className="mt-8">
-      <h3 className="font-semibold text-2xl">Final Fantasy</h3>
-      <div className="flex justify-between gap-4 mt-4">
-        <div className="flex flex-col justify-between border-4 border-white rounded p-1 w-full">
+      <h3 className="text-2xl font-semibold">Final Fantasy</h3>
+      <div className="mt-4 flex justify-between gap-4">
+        <div className="flex w-full flex-col justify-between rounded border-4 border-white p-1">
           <div className="p-4">
             <Garland />
           </div>
           <div className="flex gap-1">
-            <div className="flex flex-col justify-between border-4 border-white rounded p-2 w-full">
+            <div className="flex w-full flex-col justify-between rounded border-4 border-white p-2">
               <div>Garland</div>
             </div>
-            <div className="border-4 border-white rounded">
+            <div className="rounded border-4 border-white">
               <button
                 onClick={() => {
                   // Todo: Implement attack function
@@ -83,25 +69,25 @@ const Battle = () => {
 
                   console.log("Attacking");
                 }}
-                className="bg-black text-white px-4 py-1"
+                className="bg-black px-4 py-1 text-white"
               >
                 Attack
               </button>
-              <button onClick={cast} className="bg-black text-white px-4 py-1">
+              <button onClick={cast} className="bg-black px-4 py-1 text-white">
                 Cast
               </button>
               <button
                 onClick={defend}
-                className="bg-black text-white px-4 py-1"
+                className="bg-black px-4 py-1 text-white"
               >
                 Defend
               </button>
             </div>
           </div>
         </div>
-        <div className="border-4 border-white rounded py-4 pl-24 pr-4">
+        <div className="rounded border-4 border-white py-4 pl-24 pr-4">
           <Fighter />
-          <div className="transition hover:-translate-x-10 ">
+          <div className="transition hover:-translate-x-10">
             <BlackMage state={blackMage} />
           </div>
           <WhiteMage />

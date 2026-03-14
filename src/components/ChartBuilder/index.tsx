@@ -39,7 +39,7 @@ const ChartBuilder = () => {
   const [lineWidth, setLineWidth] = useState<number>(2);
 
   // Bar Chart Options
-  const [barColor, setBarColor] = useState<string>("red");
+  const [barColor] = useState<string>("red");
 
   // Chart Data
   const [chartData, setChartData] = useState([

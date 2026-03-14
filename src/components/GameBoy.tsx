@@ -2,7 +2,6 @@ import { useState } from "react";
 
 const GameBoy = () => {
   const [isOn, setIsOn] = useState(false);
-  const [start, setStart] = useState(false);
 
   return (
     <div className="flex">
