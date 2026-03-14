@@ -19,15 +19,6 @@ export type BattleState =
   | "dead";
 
 const Battle = () => {
-  const battleState = {
-    ready: "ready",
-    attack: "attack",
-    cast: "cast",
-    defend: "defend",
-    hurt: "hurt",
-    dead: "dead",
-  };
-
   const [blackMage, setBlackMage] = useState<BattleState>("ready");
 
   const cast = () => {
