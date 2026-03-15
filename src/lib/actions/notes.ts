@@ -1,6 +1,7 @@
 "use server";
-import type { DirectoryNode, Note, NoteFrontmatter } from "@/types";
+import type { DirectoryNode, FileNode, Note, NoteFrontmatter } from "@/types";
 import fs from "fs";
+import path from "path";
 import matter from "gray-matter";
 import { getFilesPaths } from "../utils/fs";
 import { parentPath } from "../constants";
@@ -33,53 +34,6 @@ const getNotes = async (): Promise<{ notes: Partial<Note>[] }> => {
     notes,
   };
 };
-
-// const getNoteDirectory = async (
-//   pagePath: string,
-// ): Promise<{ topics: Topic[]; notes: Partial<Note>[] }> => {
-//   const decodedPath = decodeURIComponent(pagePath);
-
-//   const files = fs
-//     .readdirSync(decodedPath, {
-//       withFileTypes: true,
-//     })
-//     .map((dirent) => (dirent.isFile() ? dirent.name : null))
-//     .filter((dirent) => dirent !== null) as string[];
-
-//   const topics = (
-//     fs
-//       .readdirSync(decodedPath, {
-//         withFileTypes: true,
-//       })
-//       .map((dirent) => (dirent.isDirectory() ? dirent.name : null))
-//       .filter((dirent) => dirent !== null) as string[]
-//   ).map((topic) => ({
-//     name: topic?.replace(/-/g, " "),
-//     path: `${decodedPath.replace("/src/markdown/notes", "/notes")}/${topic}`,
-//   }));
-
-//   const notes = files.map((filename) => {
-//     const markdownWithMeta = fs.readFileSync(
-//       `${decodedPath}/${filename!}`,
-//       "utf-8",
-//     );
-//     const { data } = matter(markdownWithMeta);
-//     const frontmatter = data as NoteFrontmatter;
-
-//     return {
-//       path: `${pagePath.replace("/src/markdown/notes", "")}/${filename.replace(
-//         ".md",
-//         "",
-//       )}`,
-//       frontmatter,
-//     };
-//   });
-
-//   return {
-//     topics,
-//     notes,
-//   };
-// };
 
 // Function to get the note directory
 // This function reads the directory and builds the FileTree of the Notes directory
@@ -137,4 +91,37 @@ const getNotesFileTree = async (path: string): Promise<DirectoryNode> => {
   });
 };
 
-export { getNotes, getNotesFileTree };
+const getNotesDirectoryTree = (): DirectoryNode => {
+  const buildTree = (dirPath: string): DirectoryNode => {
+    const name = path.basename(dirPath);
+    const entries = fs
+      .readdirSync(dirPath, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() || entry.name.endsWith(".md"))
+      .sort((a, b) => {
+        if (a.isDirectory() && !b.isDirectory()) return -1;
+        if (!a.isDirectory() && b.isDirectory()) return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+    const children: (DirectoryNode | FileNode)[] = entries.map((entry) => {
+      const fullPath = path.join(dirPath, entry.name);
+      if (entry.isDirectory()) {
+        return buildTree(fullPath);
+      }
+      const { data } = matter(fs.readFileSync(fullPath, "utf-8"));
+      const frontmatter = data as NoteFrontmatter;
+      return {
+        name: entry.name.replace(".md", ""),
+        title:
+          frontmatter.title || entry.name.replace(".md", "").replace(/-/g, " "),
+        path: "/" + path.relative(parentPath, fullPath).replace(".md", ""),
+      } as FileNode;
+    });
+
+    return { name, children };
+  };
+
+  return buildTree(parentPath);
+};
+
+export { getNotes, getNotesFileTree, getNotesDirectoryTree };
