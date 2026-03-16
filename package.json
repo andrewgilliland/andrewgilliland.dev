@@ -11,32 +11,21 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.0",
-    "@astrojs/mdx": "^3.0.0",
-    "@astrojs/react": "^3.0.0",
-    "@astrojs/tailwind": "^5.0.0",
+    "@astrojs/check": "^0.9.7",
+    "@astrojs/mdx": "^4.3.14",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/tailwind": "^6.0.2",
     "@heroicons/react": "^2.0.17",
-    "andicons": "^0.0.10",
-    "astro": "^4.15.0",
-    "d3": "^7.9.0",
-    "gray-matter": "^4.0.3",
-    "marked": "^5.0.0",
+    "astro": "^5.18.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "tailwindcss": "^3.4.0",
-    "topojson-client": "^3.1.0",
-    "victory": "^37.3.4"
+    "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
-    "@shikijs/rehype": "^1.18.0",
-    "@shikijs/transformers": "^1.18.0",
     "@tailwindcss/typography": "^0.5.9",
-    "@types/d3": "^7.4.3",
-    "@types/marked": "^4.3.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.14",
     "eslint": "^9.39.2",
@@ -46,9 +35,7 @@
     "prettier": "^3.4.2",
     "prettier-plugin-astro": "^0.14.0",
     "prettier-plugin-tailwindcss": "^0.6.9",
-    "rehype-stringify": "^10.0.0",
     "shiki": "^1.18.0",
-    "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }
 }
