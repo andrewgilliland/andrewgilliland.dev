@@ -1,28 +1,24 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageLayout from "@/components/layouts/PageLayout.astro";
-import { getFilesPaths } from "@/lib/utils/fs";
-import { transformMarkdown } from "@/lib/actions/markdown";
-import { parentPath } from "@/lib/constants";
+import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
-  const filePaths = await getFilesPaths(parentPath);
-  const normalizedBase = parentPath.replace(/^\.\//, "") + "/";
-  return filePaths.map((filePath) => ({
-    params: {
-      slug: filePath.replace(normalizedBase, "").replace(".md", ""),
-    },
+  const notes = await getCollection("notes", ({ data }) => !data.draft);
+  return notes.map((note) => ({
+    params: { slug: note.id },
+    props: { note },
   }));
 }
 
-const { slug } = Astro.params;
-const { frontmatter, html } = await transformMarkdown(
-  `./src/markdown/notes/${slug}`,
-);
+const { note } = Astro.props;
+const { Content } = await render(note);
 ---
 
-<BaseLayout title={`${frontmatter.title} - Andrew Gilliland`}>
-  <PageLayout title={frontmatter.title}>
-    <article class="prose prose-invert max-w-none p-8" set:html={html} />
+<BaseLayout title={`${note.data.title} - Andrew Gilliland`}>
+  <PageLayout title={note.data.title}>
+    <article class="prose prose-invert max-w-none p-8">
+      <Content />
+    </article>
   </PageLayout>
 </BaseLayout>

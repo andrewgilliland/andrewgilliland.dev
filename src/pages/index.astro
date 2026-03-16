@@ -6,6 +6,7 @@ import CenteredSection from "@/components/sections/CenteredSection.astro";
 import TwinSections from "@/components/sections/TwinSections.astro";
 import PrimaryButton from "@/components/PrimaryButton.astro";
 import type { Topic } from "@/types";
+import { getCollection } from "astro:content";
 
 const topics: Topic[] = [
   {
@@ -25,10 +26,10 @@ const topics: Topic[] = [
   },
 ];
 
-// TODO: Fetch notes from content collection
-const recentNotes: any[] = [
-  // Will be populated when content collections are set up
-];
+const allNotes = await getCollection("notes", ({ data }) => !data.draft);
+const recentNotes = allNotes
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 5);
 ---
 
 <BaseLayout>
@@ -77,14 +78,14 @@ const recentNotes: any[] = [
             recentNotes.map((note, index) => (
               <a
                 class={`${index && "mt-4"} group relative w-1/2 min-w-[240px]`}
-                href={note.path}
-                title={note.frontmatter.title}
+                href={`/notes/${note.id}`}
+                title={note.data.title}
               >
                 <div class="absolute bottom-0 h-full w-full rounded border-2 border-white bg-black" />
                 <div class="flex transform-gpu rounded border-2 border-white bg-black p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1">
                   <PencilSquareIcon className="h-6 w-6 stroke-white stroke-2" />
                   <h4 class="ml-2 truncate font-bold text-white">
-                    {note.frontmatter.title}
+                    {note.data.title}
                   </h4>
                 </div>
               </a>
