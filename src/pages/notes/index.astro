@@ -2,15 +2,15 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageLayout from "@/components/layouts/PageLayout.astro";
 import FileViewWindow from "@/components/react/FileViewWindow";
-import { getNotesDirectoryTree } from "@/lib/actions/notes";
+import { getCollection } from "astro:content";
 
-const directory = getNotesDirectoryTree();
+const notes = await getCollection("notes", ({ data }) => !data.draft);
 ---
 
 <BaseLayout title="Notes - Andrew Gilliland">
   <PageLayout title="Notes">
     <div class="p-8">
-      <FileViewWindow directory={directory} client:load />
+      <FileViewWindow notes={notes} client:load />
     </div>
   </PageLayout>
 </BaseLayout>

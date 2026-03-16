@@ -5,10 +5,57 @@ import FileTree from "./FileTree";
 import { FolderIcon } from "@heroicons/react/24/outline";
 
 import FileRow from "./FileRow";
-import { type DirectoryNode, type FileNode, isDirectoryNode, isFileNode } from "@/types";
+import {
+  type DirectoryNode,
+  type FileNode,
+  isDirectoryNode,
+  isFileNode,
+} from "@/types";
+
+type CollectionNote = {
+  id: string;
+  data: { title: string };
+};
 
 type FileViewWindowProps = {
-  directory: DirectoryNode;
+  notes: CollectionNote[];
+  basePath?: string;
+};
+
+const buildDirectoryTree = (
+  notes: CollectionNote[],
+  basePath?: string,
+): DirectoryNode => {
+  const rootName = basePath ? basePath.split("/").pop()! : "notes";
+  const root: DirectoryNode = { name: rootName, children: [] };
+  const prefix = basePath ? basePath + "/" : "";
+
+  for (const note of notes) {
+    const relativeId = prefix ? note.id.slice(prefix.length) : note.id;
+    const parts = relativeId.split("/");
+    let current = root;
+
+    for (let i = 0; i < parts.length - 1; i++) {
+      let dir = current.children?.find(
+        (c) => isDirectoryNode(c) && c.name === parts[i],
+      ) as DirectoryNode | undefined;
+
+      if (!dir) {
+        dir = { name: parts[i], children: [] };
+        current.children!.push(dir);
+      }
+
+      current = dir;
+    }
+
+    current.children!.push({
+      name: parts[parts.length - 1],
+      title: note.data.title,
+      path: "/" + note.id,
+    });
+  }
+
+  return root;
 };
 
 /** Recursive function to get all files that match the search term that compares by file path*/
@@ -37,8 +84,9 @@ const getFilesBySearchTerm = (
   return files;
 };
 
-const FileViewWindow: FC<FileViewWindowProps> = ({ directory }) => {
+const FileViewWindow: FC<FileViewWindowProps> = ({ notes, basePath }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const directory = buildDirectoryTree(notes, basePath);
   const searchResults = getFilesBySearchTerm(searchTerm, directory);
   const mainDirectory = directory.name;
 

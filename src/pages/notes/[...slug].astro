@@ -2,7 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageLayout from "@/components/layouts/PageLayout.astro";
 import { getCollection, render } from "astro:content";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import FileViewWindow from "@/components/react/FileViewWindow";
 
 export async function getStaticPaths() {
   const notes = await getCollection("notes", ({ data }) => !data.draft);
@@ -25,13 +25,7 @@ export async function getStaticPaths() {
     params: { slug: dir },
     props: {
       note: null,
-      dirNotes: notes
-        .filter(
-          (n) =>
-            n.id.startsWith(dir + "/") &&
-            !n.id.slice(dir.length + 1).includes("/"),
-        )
-        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+      dirNotes: notes.filter((n) => n.id.startsWith(dir + "/")),
       dirSlug: dir,
     },
   }));
@@ -57,23 +51,7 @@ const dirTitle = dirSlug ? dirSlug.split("/").pop()!.replace(/-/g, " ") : null;
     <BaseLayout title={`${dirTitle} - Notes - Andrew Gilliland`}>
       <PageLayout title={dirTitle!}>
         <div class="p-8">
-          <div class="flex flex-col gap-2">
-            {dirNotes!.map((n) => (
-              <a
-                href={`/notes/${n.id}`}
-                class="group relative"
-                title={n.data.title}
-              >
-                <div class="absolute bottom-0 h-full w-full rounded border-2 border-white bg-black" />
-                <div class="flex transform-gpu rounded border-2 border-white bg-black p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1">
-                  <PencilSquareIcon className="h-6 w-6 shrink-0 stroke-white stroke-2" />
-                  <span class="ml-2 truncate font-bold text-white">
-                    {n.data.title}
-                  </span>
-                </div>
-              </a>
-            ))}
-          </div>
+          <FileViewWindow notes={dirNotes!} basePath={dirSlug!} client:load />
         </div>
       </PageLayout>
     </BaseLayout>
