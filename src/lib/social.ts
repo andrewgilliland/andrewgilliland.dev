@@ -1,6 +1,6 @@
-import GitHubIcon from "../../components/react/svg/GitHubIcon";
-import LinkedInIcon from "../../components/react/svg/LinkedInIcon";
-import BlueskyIcon from "../../components/react/svg/BlueskyIcon";
+import GitHubIcon from "../components/react/svg/GitHubIcon";
+import LinkedInIcon from "../components/react/svg/LinkedInIcon";
+import BlueskyIcon from "../components/react/svg/BlueskyIcon";
 
 export const socialLinks = [
   {

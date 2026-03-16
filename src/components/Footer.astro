@@ -1,7 +1,7 @@
 ---
-import Block from './Block.astro';
-import ColorDivider from './ColorDivider.astro';
-import { socialLinks } from '@/lib/utils/social';
+import Block from "./Block.astro";
+import ColorDivider from "./ColorDivider.astro";
+import { socialLinks } from "@/lib/social";
 
 const currentYear = new Date().getFullYear();
 ---
@@ -15,7 +15,12 @@ const currentYear = new Date().getFullYear();
     {
       socialLinks.map(({ Icon, href, color }) => (
         <a href={href}>
-          <Block backgroundColor={`bg-${color}-500`} height="12" width="12" theme="dark">
+          <Block
+            backgroundColor={`bg-${color}-500`}
+            height="12"
+            width="12"
+            theme="dark"
+          >
             <Icon className="h-5 w-5 fill-white" />
           </Block>
         </a>
