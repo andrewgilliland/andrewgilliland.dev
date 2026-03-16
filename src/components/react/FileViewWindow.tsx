@@ -2,7 +2,7 @@
 
 import { type FC, useState } from "react";
 import FileTree from "./FileTree";
-import { FolderIcon } from "@heroicons/react/24/outline";
+import { Folder } from "lucide-react";
 
 import FileRow from "./FileRow";
 import {
@@ -99,7 +99,7 @@ const FileViewWindow: FC<FileViewWindowProps> = ({ notes, basePath }) => {
     <div className="relative overflow-hidden border-2 border-white">
       <div className="flex w-full flex-col justify-between gap-2 border-2 border-black bg-cyan-300 px-4 py-3 md:flex-row md:items-center">
         <div className="flex items-center gap-2">
-          <FolderIcon className="h-5 w-5 text-black" />
+          <Folder className="h-5 w-5 text-black" />
           <h3 className="text-lg font-bold capitalize text-black">
             {mainDirectory}
           </h3>

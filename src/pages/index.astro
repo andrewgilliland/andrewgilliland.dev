@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { File } from "lucide-react";
 import TopicCard from "@/components/TopicCard.astro";
 import CenteredSection from "@/components/sections/CenteredSection.astro";
 import TwinSections from "@/components/sections/TwinSections.astro";
@@ -84,7 +84,7 @@ const recentNotes = allNotes
               >
                 <div class="absolute bottom-0 h-full w-full rounded border-2 border-white bg-black" />
                 <div class="flex transform-gpu rounded border-2 border-white bg-black p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1">
-                  <PencilSquareIcon className="h-6 w-6 stroke-white stroke-2" />
+                  <File className="h-6 w-6 stroke-white stroke-2" />
                   <h4 class="ml-2 truncate font-bold text-white">
                     {note.data.title}
                   </h4>

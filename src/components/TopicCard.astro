@@ -1,6 +1,6 @@
 ---
-import { FolderIcon } from '@heroicons/react/24/outline';
-import type { Topic } from '@/types';
+import { Folder } from "lucide-react";
+import type { Topic } from "@/types";
 
 interface Props {
   topic: Topic;
@@ -8,8 +8,8 @@ interface Props {
 
 const { topic } = Astro.props;
 const { name, path, color } = topic;
-const lineColor = color ? 'black' : 'white';
-const bgColor = color ? 'white' : 'black';
+const lineColor = color ? "black" : "white";
+const bgColor = color ? "white" : "black";
 ---
 
 <a
@@ -22,9 +22,9 @@ const bgColor = color ? 'white' : 'black';
   >
   </div>
   <div
-    class={`flex transform-gpu justify-between rounded border-2 border-${lineColor} bg-${color ? `${color}-400` : 'black'} p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1`}
+    class={`flex transform-gpu justify-between rounded border-2 border-${lineColor} bg-${color ? `${color}-400` : "black"} p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1`}
   >
     <div class={`text-${lineColor} font-bold capitalize`}>{name}</div>
-    <FolderIcon className={`h-6 w-6 fill-${bgColor} stroke-${lineColor}`} />
+    <Folder className={`h-6 w-6 fill-${bgColor} stroke-${lineColor}`} />
   </div>
 </a>

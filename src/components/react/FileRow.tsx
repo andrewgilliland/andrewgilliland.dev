@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import type { FileNode } from "@/types";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { File } from "lucide-react";
 
 type FileRowProps = {
   fileNode: FileNode;
@@ -18,7 +18,7 @@ const FileRow: FC<FileRowProps> = ({ fileNode, depth = 1 }) => {
     >
       <div className="flex w-full items-center gap-2">
         <div>
-          <PencilSquareIcon className="h-5 w-5 stroke-2 text-pink-300" />
+          <File className="h-5 w-5 stroke-2 text-pink-300" />
         </div>
         <span className="truncate text-base font-bold text-white">
           {fileNode.title}

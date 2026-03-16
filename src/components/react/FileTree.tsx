@@ -1,5 +1,5 @@
 import { type FC, type MouseEvent, useState } from "react";
-import { FolderPlusIcon, FolderMinusIcon } from "@heroicons/react/24/outline";
+import { FolderPlus, FolderMinus } from "lucide-react";
 import FileRow from "./FileRow";
 import { type DirectoryNode, type FileNode, isDirectoryNode } from "@/types";
 
@@ -46,9 +46,9 @@ const FileTree: FC<FileTreeProps> = ({ mainDirectory, node, depth = 0 }) => {
               style={{ paddingLeft: 16 * depth }}
             >
               {isOpen ? (
-                <FolderMinusIcon className="h-6 w-6 text-white" />
+                <FolderMinus className="h-6 w-6 text-white" />
               ) : (
-                <FolderPlusIcon className="h-6 w-6 text-white" />
+                <FolderPlus className="h-6 w-6 text-white" />
               )}
               <span className="truncate text-base font-bold text-white">
                 {node.name}
