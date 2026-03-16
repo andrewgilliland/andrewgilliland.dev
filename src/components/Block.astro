@@ -5,25 +5,28 @@ interface Props {
   size?: string;
   height?: string;
   width?: string;
-  theme?: 'dark' | 'light';
+  theme?: "dark" | "light";
 }
 
 const {
-  className = '',
-  backgroundColor = '',
-  size = '16',
+  className = "",
+  backgroundColor = "",
+  size = "16",
   height = size,
   width = size,
-  theme = 'light',
+  theme = "dark",
 } = Astro.props;
 
-const themeOptions: Record<'dark' | 'light', string> = { dark: 'white', light: 'black' };
+const themeOptions: Record<"dark" | "light", string> = {
+  dark: "white",
+  light: "black",
+};
 const themeColor = themeOptions[theme];
 ---
 
 <div class={`group relative ${className}`}>
   <div
-    class={`absolute top-0 h-${height} w-${width} translate-x-1 translate-y-1 rounded-lg bg-${themeColor}`}
+    class={`absolute top-0 h-full w-full translate-x-1 translate-y-1 rounded-lg bg-white`}
   >
   </div>
   <div
