@@ -1,11 +1,11 @@
 "use client";
-import BlackMage from "@/components/svg/pixel-art/BlackMage";
-import RedMage from "@/components/svg/pixel-art/RedMage";
-import Fighter from "@/components/svg/pixel-art/Fighter";
-import WhiteMage from "@/components/svg/pixel-art/WhiteMage";
-import Thief from "@/components/svg/pixel-art/Thief";
-import Monk from "@/components/svg/pixel-art/Monk";
-import Garland from "@/components/svg/pixel-art/Garland";
+import BlackMage from "@/components/react/svg/pixel-art/BlackMage";
+import RedMage from "@/components/react/svg/pixel-art/RedMage";
+import Fighter from "@/components/react/svg/pixel-art/Fighter";
+import WhiteMage from "@/components/react/svg/pixel-art/WhiteMage";
+import Thief from "@/components/react/svg/pixel-art/Thief";
+import Monk from "@/components/react/svg/pixel-art/Monk";
+import Garland from "@/components/react/svg/pixel-art/Garland";
 import { useState } from "react";
 import Nemo from "./svg/pixel-art/Nemo";
 import Chocobo from "./svg/pixel-art/Chocobo";
