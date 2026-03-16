@@ -22,34 +22,39 @@ type FileViewWindowProps = {
   basePath?: string;
 };
 
+const getOrCreateDir = (parent: DirectoryNode, name: string): DirectoryNode => {
+  let dir = parent.children?.find(
+    (c) => isDirectoryNode(c) && c.name === name,
+  ) as DirectoryNode | undefined;
+
+  if (!dir) {
+    dir = { name, children: [] };
+    parent.children!.push(dir);
+  }
+  return dir;
+};
+
 const buildDirectoryTree = (
   notes: CollectionNote[],
   basePath?: string,
 ): DirectoryNode => {
-  const rootName = basePath ? basePath.split("/").pop()! : "notes";
+  const rootName = basePath?.split("/").pop() ?? "notes";
   const root: DirectoryNode = { name: rootName, children: [] };
   const prefix = basePath ? basePath + "/" : "";
 
   for (const note of notes) {
     const relativeId = prefix ? note.id.slice(prefix.length) : note.id;
     const parts = relativeId.split("/");
-    let current = root;
+    const dirs = parts.slice(0, -1);
+    const fileName = parts.at(-1)!;
 
-    for (let i = 0; i < parts.length - 1; i++) {
-      let dir = current.children?.find(
-        (c) => isDirectoryNode(c) && c.name === parts[i],
-      ) as DirectoryNode | undefined;
+    const parent = dirs.reduce(
+      (node, name) => getOrCreateDir(node, name),
+      root,
+    );
 
-      if (!dir) {
-        dir = { name: parts[i], children: [] };
-        current.children!.push(dir);
-      }
-
-      current = dir;
-    }
-
-    current.children!.push({
-      name: parts[parts.length - 1],
+    parent.children!.push({
+      name: fileName,
       title: note.data.title,
       path: "/" + note.id,
     });
