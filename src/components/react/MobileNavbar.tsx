@@ -25,15 +25,15 @@ const MobileNavbar = ({ pages }: MobileNavbarProps) => {
   return (
     <>
       <div className="border-white-300 fixed z-40 flex w-full items-center justify-between border-b-2 bg-black px-[10%] py-6 md:hidden">
-        <a href="/">
-          <h2
+        <a href="/" aria-label="Andrew Gilliland - Home">
+          <span
             className="header-heading text-2xl font-bold md:text-3xl"
             style={{
               backgroundImage: `linear-gradient(to bottom right, #f9a8d4, #f9a8d4 30%, #6ee7b7 30%, #6ee7b7 50%, #fde047 50%, #fde047 70%, #67e8f9 70%, #67e8f9)`,
             }}
           >
             Andrew Gilliland
-          </h2>
+          </span>
         </a>
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
