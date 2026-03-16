@@ -1,6 +1,6 @@
 ---
 title: "React Server Components in Expo Router"
-date: "2024-12-16"
+date: 2024-12-16
 draft: false
 ---
 

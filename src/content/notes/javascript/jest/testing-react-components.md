@@ -1,6 +1,6 @@
 ---
 title: "Testing React Components"
-date: "2024-06-18"
+date: 2024-06-18
 draft: true
 ---
 

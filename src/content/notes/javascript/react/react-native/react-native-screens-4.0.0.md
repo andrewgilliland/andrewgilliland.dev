@@ -1,6 +1,6 @@
 ---
 title: "React Native Screens 4.0.0"
-date: "2024-12-15"
+date: 2024-12-15
 draft: false
 ---
 

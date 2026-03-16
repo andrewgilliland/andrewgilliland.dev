@@ -1,6 +1,6 @@
 ---
 title: "IAM"
-date: "2025-2-24"
+date: 2025-02-24
 draft: false
 ---
 

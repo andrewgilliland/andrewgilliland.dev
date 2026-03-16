@@ -1,6 +1,6 @@
 ---
 title: "Promises"
-date: "2024-06-5"
+date: 2024-06-05
 draft: false
 ---
 

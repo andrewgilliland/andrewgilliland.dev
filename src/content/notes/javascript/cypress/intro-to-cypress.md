@@ -1,6 +1,6 @@
 ---
 title: "Intro to Cypress"
-date: "2024-11-06"
+date: 2024-11-06
 ---
 
 Cypress is a front end testing tool built for the modern web. It can test anything that runs in a browser. If you are a web developer or a QA engineer, Cypress can be a tool to increase the quality of your websites and web applications.

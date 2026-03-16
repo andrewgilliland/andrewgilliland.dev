@@ -1,6 +1,6 @@
 ---
 title: "Superglobals"
-date: "2025-3-19"
+date: 2025-03-19
 draft: false
 ---
 

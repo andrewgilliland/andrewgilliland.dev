@@ -1,6 +1,6 @@
 ---
 title: "Cloud Computing Terms"
-date: "2025-2-22"
+date: 2025-02-22
 draft: false
 ---
 

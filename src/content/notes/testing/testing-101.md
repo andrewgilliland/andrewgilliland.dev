@@ -1,6 +1,6 @@
 ---
 title: "Testing 101"
-date: "2024-03-24"
+date: 2024-03-24
 ---
 
 ## Why Write Tests

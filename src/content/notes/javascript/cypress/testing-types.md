@@ -1,6 +1,6 @@
 ---
 title: "Testing Types"
-date: "2024-11-05"
+date: 2024-11-05
 ---
 
 Cypress is an end-to-end testing framework that allows you to write tests for websites and web applications. It supports various types of testing, including:

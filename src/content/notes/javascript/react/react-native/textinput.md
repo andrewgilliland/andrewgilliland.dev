@@ -1,6 +1,6 @@
 ---
 title: "TextInput"
-date: "2025-1-2"
+date: 2025-01-02
 draft: false
 ---
 

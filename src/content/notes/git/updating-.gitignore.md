@@ -1,6 +1,6 @@
 ---
 title: "Updating .gitignore"
-date: "2024-03-19"
+date: 2024-03-19
 excerpt: ""
 draft: true
 ---

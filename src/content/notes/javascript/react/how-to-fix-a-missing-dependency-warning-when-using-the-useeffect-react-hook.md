@@ -1,6 +1,6 @@
 ---
 title: How to Fix A Missing Dependency Warning When Using the useEffect React Hook
-date: "2021-05-13"
+date: 2021-05-13
 excerpt: One approach to solving a missing dependency warning using the useEffect hook.
 draft: true
 ---

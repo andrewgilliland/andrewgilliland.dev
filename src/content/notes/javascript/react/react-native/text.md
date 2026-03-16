@@ -1,6 +1,6 @@
 ---
 title: "Text"
-date: "2025-1-1"
+date: 2025-01-01
 draft: false
 ---
 

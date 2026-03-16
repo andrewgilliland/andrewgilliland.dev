@@ -1,6 +1,6 @@
 ---
 title: "Metro"
-date: "2024-05-23"
+date: 2024-05-23
 ---
 
 ## Metro - a JavaScript Bundler

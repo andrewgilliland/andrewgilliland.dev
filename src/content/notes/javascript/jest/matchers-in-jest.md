@@ -1,6 +1,6 @@
 ---
 title: "Matchers in Jest"
-date: "2024-05-11"
+date: 2024-05-11
 excerpt: ""
 draft: true
 ---

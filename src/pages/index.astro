@@ -27,6 +27,9 @@ const topics: Topic[] = [
 ];
 
 const allNotes = await getCollection("notes", ({ data }) => !data.draft);
+
+console.log("allNotes: ", allNotes);
+
 const recentNotes = allNotes
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 5);

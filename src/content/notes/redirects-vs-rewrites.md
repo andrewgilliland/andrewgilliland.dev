@@ -1,6 +1,6 @@
 ---
 title: "Redirects vs. Rewrites"
-date: "2024-08-13"
+date: 2024-08-13
 excerpt: ""
 draft: false
 ---

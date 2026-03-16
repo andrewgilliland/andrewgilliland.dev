@@ -1,6 +1,6 @@
 ---
 title: "Preload, Prefetch and Preconnect"
-date: "2024-12-10"
+date: 2024-12-10
 draft: false
 ---
 

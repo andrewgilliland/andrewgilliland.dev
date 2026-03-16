@@ -1,6 +1,6 @@
 ---
 title: "Expo SDK 52"
-date: "2024-12-08"
+date: 2024-12-08
 draft: false
 ---
 

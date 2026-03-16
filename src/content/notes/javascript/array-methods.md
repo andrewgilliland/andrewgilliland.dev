@@ -1,6 +1,6 @@
 ---
 title: "Array Methods"
-date: "2024-08-26"
+date: 2024-08-26
 draft: false
 ---
 

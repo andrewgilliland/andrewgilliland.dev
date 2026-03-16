@@ -1,6 +1,6 @@
 ---
 title: "StyleSheet"
-date: "2024-12-28"
+date: 2024-12-28
 draft: false
 ---
 

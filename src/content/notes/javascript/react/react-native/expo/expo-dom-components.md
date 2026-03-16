@@ -1,6 +1,6 @@
 ---
 title: "Expo Dom Components"
-date: "2024-12-11"
+date: 2024-12-11
 draft: false
 ---
 
