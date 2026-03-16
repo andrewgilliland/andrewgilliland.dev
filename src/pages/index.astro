@@ -1,27 +1,27 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import { PencilSquareIcon } from '@heroicons/react/24/outline';
-import TopicCard from '@/components/TopicCard.astro';
-import CenteredSection from '@/components/sections/CenteredSection.astro';
-import TwinSections from '@/components/sections/TwinSections.astro';
-import PrimaryButton from '@/components/PrimaryButton/PrimaryButton.astro';
-import type { Topic } from '@/types';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import TopicCard from "@/components/TopicCard.astro";
+import CenteredSection from "@/components/sections/CenteredSection.astro";
+import TwinSections from "@/components/sections/TwinSections.astro";
+import PrimaryButton from "@/components/PrimaryButton.astro";
+import type { Topic } from "@/types";
 
 const topics: Topic[] = [
   {
-    name: 'JavaScript',
-    path: './notes/javascript',
-    color: 'yellow',
+    name: "JavaScript",
+    path: "./notes/javascript",
+    color: "yellow",
   },
   {
-    name: 'React Native',
-    path: './notes/javascript/react/react-native',
-    color: 'cyan',
+    name: "React Native",
+    path: "./notes/javascript/react/react-native",
+    color: "cyan",
   },
   {
-    name: 'Expo',
-    path: './notes/javascript/react/react-native/expo',
-    color: 'pink',
+    name: "Expo",
+    path: "./notes/javascript/react/react-native/expo",
+    color: "pink",
   },
 ];
 
@@ -76,9 +76,7 @@ const recentNotes: any[] = [
           {
             recentNotes.map((note, index) => (
               <a
-                class={`${
-                  index && 'mt-4'
-                } group relative w-1/2 min-w-[240px]`}
+                class={`${index && "mt-4"} group relative w-1/2 min-w-[240px]`}
                 href={note.path}
                 title={note.frontmatter.title}
               >
