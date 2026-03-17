@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PageLayout from "@/components/layouts/PageLayout.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -12,24 +12,33 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-const { Content } = await render(article);
+const { Content, headings } = await render(article);
 ---
 
 <BaseLayout title={`${article.data.title} - Andrew Gilliland`}>
-  <PageLayout title={article.data.title}>
-    <div class="p-8">
-      <p class="text-sm text-gray-400">
-        {
-          article.data.date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })
-        }
-      </p>
-      <article class="prose prose-invert mt-6 max-w-none">
-        <Content />
-      </article>
+  <div class="mx-auto mt-14 min-h-screen w-full max-w-6xl px-8">
+    <div class="mt-10 flex gap-12">
+      <!-- Article content -->
+      <div class="min-w-0 flex-1">
+        <h1 class="text-3xl font-bold text-white md:text-4xl">
+          {article.data.title}
+        </h1>
+        <p class="mt-2 text-sm text-gray-400">
+          {
+            article.data.date.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
+          }
+        </p>
+        <article class="prose prose-invert mt-8 max-w-none">
+          <Content />
+        </article>
+      </div>
+
+      <!-- Table of contents -->
+      <TableOfContents headings={headings} />
     </div>
-  </PageLayout>
+  </div>
 </BaseLayout>

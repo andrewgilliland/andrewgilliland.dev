@@ -1,0 +1,75 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+---
+
+{
+  headings.length > 0 && (
+    <aside class="hidden w-56 shrink-0 xl:block">
+      <div class="sticky top-24">
+        <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400">
+          On this page
+        </p>
+        <ul class="flex flex-col gap-1 border-l-2 border-white/20">
+          {headings.map((h) => (
+            <li>
+              <a
+                href={`#${h.slug}`}
+                class:list={[
+                  "toc-link block py-1 text-sm text-gray-400 transition-colors hover:text-white",
+                  h.depth === 2 ? "pl-4" : "pl-8",
+                ]}
+              >
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </aside>
+  )
+}
+
+<script is:inline>
+  const links = document.querySelectorAll(".toc-link");
+  if (links.length) {
+    const headingEls = Array.from(links)
+      .map((l) => document.getElementById(l.getAttribute("href").slice(1)))
+      .filter(Boolean);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            links.forEach((l) =>
+              l.classList.remove(
+                "text-white",
+                "border-l-2",
+                "border-white",
+                "-ml-px",
+              ),
+            );
+            const active = document.querySelector(
+              `.toc-link[href="#${entry.target.id}"]`,
+            );
+            if (active)
+              active.classList.add(
+                "text-white",
+                "border-l-2",
+                "border-white",
+                "-ml-px",
+              );
+          }
+        });
+      },
+      { rootMargin: "0px 0px -70% 0px" },
+    );
+
+    headingEls.forEach((el) => observer.observe(el));
+  }
+</script>
