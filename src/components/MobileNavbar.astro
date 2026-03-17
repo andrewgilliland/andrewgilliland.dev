@@ -1,0 +1,117 @@
+---
+import type { Page } from "@/types";
+import colors from "tailwindcss/colors";
+
+interface Props {
+  pages: Page[];
+}
+
+const { pages } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const pink = colors.pink["300"];
+const emerald = colors.emerald["300"];
+const yellow = colors.yellow["300"];
+const cyan = colors.cyan["300"];
+const gradientStyle = `linear-gradient(to bottom right, ${pink}, ${pink} 30%, ${emerald} 30%, ${emerald} 50%, ${yellow} 50%, ${yellow} 70%, ${cyan} 70%, ${cyan})`;
+---
+
+<div
+  class="fixed z-40 flex w-full items-center justify-between border-b-2 border-white bg-black px-[10%] py-6 md:hidden"
+>
+  <a href="/" aria-label="Andrew Gilliland - Home">
+    <span
+      class="header-heading text-2xl font-bold"
+      style={`background-image: ${gradientStyle}`}
+    >
+      Andrew Gilliland
+    </span>
+  </a>
+  <button id="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      class="h-10 w-10 transition ease-in-out"
+      id="menu-icon"
+    >
+      <path
+        id="line-top"
+        class="fill-pink-300 transition-opacity"
+        fill-rule="evenodd"
+        d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75Z"
+      ></path>
+      <path
+        id="line-mid-1"
+        class="fill-pink-300"
+        fill-rule="evenodd"
+        d="M3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Z"
+      ></path>
+      <path
+        id="line-mid-2"
+        class="fill-cyan-300"
+        fill-rule="evenodd"
+        d="M3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Z"
+      ></path>
+      <path
+        id="line-bottom"
+        class="fill-yellow-300 transition-opacity"
+        fill-rule="evenodd"
+        d="M3 17.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z"
+      ></path>
+    </svg>
+  </button>
+</div>
+
+<div
+  id="mobile-menu"
+  class="fixed left-0 right-0 top-0 z-30 -translate-y-full rounded-b-lg border-x-2 border-b-2 border-white bg-black px-[10%] pt-[82px] transition-all duration-300 md:hidden"
+>
+  <div class="my-10 flex h-full flex-col items-center gap-10">
+    {
+      pages.map(({ href, title }) => (
+        <a class="group" href={href}>
+          <div
+            class={`rounded-md px-2 py-1 text-3xl ${
+              currentPath === href
+                ? "bg-pink-300 font-semibold text-black"
+                : "text-white"
+            }`}
+          >
+            {title}
+          </div>
+          <div
+            class={`h-0.5 bg-pink-300 transition-all ${currentPath !== href ? "w-0 group-hover:w-full" : "w-full"}`}
+          />
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<script is:inline>
+  const toggle = document.getElementById("menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+  const icon = document.getElementById("menu-icon");
+  const lineTop = document.getElementById("line-top");
+  const lineBottom = document.getElementById("line-bottom");
+
+  toggle.addEventListener("click", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+
+    if (isOpen) {
+      menu.classList.remove("translate-y-0");
+      menu.classList.add("-translate-y-full");
+      toggle.setAttribute("aria-expanded", "false");
+      icon.classList.remove("rotate-90");
+      lineTop.classList.remove("opacity-0");
+      lineBottom.classList.remove("opacity-0");
+    } else {
+      menu.classList.add("translate-y-0");
+      menu.classList.remove("-translate-y-full");
+      toggle.setAttribute("aria-expanded", "true");
+      icon.classList.add("rotate-90");
+      lineTop.classList.add("opacity-0");
+      lineBottom.classList.add("opacity-0");
+    }
+  });
+</script>

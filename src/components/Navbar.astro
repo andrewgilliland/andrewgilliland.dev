@@ -1,17 +1,18 @@
 ---
-import MobileNavbar from './react/MobileNavbar';
-import DesktopNavbar from './DesktopNavbar.astro';
-import type { Page } from '@/types';
+import MobileNavbar from "./MobileNavbar.astro";
+import DesktopNavbar from "./DesktopNavbar.astro";
+import type { Page } from "@/types";
 
 const pages: Page[] = [
-  { href: '/', title: 'Home' },
-  { href: '/projects', title: 'Projects' },
-  { href: '/notes', title: 'Notes' },
-  { href: '/about', title: 'About' },
+  { href: "/", title: "Home" },
+  { href: "/projects", title: "Projects" },
+  { href: "/articles", title: "Articles" },
+  { href: "/notes", title: "Notes" },
+  { href: "/about", title: "About" },
 ];
 ---
 
 <div class="bg-black">
-  <MobileNavbar client:load pages={pages} />
+  <MobileNavbar pages={pages} />
   <DesktopNavbar pages={pages} />
 </div>
