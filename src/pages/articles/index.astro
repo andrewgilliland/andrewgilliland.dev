@@ -15,7 +15,10 @@ const sorted = articles.sort(
       {
         sorted.map((article) => (
           <li>
-            <a class="group block" href={`/articles/${article.id}`}>
+            <a
+              class="group block"
+              href={`/articles/${article.id.replace(/\.mdx?$/, "")}`}
+            >
               <div class="relative">
                 <div class="absolute bottom-0 h-full w-full rounded border-2 border-white bg-black" />
                 <div class="flex flex-col rounded border-2 border-white bg-black p-6 transition group-hover:-translate-x-1 group-hover:-translate-y-1">
