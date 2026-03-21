@@ -13,10 +13,10 @@ const currentYear = new Date().getFullYear();
   <div class="text-white">ⓒ {currentYear} Andrew Gilliland</div>
   <div class="mt-6 flex items-center gap-10 lg:mt-0">
     {
-      socialLinks.map(({ Icon, href, color, title }) => (
-        <a href={href} aria-label={title}>
+      socialLinks.map(({ Icon, href, bgColor, title }) => (
+        <a href={href} aria-label={title} target="_blank" rel="noopener noreferrer">
           <Block
-            backgroundColor={`bg-${color}-500`}
+            backgroundColor={bgColor}
             height="12"
             width="12"
             theme="dark"

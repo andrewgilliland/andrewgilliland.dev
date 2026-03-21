@@ -1,0 +1,17 @@
+---
+interface Props {
+  className?: string;
+  padding?: string;
+}
+
+const { className = "", padding = "p-4" } = Astro.props;
+---
+
+<div class={`group relative ${className}`}>
+  <div class="absolute bottom-0 h-full w-full rounded border-2 border-white bg-black" />
+  <div
+    class={`relative flex rounded border-2 border-white bg-black ${padding} transition group-hover:-translate-x-1 group-hover:-translate-y-1`}
+  >
+    <slot />
+  </div>
+</div>

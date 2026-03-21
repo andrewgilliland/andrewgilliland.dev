@@ -1,5 +1,3 @@
-"use client";
-
 import { type FC, useState } from "react";
 import FileTree from "./FileTree";
 import { Folder } from "lucide-react";

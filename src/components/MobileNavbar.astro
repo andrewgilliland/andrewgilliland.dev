@@ -64,6 +64,9 @@ const gradientStyle = `linear-gradient(to bottom right, ${pink}, ${pink} 30%, ${
 
 <div
   id="mobile-menu"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Navigation menu"
   class="fixed left-0 right-0 top-0 z-30 -translate-y-full rounded-b-lg border-x-2 border-b-2 border-white bg-black px-[10%] pt-[82px] transition-all duration-300 md:hidden"
 >
   <div class="my-10 flex h-full flex-col items-center gap-10">
@@ -97,27 +100,41 @@ const gradientStyle = `linear-gradient(to bottom right, ${pink}, ${pink} 30%, ${
   const lineMid2 = document.getElementById("line-mid-2");
   const lineBottom = document.getElementById("line-bottom");
 
+  function closeMenu() {
+    menu.classList.remove("translate-y-0");
+    menu.classList.add("-translate-y-full");
+    toggle.setAttribute("aria-expanded", "false");
+    icon.classList.remove("rotate-180");
+    lineMid1.classList.remove("-rotate-[135deg]");
+    lineMid2.classList.remove("rotate-[135deg]");
+    lineTop.classList.remove("opacity-0");
+    lineBottom.classList.remove("opacity-0");
+  }
+
+  function openMenu() {
+    menu.classList.add("translate-y-0");
+    menu.classList.remove("-translate-y-full");
+    toggle.setAttribute("aria-expanded", "true");
+    icon.classList.add("rotate-180");
+    lineMid1.classList.add("-rotate-[135deg]");
+    lineMid2.classList.add("rotate-[135deg]");
+    lineTop.classList.add("opacity-0");
+    lineBottom.classList.add("opacity-0");
+  }
+
   toggle.addEventListener("click", () => {
     const isOpen = toggle.getAttribute("aria-expanded") === "true";
-
     if (isOpen) {
-      menu.classList.remove("translate-y-0");
-      menu.classList.add("-translate-y-full");
-      toggle.setAttribute("aria-expanded", "false");
-      icon.classList.remove("rotate-180");
-      lineMid1.classList.remove("-rotate-[135deg]");
-      lineMid2.classList.remove("rotate-[135deg]");
-      lineTop.classList.remove("opacity-0");
-      lineBottom.classList.remove("opacity-0");
+      closeMenu();
     } else {
-      menu.classList.add("translate-y-0");
-      menu.classList.remove("-translate-y-full");
-      toggle.setAttribute("aria-expanded", "true");
-      icon.classList.add("rotate-180");
-      lineMid1.classList.add("-rotate-[135deg]");
-      lineMid2.classList.add("rotate-[135deg]");
-      lineTop.classList.add("opacity-0");
-      lineBottom.classList.add("opacity-0");
+      openMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+      closeMenu();
+      toggle.focus();
     }
   });
 </script>

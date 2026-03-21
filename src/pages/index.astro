@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { File } from "lucide-react";
 import TopicCard from "@/components/TopicCard.astro";
+import ShadowCard from "@/components/ShadowCard.astro";
 import CenteredSection from "@/components/sections/CenteredSection.astro";
 import TwinSections from "@/components/sections/TwinSections.astro";
 import PrimaryButton from "@/components/PrimaryButton.astro";
@@ -74,17 +75,16 @@ const recentNotes = allNotes
           {
             recentNotes.map((note, index) => (
               <a
-                class={`${index && "mt-4"} group relative w-1/2 min-w-[240px]`}
+                class={`${index && "mt-4"} w-1/2 min-w-[240px]`}
                 href={`/notes/${note.id}`}
                 title={note.data.title}
               >
-                <div class="absolute bottom-0 h-full w-full rounded border-2 border-white bg-black" />
-                <div class="flex transform-gpu rounded border-2 border-white bg-black p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1">
+                <ShadowCard>
                   <File className="h-6 w-6 stroke-white stroke-2" />
                   <h3 class="ml-2 truncate font-bold text-white">
                     {note.data.title}
                   </h3>
-                </div>
+                </ShadowCard>
               </a>
             ))
           }

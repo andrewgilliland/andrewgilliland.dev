@@ -8,8 +8,19 @@ interface Props {
 
 const { topic } = Astro.props;
 const { name, path, color } = topic;
-const lineColor = color ? "black" : "white";
-const bgColor = color ? "white" : "black";
+
+const bgColorMap: Record<string, string> = {
+  yellow: "bg-yellow-400",
+  cyan: "bg-cyan-400",
+  pink: "bg-pink-400",
+};
+
+const borderClass = color ? "border-black" : "border-white";
+const shadowBgClass = color ? "bg-white" : "bg-black";
+const fgBgClass = color ? (bgColorMap[color] ?? "bg-black") : "bg-black";
+const textClass = color ? "text-black" : "text-white";
+const fillClass = color ? "fill-white" : "fill-black";
+const strokeClass = color ? "stroke-black" : "stroke-white";
 ---
 
 <a
@@ -18,13 +29,13 @@ const bgColor = color ? "white" : "black";
   class="group relative"
 >
   <div
-    class={`absolute bottom-0 h-full w-full rounded border-2 border-${lineColor} bg-${bgColor}`}
+    class={`absolute bottom-0 h-full w-full rounded border-2 ${borderClass} ${shadowBgClass}`}
   >
   </div>
   <div
-    class={`flex transform-gpu justify-between rounded border-2 border-${lineColor} bg-${color ? `${color}-400` : "black"} p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1`}
+    class={`flex transform-gpu justify-between rounded border-2 ${borderClass} ${fgBgClass} p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1`}
   >
-    <div class={`text-${lineColor} font-bold capitalize`}>{name}</div>
-    <Folder className={`h-6 w-6 fill-${bgColor} stroke-${lineColor}`} />
+    <div class={`${textClass} font-bold capitalize`}>{name}</div>
+    <Folder className={`h-6 w-6 ${fillClass} ${strokeClass}`} />
   </div>
 </a>

@@ -7,18 +7,18 @@ export const socialLinks = [
     title: "GitHub",
     Icon: GitHubIcon,
     href: "https://github.com/andrewgilliland",
-    color: "cyan",
+    bgColor: "bg-cyan-500",
   },
   {
     title: "LinkedIn",
     Icon: LinkedInIcon,
     href: "https://www.linkedin.com/in/andrew-gilliland-a89b8919a/",
-    color: "pink",
+    bgColor: "bg-pink-500",
   },
   {
     title: "Bluesky",
     Icon: BlueskyIcon,
     href: "https://bsky.app/profile/andrewgilliland.dev",
-    color: "emerald",
+    bgColor: "bg-emerald-500",
   },
 ];
