@@ -1,0 +1,31 @@
+import type { FC } from "react";
+import type { FileNode } from "@/types";
+import { File } from "lucide-react";
+
+type FileRowProps = {
+  fileNode: FileNode;
+  /** depth of the node in the tree determines left padding */
+  depth?: number;
+};
+
+const FileRow: FC<FileRowProps> = ({ fileNode, depth = 1 }) => {
+  return (
+    <a
+      href={`/notes${fileNode.path}`}
+      title={fileNode.title}
+      className="flex border-b border-gray-800 py-3 pr-4 transition-colors hover:bg-gray-900"
+      style={{ paddingLeft: 16 * depth }}
+    >
+      <div className="flex w-full items-center gap-2">
+        <div>
+          <File className="h-5 w-5 stroke-2 text-pink-300" />
+        </div>
+        <span className="truncate text-base font-bold text-white">
+          {fileNode.title}
+        </span>
+      </div>
+    </a>
+  );
+};
+
+export default FileRow;

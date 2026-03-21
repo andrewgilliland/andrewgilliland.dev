@@ -1,20 +1,13 @@
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/jetbrains-mono";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-  --move: 100px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+  --font-space-grotesk: "Space Grotesk Variable", sans-serif;
+  --font-jetbrains-mono: "JetBrains Mono Variable", monospace;
 }
 
 ::-moz-selection {
@@ -30,16 +23,6 @@
 
 html {
   scroll-behavior: smooth;
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
 }
 
 .header-heading {
@@ -144,62 +127,14 @@ body {
   }
 }
 
-/* ! These selectors are needed for syntax highlighting using shiki  */
-pre {
-  tab-size: 2;
-  overflow: hidden; /* Ensure the element has overflow hidden */
-  position: relative; /* Ensure the element is positioned relative for pseudo-elements */
-  /* white-space: pre-wrap; /* Wrap text  */
-
-  /* Firefox */
-  scrollbar-width: thin; /* Thin scrollbar */
-  scrollbar-color: theme("colors.cyan.500") theme("colors.white"); /* Thumb color and track color */
-}
-
-.highlighted {
-  background-color: theme("colors.gray.950");
-}
-
-.line {
-  counter-increment: count;
-  display: flex;
-  padding-right: 1em;
-}
-
-.line::before {
-  content: counter(count);
-  padding-right: 0.75em;
-  opacity: 0.4;
-  width: 2em; /* Make the counter have a fixed width */
-  text-align: right; /* Align the text to the right */
-}
-
-/* WebKit browsers (Chrome, Safari) */
-pre::-webkit-scrollbar {
-  height: 8px; /* Height of the horizontal scrollbar */
-}
-
-pre::-webkit-scrollbar-track {
-  background: theme(
-    "colors.emerald.300"
-  ); /* Background of the scrollbar track */
-}
-
-pre::-webkit-scrollbar-thumb {
-  background: theme("colors.yellow.300"); /* Color of the scrollbar thumb */
-  border-radius: 0px; /* Rounded corners for the scrollbar thumb */
-}
-
-pre::-webkit-scrollbar-thumb:hover {
-  background: theme(
-    "colors.pink.300"
-  ); /* Color of the scrollbar thumb on hover */
+.prose pre {
+  border: 2px solid white;
 }
 
 .prose a {
-  transition-property: color, background-color, border-color,
-    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
-    backdrop-filter;
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke,
+    opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }

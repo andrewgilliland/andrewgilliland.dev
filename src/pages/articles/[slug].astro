@@ -1,0 +1,45 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const articles = await getCollection("articles", ({ data }) => !data.draft);
+  return articles.map((article) => ({
+    params: { slug: article.id.replace(/\.mdx?$/, "") },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content, headings } = await render(article);
+---
+
+<BaseLayout title={`${article.data.title} - Andrew Gilliland`}>
+  <div class="mx-auto my-14 min-h-screen w-full max-w-3xl px-8">
+    <div class="mt-10 rounded border-2 border-white">
+      <div
+        class="sticky top-0 flex items-start justify-between gap-4 border-b-2 border-white bg-black p-8"
+      >
+        <div>
+          <h1 class="text-3xl font-bold text-white md:text-4xl">
+            {article.data.title}
+          </h1>
+          <p class="mt-2 text-sm text-gray-400">
+            {
+              article.data.date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
+            }
+          </p>
+        </div>
+        <TableOfContents headings={headings} />
+      </div>
+      <article class="prose prose-invert mt-8 max-w-none p-8">
+        <Content />
+      </article>
+    </div>
+  </div>
+</BaseLayout>

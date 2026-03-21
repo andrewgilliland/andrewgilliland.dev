@@ -1,0 +1,44 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageLayout from "@/components/layouts/PageLayout.astro";
+import ShadowCard from "@/components/ShadowCard.astro";
+import { getCollection } from "astro:content";
+
+const articles = await getCollection("articles", ({ data }) => !data.draft);
+const sorted = articles.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+
+<BaseLayout title="Articles - Andrew Gilliland">
+  <PageLayout title="Articles">
+    <ul class="mt-8 flex flex-col gap-4 p-8">
+      {
+        sorted.map((article) => (
+          <li>
+            <a
+              class="block"
+              href={`/articles/${article.id.replace(/\.mdx?$/, "")}`}
+            >
+              <ShadowCard padding="p-6">
+                <div class="flex flex-col">
+                  <p class="text-sm text-gray-400">
+                    {article.data.date.toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  <h2 class="mt-1 text-xl font-bold text-white">
+                    {article.data.title}
+                  </h2>
+                  <p class="mt-2 text-gray-300">{article.data.excerpt}</p>
+                </div>
+              </ShadowCard>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </PageLayout>
+</BaseLayout>

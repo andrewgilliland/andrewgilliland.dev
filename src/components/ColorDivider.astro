@@ -1,0 +1,13 @@
+---
+import colors from "tailwindcss/colors";
+
+interface Props {
+  className?: string;
+}
+
+const { className = "mt-8 h-2 w-full rounded-full" } = Astro.props;
+
+const gradientStyle = `linear-gradient(-10deg, ${colors.pink[300]}, ${colors.pink[300]} 30%, ${colors.emerald[300]} 30%, ${colors.emerald[300]} 50%, ${colors.yellow[300]} 50%, ${colors.yellow[300]} 70%, ${colors.cyan[300]} 70%, ${colors.cyan[300]})`;
+---
+
+<div class={className} style={`background-image: ${gradientStyle}`}></div>
