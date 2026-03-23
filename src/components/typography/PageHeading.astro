@@ -3,11 +3,9 @@ interface Props {
   className?: string;
 }
 
-const { className = '' } = Astro.props;
+const { className = "" } = Astro.props;
 ---
 
-<h1
-  class={`stroke-white text-3xl font-bold capitalize text-gray-100 md:text-4xl ${className}`}
->
+<h1 class={`text-white text-3xl font-bold capitalize md:text-4xl ${className}`}>
   <slot />
 </h1>

@@ -1,7 +1,5 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PageLayout from "@/components/layouts/PageLayout.astro";
-import ShadowCard from "@/components/ShadowCard.astro";
 import { getCollection } from "astro:content";
 
 const articles = await getCollection("articles", ({ data }) => !data.draft);
@@ -11,34 +9,39 @@ const sorted = articles.sort(
 ---
 
 <BaseLayout title="Articles - Andrew Gilliland">
-  <PageLayout title="Articles">
-    <ul class="mt-8 flex flex-col gap-4 p-8">
+  <div class="mx-auto mt-14 min-h-screen w-full max-w-3xl px-8">
+    <header class="mb-8 border-b border-white pb-8 pt-10">
+      <h1 class="text-[2.5rem] font-normal leading-[1.2] text-white">
+        Articles
+      </h1>
+    </header>
+    <section
+      class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2"
+    >
       {
-        sorted.map((article) => (
-          <li>
+        sorted.map((article, index) => (
+          <article class={index === 0 ? "sm:col-span-2" : ""}>
             <a
-              class="block"
+              class={`grid min-h-[220px] overflow-hidden rounded-lg border border-white bg-black text-white no-underline transition-all duration-200 ease-in-out hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[3px_3px_#fff] ${index === 0 ? "min-h-[280px]" : ""}`}
               href={`/articles/${article.id.replace(/\.mdx?$/, "")}`}
             >
-              <ShadowCard padding="p-6">
-                <div class="flex flex-col">
-                  <p class="text-sm text-gray-400">
-                    {article.data.date.toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                  <h2 class="mt-1 text-xl font-bold text-white">
-                    {article.data.title}
-                  </h2>
-                  <p class="mt-2 text-gray-300">{article.data.excerpt}</p>
-                </div>
-              </ShadowCard>
+              <div class="flex h-full grow flex-col space-y-2 p-6">
+                <h2 class="flex-none text-2xl leading-tight">
+                  {article.data.title}
+                </h2>
+                <div class="flex-1" />
+                <p class="flex-none text-sm text-gray-400">
+                  {article.data.date.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
             </a>
-          </li>
+          </article>
         ))
       }
-    </ul>
-  </PageLayout>
+    </section>
+  </div>
 </BaseLayout>
