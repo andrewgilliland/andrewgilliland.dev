@@ -1,33 +1,96 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Block from "@/components/Block.astro";
-
-const images = [
-  { src: "/hannah-andrew-1.jpeg", alt: "Hannah and Andrew" },
-  { src: "/hank-kitchen-1.jpeg", alt: "Hank the Dog" },
-  { src: "/gus-christmas-1.jpeg", alt: "Gus the Cat" },
-  { src: "/bernie-kitchen-1.jpeg", alt: "Bernie in Cat" },
-];
 ---
 
 <BaseLayout title="About - Andrew Gilliland">
   <div class="px-8">
-    <section class="mx-auto mb-10 mt-20 max-w-[60ch]">
+    <section class="mx-auto mb-10 mt-20 max-w-3xl">
       <h1 class="text-3xl font-bold capitalize text-gray-100 md:text-4xl">
         About
       </h1>
-      <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {
-          images.map((image) => (
-            <img
-              class="h-auto w-full border-2 border-white object-cover"
-              src={image.src}
-              width="200"
-              height="250"
-              alt={image.alt}
-            />
-          ))
-        }
+      <div class="mt-10 flex flex-col gap-8 lg:flex-row">
+        <div class="flex flex-col gap-8 lg:w-1/2">
+          <div
+            class="flex items-center rounded-2xl border border-gray-700 bg-gray-900 px-4 py-10 md:p-10"
+          >
+            <h3 class="text-4xl font-medium text-white md:text-5xl">
+              Developer.<br />Builder.<br />Learner.
+            </h3>
+          </div>
+          <div
+            class="flex items-center justify-center rounded-2xl border border-gray-700 bg-gray-900 p-8 lg:px-12 lg:py-10"
+          >
+            <div class="relative">
+              <img
+                class="mx-auto h-auto w-full rounded-full object-cover"
+                src="/gus-christmas-1.jpeg"
+                width="400"
+                height="400"
+                alt="Gus the Cat"
+              />
+              <div
+                class="absolute -top-4 left-0 rounded-2xl border border-white bg-black px-6 py-4 sm:-left-8 sm:px-8"
+              >
+                <p class="m-0 text-xl font-medium text-white">
+                  Gus
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-8 lg:w-1/2">
+          <div
+            class="flex items-center justify-center rounded-2xl border border-gray-700 bg-gray-900 p-8 lg:px-12 lg:py-10"
+          >
+            <div class="relative">
+              <img
+                class="mx-auto h-auto w-full rounded-full object-cover"
+                src="/hank-kitchen-1.jpeg"
+                width="400"
+                height="400"
+                alt="Hank the Dog"
+              />
+              <div
+                class="absolute -bottom-2 left-0 rounded-2xl border border-white bg-black px-6 py-4 sm:-left-8 sm:px-6"
+              >
+                <p class="m-0 text-xl font-medium text-white">Hank</p>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-8">
+            <div
+              class="flex items-center justify-center rounded-2xl border border-gray-700 bg-gray-900 p-4"
+            >
+              <img
+                class="h-auto w-full rounded-xl object-cover"
+                src="/hannah-andrew-1.jpeg"
+                width="200"
+                height="250"
+                alt="Hannah and Andrew"
+              />
+            </div>
+            <div
+              class="flex items-center justify-center rounded-2xl border border-gray-700 bg-gray-900 p-4"
+            >
+              <img
+                class="h-auto w-full rounded-xl object-cover"
+                src="/bernie-kitchen-1.jpeg"
+                width="200"
+                height="250"
+                alt="Bernie the Cat"
+              />
+            </div>
+          </div>
+          <div
+            class="flex items-center rounded-2xl border border-gray-700 bg-gray-900 px-4 py-10 md:p-10"
+          >
+            <h3 class="text-4xl font-medium text-white md:text-5xl">
+              Cats, code,<br />and Yacht Rock.
+            </h3>
+          </div>
+        </div>
       </div>
 
       <div class="mt-10 grid gap-4 text-base text-white sm:gap-8">
