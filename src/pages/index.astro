@@ -27,9 +27,9 @@ const topics: Topic[] = [
   },
 ];
 
-const allNotes = await getCollection("notes", ({ data }) => !data.draft);
+const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 
-const recentNotes = allNotes
+const recentArticles = allArticles
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 5);
 ---
@@ -69,20 +69,20 @@ const recentNotes = allNotes
       </TwinSections>
       <CenteredSection>
         <h2 class="mb-12 text-center text-4xl font-bold text-white">
-          Recent Notes
+          Recent Articles
         </h2>
         <div class="flex flex-col items-center">
           {
-            recentNotes.map((note, index) => (
+            recentArticles.map((article, index) => (
               <a
                 class={`${index && "mt-4"} w-1/2 min-w-[240px]`}
-                href={`/notes/${note.id}`}
-                title={note.data.title}
+                href={`/articles/${article.id.replace(/\.mdx?$/, "")}`}
+                title={article.data.title}
               >
                 <ShadowCard>
                   <File className="h-6 w-6 stroke-white stroke-2" />
                   <h3 class="ml-2 truncate font-bold text-white">
-                    {note.data.title}
+                    {article.data.title}
                   </h3>
                 </ShadowCard>
               </a>
