@@ -131,6 +131,19 @@ html {
   border: 2px solid white;
 }
 
+.prose :not(pre) > code {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.875em;
+}
+
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: none;
+}
+
 .prose a {
   transition-property:
     color, background-color, border-color, text-decoration-color, fill, stroke,
