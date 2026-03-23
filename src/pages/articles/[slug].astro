@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-const { Content, headings } = await render(article);
+const { Content } = await render(article);
 ---
 
 <BaseLayout title={`${article.data.title} - Andrew Gilliland`}>
