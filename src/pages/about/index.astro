@@ -27,120 +27,113 @@ const techGroups = [
 <BaseLayout title="About - Andrew Gilliland">
   <div class="mx-auto mt-14 min-h-screen w-full max-w-3xl px-8">
     <SectionHeader title="About" />
-    <div class="mt-10 flex flex-col gap-8 lg:flex-row">
-      <div class="flex flex-col gap-8 lg:w-1/2">
-        <div
-          class="flex items-center rounded-2xl border border-white bg-black px-4 py-10 md:p-10"
-        >
-          <h3 class="text-4xl font-medium text-white md:text-5xl">
-            Developer.<br />Builder.<br />Learner.
-          </h3>
-        </div>
-        <div
-          class="flex items-center justify-center rounded-2xl border border-white bg-black p-8 lg:px-12 lg:py-10"
-        >
-          <div class="relative">
-            <img
-              class="mx-auto h-auto w-full rounded-full object-cover"
-              src="/gus-christmas-1.jpeg"
-              width="400"
-              height="400"
-              alt="Gus the Cat"
-            />
-            <div
-              class="absolute -top-4 left-0 rounded-2xl border border-white bg-black px-6 py-4 sm:-left-8 sm:px-8"
-            >
-              <p class="m-0 text-xl font-medium text-white">Gus</p>
-            </div>
-          </div>
-        </div>
-        <div
-          class="rounded-2xl border border-white bg-black px-6 py-8 md:px-10 md:py-10"
-        >
-          <p class="text-base leading-relaxed text-white">
-            Community-taught full stack developer who learned everything the
-            hard way, one Stack Overflow rabbit hole at a time. He loves digging
-            into new ideas, untangling hard problems, and making things that
-            actually ship. When he&apos;s not pushing commits, he&apos;s
-            organizing meetups for <a
-              class="text-emerald-400 hover:underline"
-              href="https://www.blono.dev/">Bloomington-Normal Developers</a
-            >, because talking about code is almost as fun as writing it.
-          </p>
-        </div>
-        <TechCard title={techGroups[0].title} items={techGroups[0].items} />
+    <div class="mt-10 columns-1 gap-8 lg:columns-2">
+      <div
+        class="mb-8 flex break-inside-avoid items-center rounded-2xl border border-white bg-black px-4 py-10 md:p-10"
+      >
+        <h3 class="text-4xl font-medium text-white md:text-5xl">
+          Developer.<br />Builder.<br />Learner.
+        </h3>
       </div>
-
-      <div class="flex flex-col gap-8 lg:w-1/2">
-        <div
-          class="flex items-center justify-center rounded-2xl border border-white bg-black p-8 lg:px-12 lg:py-10"
-        >
-          <div class="relative">
-            <img
-              class="mx-auto h-auto w-full rounded-full object-cover"
-              src="/hank-kitchen-1.jpeg"
-              width="400"
-              height="400"
-              alt="Hank the Dog"
-            />
-            <div
-              class="absolute -bottom-2 left-0 rounded-2xl border border-white bg-black px-6 py-4 sm:-left-8 sm:px-6"
-            >
-              <p class="m-0 text-xl font-medium text-white">Hank</p>
-            </div>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-8">
+      <div
+        class="mb-8 flex break-inside-avoid items-center justify-center rounded-2xl border border-white bg-black p-8 lg:px-12 lg:py-10"
+      >
+        <div class="relative">
+          <img
+            class="mx-auto h-auto w-full rounded-full object-cover"
+            src="/gus-christmas-1.jpeg"
+            width="400"
+            height="400"
+            alt="Gus the Cat"
+          />
           <div
-            class="flex items-center justify-center rounded-2xl border border-white bg-black p-4"
+            class="absolute -top-4 left-0 rounded-2xl border border-white bg-black px-6 py-4 sm:-left-8 sm:px-8"
           >
-            <img
-              class="h-auto w-full rounded-xl object-cover"
-              src="/hannah-andrew-1.jpeg"
-              width="200"
-              height="250"
-              alt="Hannah and Andrew"
-            />
+            <p class="m-0 text-xl font-medium text-white">Gus</p>
           </div>
+        </div>
+      </div>
+      <div
+        class="mb-8 break-inside-avoid rounded-2xl border border-white bg-black px-6 py-8 md:px-10 md:py-10"
+      >
+        <p class="text-base leading-relaxed text-white">
+          Community-taught full stack developer who learned everything the hard
+          way, one Stack Overflow rabbit hole at a time. He loves digging into
+          new ideas, untangling hard problems, and making things that actually
+          ship. When he&apos;s not pushing commits, he&apos;s organizing meetups
+          for <a
+            class="text-emerald-400 hover:underline"
+            href="https://www.blono.dev/">Bloomington-Normal Developers</a
+          >, because talking about code is almost as fun as writing it.
+        </p>
+      </div>
+      <div
+        class="mb-8 flex break-inside-avoid items-center justify-center rounded-2xl border border-white bg-black p-8 lg:px-12 lg:py-10"
+      >
+        <div class="relative">
+          <img
+            class="mx-auto h-auto w-full rounded-full object-cover"
+            src="/hank-kitchen-1.jpeg"
+            width="400"
+            height="400"
+            alt="Hank the Dog"
+          />
           <div
-            class="flex items-center justify-center rounded-2xl border border-white bg-black p-4"
+            class="absolute -bottom-2 left-0 rounded-2xl border border-white bg-black px-6 py-4 sm:-left-8 sm:px-6"
           >
-            <img
-              class="h-auto w-full rounded-xl object-cover"
-              src="/bernie-kitchen-1.jpeg"
-              width="200"
-              height="250"
-              alt="Bernie the Cat"
-            />
+            <p class="m-0 text-xl font-medium text-white">Hank</p>
           </div>
         </div>
+      </div>
+      <div class="mb-8 grid break-inside-avoid grid-cols-2 gap-8">
         <div
-          class="flex items-center rounded-2xl border border-white bg-black px-4 py-10 md:p-10"
+          class="flex items-center justify-center rounded-2xl border border-white bg-black p-4"
         >
-          <h3 class="text-4xl font-medium text-white md:text-5xl">
-            Cats, code,<br />and Yacht Rock.
-          </h3>
+          <img
+            class="h-auto w-full rounded-xl object-cover"
+            src="/hannah-andrew-1.jpeg"
+            width="200"
+            height="250"
+            alt="Hannah and Andrew"
+          />
         </div>
         <div
-          class="rounded-2xl border border-white bg-black px-6 py-8 md:px-10 md:py-10"
+          class="flex items-center justify-center rounded-2xl border border-white bg-black p-4"
         >
-          <p class="text-base leading-relaxed text-white">
-            Away from the keyboard he&apos;s usually grilling something,
-            building something out of wood, or pretending his home projects have
-            a deadline. Downtime means hanging with his fiancé Hannah, a dog
-            named Hank who thinks he&apos;s a person, and two cats, Gus and
-            Bernie, who are definitely in charge. Soundtrack: strictly Yacht
-            Rock.
-          </p>
+          <img
+            class="h-auto w-full rounded-xl object-cover"
+            src="/bernie-kitchen-1.jpeg"
+            width="200"
+            height="250"
+            alt="Bernie the Cat"
+          />
         </div>
+      </div>
+      <div
+        class="mb-8 flex break-inside-avoid items-center rounded-2xl border border-white bg-black px-4 py-10 md:p-10"
+      >
+        <h3 class="text-4xl font-medium text-white md:text-5xl">
+          Cats, code,<br />and Yacht Rock.
+        </h3>
+      </div>
+      <div
+        class="mb-8 break-inside-avoid rounded-2xl border border-white bg-black px-6 py-8 md:px-10 md:py-10"
+      >
+        <p class="text-base leading-relaxed text-white">
+          Away from the keyboard he&apos;s usually grilling something, building
+          something out of wood, or pretending his home projects have a
+          deadline. Downtime means hanging with his fiancé Hannah, a dog named
+          Hank who thinks he&apos;s a person, and two cats, Gus and Bernie, who
+          are definitely in charge. Soundtrack: strictly Yacht Rock.
+        </p>
       </div>
     </div>
 
-    <div class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
+    <div class="mt-8 columns-1 gap-8 lg:columns-2">
       {
-        techGroups
-          .slice(1)
-          .map((group) => <TechCard title={group.title} items={group.items} />)
+        techGroups.map((group) => (
+          <TechCard title={group.title} items={group.items} />
+        ))
       }
     </div>
 
