@@ -1,6 +1,6 @@
 ---
 title: CI/CD for Lambda Functions with GitHub Actions
-date: 2026-07-25
+date: 2026-03-23
 excerpt: Stop running cdk deploy from your laptop. Set up a GitHub Actions pipeline to test and deploy your Lambda functions automatically.
 draft: false
 ---

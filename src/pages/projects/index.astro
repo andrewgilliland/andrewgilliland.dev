@@ -1,64 +1,57 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
+import BaseLayout from "@/layouts/BaseLayout.astro";
 
 const projects = [
   {
-    title: 'SmartScout',
+    title: "SmartScout",
     description:
-      'Precision Planting SmartScout is an app that uses machine vision and augmented reality to automatically assess emergence and plant spacing in a 3D space.',
-    href: '/projects/smartscout',
-    logo: '/projects/smartscout-icon-1.webp',
+      "Precision Planting SmartScout is an app that uses machine vision and augmented reality to automatically assess emergence and plant spacing in a 3D space.",
+    href: "/projects/smartscout",
+    logo: "/projects/smartscout-icon-1.webp",
   },
   {
-    title: 'blono.dev',
+    title: "blono.dev",
     description:
-      'blono.dev is a website for Bloomington-Normal Developers, a local developer community in Central Illinois. Built with Next.js and Tailwind CSS.',
-    href: '/projects/blono-dev',
-    logo: '/projects/blono-dev-icon-1.svg',
+      "blono.dev is a website for Bloomington-Normal Developers, a local developer community in Central Illinois. Built with Next.js and Tailwind CSS.",
+    href: "/projects/blono-dev",
+    logo: "/projects/blono-dev-icon-1.svg",
   },
 ];
 ---
 
 <BaseLayout title="Projects - Andrew Gilliland">
-  <div class="px-8">
-    <section class="mx-auto mt-20 max-w-[60ch]">
-      <h1
-        class="stroke-white text-3xl font-bold capitalize text-gray-100 md:text-4xl"
-      >
-        My Projects
+  <div class="mx-auto mt-14 min-h-screen w-full max-w-3xl px-8">
+    <header class="mb-8 border-b border-white pb-8 pt-10">
+      <h1 class="text-[2.5rem] font-normal leading-[1.2] text-white">
+        Projects
       </h1>
-      <p class="mt-10 text-gray-300">
-        Explore some of the work I&apos;ve built and contributed to.
-      </p>
-    </section>
-
-    <section class="mx-auto mt-10 max-w-[60ch]">
-      <div class="grid gap-6">
-        {
-          projects.map(({ href, title, description, logo }) => (
+    </header>
+    <section class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+      {
+        projects.map(({ href, title, description, logo }, index) => (
+          <article class={index === 0 ? "sm:col-span-2" : ""}>
             <a
-              class="group relative min-w-[240px]"
+              class={`grid overflow-hidden rounded-lg border border-white bg-black text-white no-underline transition-all duration-200 ease-in-out hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[3px_3px_#fff] ${index === 0 ? "min-h-[280px]" : "min-h-[220px]"}`}
               href={href}
-              title={title}
             >
-              <div class="absolute bottom-0 h-full w-full rounded border-2 border-white bg-black" />
-              <div class="transform-gpu rounded border-2 border-white bg-black p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1">
+              <div class="flex h-full grow flex-col space-y-2 p-6">
                 {logo && (
                   <img
                     src={logo}
                     alt={`${title} logo`}
-                    class="mb-4 h-12 w-12 rounded-sm object-contain"
+                    class="h-12 w-12 rounded-sm object-contain"
                     width="48"
                     height="48"
                   />
                 )}
-                <h4 class="font-bold text-white">{title}</h4>
-                <p class="mt-2 text-gray-300">{description}</p>
+                <h2 class="flex-none text-2xl leading-tight">{title}</h2>
+                <p class="text-gray-400">{description}</p>
+                <div class="flex-1" />
               </div>
             </a>
-          ))
-        }
-      </div>
+          </article>
+        ))
+      }
     </section>
   </div>
 </BaseLayout>
