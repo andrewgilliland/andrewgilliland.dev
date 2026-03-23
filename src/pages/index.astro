@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { File } from "lucide-react";
 import TopicCard from "@/components/TopicCard.astro";
-import ShadowCard from "@/components/ShadowCard.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import CardLink from "@/components/CardLink.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
 import CenteredSection from "@/components/sections/CenteredSection.astro";
 import TwinSections from "@/components/sections/TwinSections.astro";
 import PrimaryButton from "@/components/PrimaryButton.astro";
@@ -27,11 +28,13 @@ const topics: Topic[] = [
   },
 ];
 
-const allNotes = await getCollection("notes", ({ data }) => !data.draft);
+const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 
-const recentNotes = allNotes
+const sortedArticles = allArticles
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 5);
+  .slice(0, 4);
+
+const [featured, ...sideArticles] = sortedArticles;
 ---
 
 <BaseLayout>
@@ -68,26 +71,66 @@ const recentNotes = allNotes
         </div>
       </TwinSections>
       <CenteredSection>
-        <h2 class="mb-12 text-center text-4xl font-bold text-white">
-          Recent Notes
-        </h2>
-        <div class="flex flex-col items-center">
-          {
-            recentNotes.map((note, index) => (
-              <a
-                class={`${index && "mt-4"} w-1/2 min-w-[240px]`}
-                href={`/notes/${note.id}`}
-                title={note.data.title}
+        <div class="mx-auto w-full max-w-3xl px-8">
+          <SectionHeader title="Recent Articles" tag="h2" />
+          <section class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            {/* Featured article card */}
+            <article>
+              <CardLink
+                href={`/articles/${featured.id.replace(/\.mdx?$/, "")}`}
+                class="h-full min-h-[320px]"
               >
-                <ShadowCard>
-                  <File className="h-6 w-6 stroke-white stroke-2" />
-                  <h3 class="ml-2 truncate font-bold text-white">
-                    {note.data.title}
+                <div class="flex h-full grow flex-col space-y-2 p-6">
+                  <h3 class="flex-none text-2xl leading-tight">
+                    {featured.data.title}
                   </h3>
-                </ShadowCard>
-              </a>
-            ))
-          }
+                  <div class="flex-1"></div>
+                  <FormattedDate
+                    date={featured.data.date}
+                    class="flex-none text-sm text-gray-400"
+                  />
+                </div>
+              </CardLink>
+            </article>
+
+            {/* Side article list */}
+            <div class="flex h-full flex-col">
+              <ul class="grow divide-y divide-gray-700">
+                {
+                  sideArticles.map((article) => (
+                    <li class="py-4 first:pt-0">
+                      <a
+                        class="group flex items-end justify-between text-white no-underline hover:text-pink-400"
+                        href={`/articles/${article.id.replace(/\.mdx?$/, "")}`}
+                      >
+                        <div class="grid grid-cols-1 gap-1">
+                          <h4 class="mb-0.5 text-2xl font-normal">
+                            {article.data.title}
+                          </h4>
+                          <FormattedDate
+                            date={article.data.date}
+                            class="pb-0.5 text-base text-gray-400"
+                          />
+                        </div>
+                        <div class="ml-3 mr-1 flex h-10 w-10 shrink-0 items-center justify-center self-end rounded-md border border-gray-500 p-2 transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#fff]">
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </section>
         </div>
       </CenteredSection>
     </div>

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import TableOfContents from "@/components/TableOfContents.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -12,34 +12,39 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-const { Content, headings } = await render(article);
+const { Content } = await render(article);
 ---
 
 <BaseLayout title={`${article.data.title} - Andrew Gilliland`}>
   <div class="mx-auto my-14 min-h-screen w-full max-w-3xl px-8">
-    <div class="mt-10 rounded border-2 border-white">
-      <div
-        class="sticky top-0 flex items-start justify-between gap-4 border-b-2 border-white bg-black p-8"
+    <div class="mb-12">
+      <a
+        class="mt-4 flex items-center font-medium text-pink-400 hover:text-pink-300"
+        href="/articles"
       >
-        <div>
-          <h1 class="text-3xl font-bold text-white md:text-4xl">
-            {article.data.title}
-          </h1>
-          <p class="mt-2 text-sm text-gray-400">
-            {
-              article.data.date.toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
-            }
-          </p>
-        </div>
-        <TableOfContents headings={headings} />
-      </div>
-      <article class="prose prose-invert mt-8 max-w-none p-8">
-        <Content />
-      </article>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="currentColor"
+          class="mr-1.5"
+        >
+          <path d="m6 12 6 5v-4h6v-2h-6V7z"></path>
+        </svg>
+        Back to Articles
+      </a>
     </div>
+    <header class="mb-8">
+      <h1 class="mb-4 text-[2.5rem] font-normal leading-[1.2] text-white">
+        {article.data.title}
+      </h1>
+      <FormattedDate date={article.data.date} class="text-lg text-gray-400" />
+    </header>
+    <article
+      class="prose prose-invert mx-auto mt-8 max-w-3xl border-t border-white py-12"
+    >
+      <Content />
+    </article>
   </div>
 </BaseLayout>

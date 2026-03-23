@@ -29,6 +29,7 @@ html {
   color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
+  display: inline-block;
 }
 
 .header-heading:hover {
@@ -129,6 +130,35 @@ html {
 
 .prose pre {
   border: 2px solid white;
+}
+
+.prose h2 {
+  color: theme("colors.pink.300");
+}
+
+.prose h3 {
+  color: theme("colors.cyan.300");
+}
+
+.prose h4 {
+  color: theme("colors.yellow.300");
+}
+
+.prose h5 {
+  color: theme("colors.emerald.300");
+}
+
+.prose :not(pre) > code {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.875em;
+}
+
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: none;
 }
 
 .prose a {

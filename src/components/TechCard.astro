@@ -1,0 +1,28 @@
+---
+import CheckIcon from "./CheckIcon.astro";
+
+interface Props {
+  title: string;
+  items: string[];
+}
+
+const { title, items } = Astro.props;
+---
+
+<div
+  class="mb-8 flex break-inside-avoid flex-col justify-between rounded-3xl border border-white bg-black p-8"
+>
+  <p class="mb-8 text-3xl text-white">{title}</p>
+  <div class="flex flex-col gap-4">
+    {
+      items.map((item) => (
+        <div class="flex gap-4">
+          <div class="flex h-7 flex-none items-center justify-center">
+            <CheckIcon />
+          </div>
+          <p class="text-balance text-lg text-white">{item}</p>
+        </div>
+      ))
+    }
+  </div>
+</div>

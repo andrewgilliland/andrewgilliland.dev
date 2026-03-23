@@ -1,0 +1,14 @@
+---
+interface Props {
+  title: string;
+  tag?: "h1" | "h2";
+}
+
+const { title, tag: Tag = "h1" } = Astro.props;
+---
+
+<header class="mb-8 border-b border-white pb-8 pt-10">
+  <Tag class="text-[2.5rem] font-normal leading-[1.2] text-white">
+    {title}
+  </Tag>
+</header>
