@@ -29,6 +29,7 @@ html {
   color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
+  display: inline-block;
 }
 
 .header-heading:hover {
@@ -129,6 +130,22 @@ html {
 
 .prose pre {
   border: 2px solid white;
+}
+
+.prose h2 {
+  color: theme("colors.pink.300");
+}
+
+.prose h3 {
+  color: theme("colors.cyan.300");
+}
+
+.prose h4 {
+  color: theme("colors.yellow.300");
+}
+
+.prose h5 {
+  color: theme("colors.emerald.300");
 }
 
 .prose :not(pre) > code {
