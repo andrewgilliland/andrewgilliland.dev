@@ -19,6 +19,7 @@ If you know npm, you already know the concepts behind uv. Here's a quick mapping
 | --------------------- | ------------------------ |
 | `npm init`            | `uv init`                |
 | `npm install express` | `uv add requests`        |
+| `npm remove express`  | `uv remove requests`     |
 | `package.json`        | `pyproject.toml`         |
 | `package-lock.json`   | `uv.lock`                |
 | `node_modules/`       | `.venv/`                 |
@@ -86,30 +87,31 @@ This is like `nvm install 20` in the Node world. No more Googling "how to instal
 
 ## Defining Scripts
 
-In `package.json` you're used to defining scripts like `"dev": "next dev"`. Python has something similar in `pyproject.toml` using `[project.scripts]`:
+In `package.json` you're used to defining scripts like `"dev": "next dev"`. In Python, `[project.scripts]` in `pyproject.toml` lets you define CLI entry points:
 
 ```toml
 [project.scripts]
 dev = "my_app.main:run"
 ```
 
-This creates a CLI entry point that maps to a function. After running `uv sync`, you can call it with:
+This maps the command `dev` to the `run` function in `my_app/main.py`. After running `uv sync`, you can call it with:
 
 ```bash
 uv run dev
 ```
 
-If you want something closer to npm's scripts, just running shell commands, you can use `[tool.uv.scripts]`:
+Unlike npm scripts, these aren't arbitrary shell commands, they point to Python functions. But in practice, `uv run` covers the gap. You can run any command inside the project's environment directly:
 
-```toml
-[tool.uv.scripts]
-dev = "python main.py"
-test = "pytest"
-lint = "ruff check ."
+```bash
+uv run pytest
+uv run ruff check .
+uv run python main.py
 ```
 
-Then `uv run dev`, `uv run test`, and `uv run lint` work exactly the way you'd expect.
+No script definitions needed. Just `uv run` + the command.
 
 ## The Takeaway
 
 uv made Python tooling feel familiar to me as a JavaScript developer. One tool for project setup, dependency management, virtual environments, and running scripts. If you're coming from the JS ecosystem and Python's tooling has felt like a maze, give uv a shot.
+
+Check out the [uv docs](https://docs.astral.sh/uv/) to get started.
