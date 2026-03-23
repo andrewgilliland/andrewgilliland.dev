@@ -17,7 +17,7 @@ const gradientStyle = `linear-gradient(to bottom right, ${pink}, ${pink} 30%, ${
 ---
 
 <div
-  class="z-40 flex w-full items-center justify-between border-b-2 border-white bg-black px-[10%] py-6 md:hidden"
+  class="relative z-40 flex w-full items-center justify-between border-b-2 border-white bg-black px-[10%] py-6 md:hidden"
 >
   <a href="/" aria-label="Andrew Gilliland - Home">
     <span
@@ -67,7 +67,7 @@ const gradientStyle = `linear-gradient(to bottom right, ${pink}, ${pink} 30%, ${
   role="dialog"
   aria-modal="true"
   aria-label="Navigation menu"
-  class="fixed left-0 right-0 top-0 z-30 -translate-y-full rounded-b-lg border-x-2 border-b-2 border-white bg-black px-[10%] pt-[82px] transition-all duration-300 md:hidden"
+  class="absolute left-0 right-0 top-full z-30 -translate-y-full rounded-b-lg border-x-2 border-b-2 border-white bg-black px-[10%] transition-all duration-300 md:hidden"
 >
   <div class="my-10 flex h-full flex-col items-center gap-10">
     {
