@@ -66,7 +66,7 @@ Instead of activating a virtual environment every time, just use `uv run`:
 uv run python main.py
 ```
 
-Think of it like `npx` — it runs the command inside the project's environment without you having to manage it manually.
+Think of it like `npx`, it runs the command inside the project's environment without you having to manage it manually.
 
 ## Virtual Environments
 
@@ -83,6 +83,32 @@ uv python install 3.12
 ```
 
 This is like `nvm install 20` in the Node world. No more Googling "how to install Python 3.12 on macOS."
+
+## Defining Scripts
+
+In `package.json` you're used to defining scripts like `"dev": "next dev"`. Python has something similar in `pyproject.toml` using `[project.scripts]`:
+
+```toml
+[project.scripts]
+dev = "my_app.main:run"
+```
+
+This creates a CLI entry point that maps to a function. After running `uv sync`, you can call it with:
+
+```bash
+uv run dev
+```
+
+If you want something closer to npm's scripts, just running shell commands, you can use `[tool.uv.scripts]`:
+
+```toml
+[tool.uv.scripts]
+dev = "python main.py"
+test = "pytest"
+lint = "ruff check ."
+```
+
+Then `uv run dev`, `uv run test`, and `uv run lint` work exactly the way you'd expect.
 
 ## The Takeaway
 
