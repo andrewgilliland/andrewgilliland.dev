@@ -2,6 +2,7 @@
 import "@/styles/index.css";
 import Navbar from "@/components/Navbar.astro";
 import Footer from "@/components/Footer.astro";
+import fontUrl from "@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url";
 
 interface Props {
   title?: string;
@@ -40,6 +41,7 @@ const canonicalURL = Astro.url.href;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(image, Astro.site).href} />
 
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
   </head>
   <body class="font-brand">
