@@ -86,7 +86,7 @@ Deploy this stack once from your laptop:
 cdk deploy CiCdStack
 ```
 
-Copy the role ARN from the output — you'll need it in the workflow file.
+Copy the role ARN from the output, you'll need it in the workflow file.
 
 ## Your First Workflow File
 
@@ -148,7 +148,7 @@ on:
     branches: [main]
 ```
 
-This means: every time code is pushed to `main`, deploy. If you use pull requests, code only reaches `main` after review — so this is your gate.
+This means: every time code is pushed to `main`, deploy. If you use pull requests, code only reaches `main` after review, so this is your gate.
 
 You can also add a path filter if you only want to deploy when specific files change:
 
@@ -176,7 +176,7 @@ Two steps handle the Python setup:
   uses: astral-sh/setup-uv@v3
 ```
 
-The `astral-sh/setup-uv` action installs uv and makes it available for the rest of the job. Then `uv sync` installs everything from your lockfile — just like `npm ci` in a Node project.
+The `astral-sh/setup-uv` action installs uv and makes it available for the rest of the job. Then `uv sync` installs everything from your lockfile, just like `npm ci` in a Node project.
 
 ## Running Tests Before Deploying
 
@@ -232,7 +232,7 @@ Installing dependencies on every run is slow. Add caching to speed things up:
 
 The `enable-cache` option on the uv action caches the uv package cache between runs. If your lockfile hasn't changed, dependencies restore from cache instead of downloading again.
 
-This can cut minutes off your workflow — especially when you have heavy dependencies like `pandas` or `boto3`.
+This can cut minutes off your workflow, especially when you have heavy dependencies like `pandas` or `boto3`.
 
 ## Deploying to Staging vs Production
 
@@ -263,7 +263,7 @@ jobs:
         run: uv run cdk deploy --all --require-approval never --context env=${{ env.ENV }}
 ```
 
-Then in your CDK code, read the context value to configure different settings per environment — different Lambda memory, different DynamoDB table names, whatever you need.
+Then in your CDK code, read the context value to configure different settings per environment, different Lambda memory, different DynamoDB table names, whatever you need.
 
 ## What Happens When a Deploy Fails
 
@@ -278,11 +278,11 @@ In your GitHub Actions workflow, a failed deploy means:
 
 To debug, check two places:
 
-- **GitHub Actions logs** — shows the CDK output and error messages
-- **CloudFormation console** — shows exactly which resource failed and why
+- **GitHub Actions logs** - shows the CDK output and error messages
+- **CloudFormation console** - shows exactly which resource failed and why
 
 One gotcha: if your Lambda code deploys successfully but has a runtime bug, CloudFormation won't catch that. It only checks that resources were created, not that your code works. That's what your test step is for.
 
 ## The Takeaway
 
-Setting up CI/CD for Lambda functions isn't much different from what you'd do for a Vercel or Netlify project — push to `main`, let the pipeline handle the rest. OIDC keeps the auth secure, uv keeps the installs fast, and CDK gives you repeatable deployments. Once this is in place, you'll never want to go back to deploying from your laptop.
+Setting up CI/CD for Lambda functions isn't much different from what you'd do for a Vercel or Netlify project, push to `main`, let the pipeline handle the rest. OIDC keeps the auth secure, uv keeps the installs fast, and CDK gives you repeatable deployments. Once this is in place, you'll never want to go back to deploying from your laptop.
