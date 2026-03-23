@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import TopicCard from "@/components/TopicCard.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import CardLink from "@/components/CardLink.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
 import CenteredSection from "@/components/sections/CenteredSection.astro";
 import TwinSections from "@/components/sections/TwinSections.astro";
 import PrimaryButton from "@/components/PrimaryButton.astro";
@@ -69,34 +72,25 @@ const [featured, ...sideArticles] = sortedArticles;
       </TwinSections>
       <CenteredSection>
         <div class="mx-auto w-full max-w-3xl px-8">
-          <header class="mb-8 border-b border-white pb-8">
-            <h2 class="text-[2.5rem] font-normal leading-[1.2] text-white">
-              Recent Articles
-            </h2>
-          </header>
+          <SectionHeader title="Recent Articles" tag="h2" />
           <section class="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Featured article card */}
             <article>
-              <a
-                class="grid h-full min-h-[320px] overflow-hidden rounded-lg border border-white bg-black text-white no-underline transition-all duration-200 ease-in-out hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[3px_3px_#fff]"
+              <CardLink
                 href={`/articles/${featured.id.replace(/\.mdx?$/, "")}`}
+                class="h-full min-h-[320px]"
               >
                 <div class="flex h-full grow flex-col space-y-2 p-6">
                   <h3 class="flex-none text-2xl leading-tight">
                     {featured.data.title}
                   </h3>
                   <div class="flex-1"></div>
-                  <p class="flex-none text-sm text-gray-400">
-                    {
-                      featured.data.date.toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
-                    }
-                  </p>
+                  <FormattedDate
+                    date={featured.data.date}
+                    class="flex-none text-sm text-gray-400"
+                  />
                 </div>
-              </a>
+              </CardLink>
             </article>
 
             {/* Side article list */}
@@ -113,13 +107,10 @@ const [featured, ...sideArticles] = sortedArticles;
                           <h4 class="mb-0.5 text-2xl font-normal">
                             {article.data.title}
                           </h4>
-                          <p class="pb-0.5 text-base text-gray-400">
-                            {article.data.date.toLocaleDateString("en-US", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </p>
+                          <FormattedDate
+                            date={article.data.date}
+                            class="pb-0.5 text-base text-gray-400"
+                          />
                         </div>
                         <div class="ml-3 mr-1 flex h-10 w-10 shrink-0 items-center justify-center self-end rounded-md border border-gray-500 p-2 transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#fff]">
                           <svg

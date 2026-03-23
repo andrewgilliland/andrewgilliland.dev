@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import TableOfContents from "@/components/TableOfContents.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -39,15 +39,7 @@ const { Content, headings } = await render(article);
       <h1 class="mb-4 text-[2.5rem] font-normal leading-[1.2] text-white">
         {article.data.title}
       </h1>
-      <time class="text-lg text-gray-400">
-        {
-          article.data.date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })
-        }
-      </time>
+      <FormattedDate date={article.data.date} class="text-lg text-gray-400" />
     </header>
     <article
       class="prose prose-invert mx-auto mt-8 max-w-3xl border-t border-white py-12"

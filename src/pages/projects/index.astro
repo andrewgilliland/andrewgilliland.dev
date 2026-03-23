@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import CardLink from "@/components/CardLink.astro";
 
 const projects = [
   {
@@ -21,18 +23,14 @@ const projects = [
 
 <BaseLayout title="Projects - Andrew Gilliland">
   <div class="mx-auto mt-14 min-h-screen w-full max-w-3xl px-8">
-    <header class="mb-8 border-b border-white pb-8 pt-10">
-      <h1 class="text-[2.5rem] font-normal leading-[1.2] text-white">
-        Projects
-      </h1>
-    </header>
+    <SectionHeader title="Projects" />
     <section class="grid grid-cols-1 gap-8 sm:grid-cols-2">
       {
         projects.map(({ href, title, description, logo }, index) => (
           <article class={index === 0 ? "sm:col-span-2" : ""}>
-            <a
-              class={`grid overflow-hidden rounded-lg border border-white bg-black text-white no-underline transition-all duration-200 ease-in-out hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[3px_3px_#fff] ${index === 0 ? "min-h-[280px]" : "min-h-[220px]"}`}
+            <CardLink
               href={href}
+              class={index === 0 ? "min-h-[280px]" : "min-h-[220px]"}
             >
               <div class="flex h-full grow flex-col space-y-2 p-6">
                 {logo && (
@@ -48,7 +46,7 @@ const projects = [
                 <p class="text-gray-400">{description}</p>
                 <div class="flex-1" />
               </div>
-            </a>
+            </CardLink>
           </article>
         ))
       }
