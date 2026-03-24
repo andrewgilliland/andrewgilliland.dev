@@ -1,6 +1,5 @@
 ---
 import type { Topic } from "@/types";
-import { emerald } from "tailwindcss/colors";
 
 interface Props {
   topic: Topic;
@@ -17,13 +16,12 @@ const bgColorMap: Record<string, string> = {
 };
 
 const fgBgClass = color ? (bgColorMap[color] ?? "bg-black") : "bg-black";
-const textClass = color ? "text-black" : "text-white";
 ---
 
 <a
   data-cy={`topic-card-${name.toLowerCase()}`}
   href={`/${path.toLowerCase()}`}
-  class={`text-center px-4 py-2 rounded-full text-lg md:text-2xl font-medium no-underline motion-safe:hover:-translate-x-1 motion-safe:hover:-translate-y-1 transition-all whitespace-nowrap border border-black hover:shadow-[4px_4px_0_0_#000000] ${fgBgClass} ${textClass}`}
+  class={`text-center px-4 py-2 rounded-full text-lg md:text-2xl font-medium no-underline motion-safe:hover:-translate-x-1 motion-safe:hover:-translate-y-1 transition-all whitespace-nowrap border border-black hover:shadow-[4px_4px_0_0_#000000] ${fgBgClass} text-black`}
 >
   <span class="lowercase">{name}</span>
 </a>
