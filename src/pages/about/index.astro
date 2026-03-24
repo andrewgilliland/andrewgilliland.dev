@@ -1,8 +1,13 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Block from "@/components/Block.astro";
 import SectionHeader from "@/components/SectionHeader.astro";
 import TechCard from "@/components/TechCard.astro";
+import gusImg from "@/images/gus-christmas-1.jpeg";
+import hankImg from "@/images/hank-kitchen-1.jpeg";
+import hannahAndrewImg from "@/images/hannah-andrew-1.jpeg";
+import bernieImg from "@/images/bernie-kitchen-1.jpeg";
 
 const techGroups = [
   {
@@ -39,11 +44,11 @@ const techGroups = [
         class="mb-8 flex break-inside-avoid items-center justify-center rounded-2xl border border-white bg-black p-8 lg:px-12 lg:py-10"
       >
         <div class="relative">
-          <img
+          <Image
             class="mx-auto h-auto w-full rounded-full object-cover"
-            src="/gus-christmas-1.jpeg"
-            width="400"
-            height="400"
+            src={gusImg}
+            width={1128}
+            height={1410}
             alt="Gus the Cat"
           />
           <div
@@ -71,11 +76,11 @@ const techGroups = [
         class="mb-8 flex break-inside-avoid items-center justify-center rounded-2xl border border-white bg-black p-8 lg:px-12 lg:py-10"
       >
         <div class="relative">
-          <img
+          <Image
             class="mx-auto h-auto w-full rounded-full object-cover"
-            src="/hank-kitchen-1.jpeg"
-            width="400"
-            height="400"
+            src={hankImg}
+            width={1128}
+            height={1410}
             alt="Hank the Dog"
           />
           <div
@@ -89,22 +94,22 @@ const techGroups = [
         <div
           class="flex items-center justify-center rounded-2xl border border-white bg-black p-4"
         >
-          <img
+          <Image
             class="h-auto w-full rounded-xl object-cover"
-            src="/hannah-andrew-1.jpeg"
-            width="200"
-            height="250"
+            src={hannahAndrewImg}
+            width={496}
+            height={620}
             alt="Hannah and Andrew"
           />
         </div>
         <div
           class="flex items-center justify-center rounded-2xl border border-white bg-black p-4"
         >
-          <img
+          <Image
             class="h-auto w-full rounded-xl object-cover"
-            src="/bernie-kitchen-1.jpeg"
-            width="200"
-            height="250"
+            src={bernieImg}
+            width={496}
+            height={620}
             alt="Bernie the Cat"
           />
         </div>

@@ -1,12 +1,14 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import ColorDivider from "@/components/ColorDivider.astro";
+import blonoDev1 from "@/images/blono-dev-1.png";
 
 const title = "blono.dev";
 const description =
   "blono.dev is a website for Bloomington-Normal Developers, a local developer community in Central Illinois. Built with Next.js and Tailwind CSS.";
 const link = "https://blono.dev";
-const images = ["/projects/blono-dev-1.png"];
+const images = [blonoDev1];
 const overview =
   "blono.dev is a website for Bloomington-Normal Developers, a local developer community in Central Illinois. It serves as a hub for sharing resources, collaborating on projects, and fostering connections among developers in the area. The site is built with Next.js and Tailwind CSS, ensuring a modern and responsive design.";
 const features = [
@@ -38,7 +40,7 @@ const techStack = ["TypeScript", "React", "Next.js", "Tailwind CSS", "Vercel"];
       >
         {
           images.map((src, index) => (
-            <img
+            <Image
               src={src}
               alt={`blono.dev ${index + 1}`}
               width={800}
