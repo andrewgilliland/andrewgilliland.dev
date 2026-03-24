@@ -47,37 +47,6 @@ html {
   -webkit-text-fill-color: black;
 }
 
-.stroke-blue-500 {
-  -webkit-text-stroke: 1px rgb(59, 130, 246);
-  -webkit-text-fill-color: black;
-}
-
-.animate-rotate {
-  animation: rotate 5s infinite linear;
-}
-
-.animate-rotate-reverse {
-  animation: rotate-reverse 5s infinite linear;
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes rotate-reverse {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(-360deg);
-  }
-}
-
 @keyframes spring-bounce {
   0% {
     transform: scale3d(0.96, 0.96, 1);

@@ -1,5 +1,4 @@
 ---
-import { Folder } from "lucide-react";
 import type { Topic } from "@/types";
 
 interface Props {
@@ -13,29 +12,16 @@ const bgColorMap: Record<string, string> = {
   yellow: "bg-yellow-400",
   cyan: "bg-cyan-400",
   pink: "bg-pink-400",
+  emerald: "bg-emerald-400",
 };
 
-const borderClass = color ? "border-black" : "border-white";
-const shadowBgClass = color ? "bg-white" : "bg-black";
 const fgBgClass = color ? (bgColorMap[color] ?? "bg-black") : "bg-black";
-const textClass = color ? "text-black" : "text-white";
-const fillClass = color ? "fill-white" : "fill-black";
-const strokeClass = color ? "stroke-black" : "stroke-white";
 ---
 
 <a
   data-cy={`topic-card-${name.toLowerCase()}`}
   href={`/${path.toLowerCase()}`}
-  class="group relative"
+  class={`text-center px-4 py-2 rounded-full text-lg md:text-2xl font-medium no-underline motion-safe:hover:-translate-x-1 motion-safe:hover:-translate-y-1 transition-all whitespace-nowrap border border-black hover:shadow-[4px_4px_0_0_#000000] ${fgBgClass} text-black`}
 >
-  <div
-    class={`absolute bottom-0 h-full w-full rounded border-2 ${borderClass} ${shadowBgClass}`}
-  >
-  </div>
-  <div
-    class={`flex transform-gpu justify-between rounded border-2 ${borderClass} ${fgBgClass} p-4 transition group-hover:-translate-x-1 group-hover:-translate-y-1`}
-  >
-    <div class={`${textClass} font-bold capitalize`}>{name}</div>
-    <Folder className={`h-6 w-6 ${fillClass} ${strokeClass}`} />
-  </div>
+  <span class="lowercase">{name}</span>
 </a>
