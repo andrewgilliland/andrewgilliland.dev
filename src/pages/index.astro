@@ -19,7 +19,7 @@ const topics: Topic[] = [
   {
     name: "React Native",
     path: "./notes/javascript/react/react-native",
-    color: "cyan",
+    color: "emerald",
   },
   {
     name: "Expo",
@@ -43,7 +43,7 @@ const [featured, ...sideArticles] = sortedArticles;
       <TwinSections>
         <div slot="section-one">
           <div class="mx-auto max-w-xl">
-            <h1 class="text-4xl font-bold text-black md:text-6xl">
+            <h1 class="text-4xl text-black md:text-6xl">
               Howdy, I&apos;m Andrew!
             </h1>
             <p class="mt-8 text-xl text-black md:mt-12">
@@ -55,15 +55,13 @@ const [featured, ...sideArticles] = sortedArticles;
         </div>
         <div slot="section-two">
           <div>
-            <h2 class="text-center text-4xl font-bold text-black">Notes</h2>
+            <h2 class="text-center text-4xl text-black">Notes</h2>
 
             <div class="flex flex-col items-center justify-center">
               <div class="flex items-center gap-4">
-                <h2 class="text-2xl font-bold text-black">
-                  Some topics to explore:
-                </h2>
+                <h2 class="text-lg text-black">Some topics to explore</h2>
               </div>
-              <div class="mt-6 grid w-60 gap-4">
+              <div class="mt-6 flex flex-col justify-center gap-4">
                 {topics.map((topic) => <TopicCard topic={topic} />)}
               </div>
             </div>
