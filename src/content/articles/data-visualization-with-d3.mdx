@@ -1,0 +1,89 @@
+---
+title: Data Visualization with D3 and React
+date: 2025-06-24
+excerpt: Build interactive data visualizations using D3.js and React. See live examples of bar charts, donut charts, and line charts you can embed directly in your content.
+draft: false
+---
+
+import BarChart from "@/components/react/d3/BarChart";
+import DonutChart from "@/components/react/d3/DonutChart";
+import LineChart from "@/components/react/d3/LineChart";
+
+## Why D3?
+
+[D3.js](https://d3js.org/) (Data-Driven Documents) is a JavaScript library for producing dynamic, interactive data visualizations. Unlike charting libraries that give you pre-built components, D3 gives you building blocks, scales, axes, shapes, transitions, and bindable data joins — so you can create exactly what you need.
+
+D3 pairs naturally with React. React owns the component lifecycle and state, while D3 handles the math (scales, layouts, interpolations) and DOM manipulation inside an SVG element.
+
+## Bar Chart
+
+A bar chart is the workhorse of data visualization. This one uses `d3.scaleBand` for the x-axis and `d3.scaleLinear` for the y-axis, with animated transitions when data changes. Hit **Randomize** to see D3 transitions in action.
+
+<BarChart client:visible />
+
+The key D3 concepts at play:
+
+- **`scaleBand`** - maps categorical data (framework names) to evenly spaced positions
+- **`scaleLinear`** - maps numeric values to pixel heights
+- **`transition().duration()`** - animates property changes over time
+- **`easeCubicOut`** - easing function for a natural deceleration feel
+
+## Donut Chart
+
+Donut charts are great for showing proportions. This one uses `d3.pie` to compute angles and `d3.arc` to generate SVG path data. Hover over a slice to see it expand.
+
+<DonutChart client:visible />
+
+Key concepts:
+
+- **`d3.pie()`** - takes an array of values and computes start/end angles for each slice
+- **`d3.arc()`** - converts angle data into SVG path strings
+- **`padAngle`** - adds a small gap between slices
+- **`interpolate`** - used in `attrTween` to animate the arcs drawing in from zero
+
+## Line Chart
+
+Line charts work well for time-series data. This one uses `d3.scaleTime` for the x-axis, `d3.curveMonotoneX` for smooth interpolation, and a stroke-dashoffset animation to draw the line in. Hover over any dot to see its value.
+
+<LineChart client:visible />
+
+Key concepts:
+
+- **`d3.scaleTime`** - maps `Date` objects to pixel positions
+- **`d3.line()` / `d3.area()`** - generate SVG path data from coordinate arrays
+- **`curveMonotoneX`** - monotone cubic interpolation that preserves monotonicity
+- **Stroke-dashoffset trick** - set `stroke-dasharray` and `stroke-dashoffset` to the path length, then animate offset to 0 to "draw" the line
+
+## D3 + React: The Pattern
+
+The approach used in all three components follows the same pattern:
+
+1. **React owns state and the SVG ref** - `useState` for data, `useRef` for the SVG element
+2. **D3 renders inside `useEffect`** - when data changes, D3 clears and redraws the SVG
+3. **User events bridge back to React** - D3 mouse handlers call `setState` for tooltips or active states
+
+```tsx
+const svgRef = useRef<SVGSVGElement>(null);
+const [data, setData] = useState(initialData);
+
+useEffect(() => {
+  const svg = d3.select(svgRef.current);
+  svg.selectAll("*").remove();
+  // ... D3 rendering logic
+}, [data]);
+
+return <svg ref={svgRef} />;
+```
+
+This gives you full control over the visualization while React handles reactivity and component composition.
+
+## When to Use D3 vs. a Chart Library
+
+| Reach for D3 when...                       | Reach for Chart.js / Recharts when...        |
+| ------------------------------------------ | -------------------------------------------- |
+| You need a custom or unusual visualization | A standard bar/line/pie chart is fine        |
+| You want full control over animations      | You want something working in 5 minutes      |
+| You're building a design-system component  | You're building a dashboard with many charts |
+| Performance with large datasets matters    | Dataset is small and straightforward         |
+
+D3 has a steep learning curve, but the payoff is total creative control over your visualizations. And with React handling the component lifecycle, you get the best of both worlds.

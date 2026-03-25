@@ -102,7 +102,7 @@ html {
 }
 
 .prose h2 {
-  color: theme("colors.pink.300");
+  color: theme("colors.pink.500");
 }
 
 .prose h3 {
