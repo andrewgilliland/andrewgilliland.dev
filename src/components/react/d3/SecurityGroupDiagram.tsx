@@ -23,8 +23,6 @@ const C = {
   packetColor: "#ec4899",
 };
 
-type Flow = "legitimate" | "attack" | null;
-
 type SgNode = {
   id: string;
   label: string;
