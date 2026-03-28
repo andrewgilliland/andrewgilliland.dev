@@ -1,29 +1,28 @@
 import { useState } from "react";
 
-const colors = {
-  vpcBorder: "#374151",
-  vpcFill: "#0a0a0a",
-  azFill: "#111827",
-  azBorder: "#374151",
-  publicFill: "#052e16",
-  publicBorder: "#16a34a",
-  publicText: "#4ade80",
-  privateFill: "#1e1b4b",
-  privateBorder: "#6366f1",
-  privateText: "#a5b4fc",
-  isolatedFill: "#450a0a",
-  isolatedBorder: "#dc2626",
-  isolatedText: "#fca5a5",
-  labelText: "#9ca3af",
-  titleText: "#f9fafb",
-  highlight: "#ec4899",
-  tooltipBg: "#1f2937",
-  tooltipBorder: "#4b5563",
-  tooltipText: "#f9fafb",
-  igwFill: "#1c1917",
-  igwBorder: "#d97706",
-  igwText: "#fbbf24",
-};
+const subnetStyles = {
+  public: {
+    fill: "bg-green-950",
+    border: "border-green-600",
+    text: "text-green-400",
+    badgeBg: "bg-green-600/20",
+    legendBg: "bg-green-600",
+  },
+  private: {
+    fill: "bg-indigo-950",
+    border: "border-indigo-500",
+    text: "text-indigo-300",
+    badgeBg: "bg-indigo-500/20",
+    legendBg: "bg-indigo-500",
+  },
+  isolated: {
+    fill: "bg-red-950",
+    border: "border-red-600",
+    text: "text-red-300",
+    badgeBg: "bg-red-600/20",
+    legendBg: "bg-red-600",
+  },
+} as const;
 
 type SubnetInfo = {
   id: string;
@@ -92,29 +91,6 @@ const subnets: SubnetInfo[] = [
   },
 ];
 
-function getSubnetColors(type: SubnetInfo["type"]) {
-  switch (type) {
-    case "public":
-      return {
-        fill: colors.publicFill,
-        border: colors.publicBorder,
-        text: colors.publicText,
-      };
-    case "private":
-      return {
-        fill: colors.privateFill,
-        border: colors.privateBorder,
-        text: colors.privateText,
-      };
-    case "isolated":
-      return {
-        fill: colors.isolatedFill,
-        border: colors.isolatedBorder,
-        text: colors.isolatedText,
-      };
-  }
-}
-
 function SubnetCard({
   subnet,
   isSelected,
@@ -124,20 +100,14 @@ function SubnetCard({
   isSelected: boolean;
   onClick: () => void;
 }) {
-  const sc = getSubnetColors(subnet.type);
+  const sc = subnetStyles[subnet.type];
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-lg p-3 text-left transition-all duration-200"
-      style={{
-        background: sc.fill,
-        border: `1.5px solid ${isSelected ? "#ec4899" : sc.border}`,
-        boxShadow: isSelected ? `0 0 10px #ec489966` : "none",
-      }}
+      className={`w-full rounded-lg border-[1.5px] p-3 text-left transition-all duration-200 ${sc.fill} ${isSelected ? "border-pink-500" : sc.border}`}
     >
       <div
-        className="mb-1 font-mono text-xs font-bold"
-        style={{ color: isSelected ? "#ec4899" : sc.text }}
+        className={`mb-1 font-mono text-xs font-bold ${isSelected ? "text-pink-500" : sc.text}`}
       >
         {subnet.label}
       </div>
@@ -146,11 +116,7 @@ function SubnetCard({
         {subnet.resources.map((r) => (
           <div
             key={r}
-            className="rounded px-1.5 py-0.5 font-mono text-[9px]"
-            style={{
-              background: isSelected ? "#ec489922" : sc.border + "33",
-              color: isSelected ? "#ec4899" : sc.text,
-            }}
+            className={`rounded px-1.5 py-0.5 font-mono text-[9px] ${isSelected ? "bg-pink-500/10 text-pink-500" : `${sc.badgeBg} ${sc.text}`}`}
           >
             {r}
           </div>
@@ -175,9 +141,13 @@ export default function VpcDiagram() {
         </span>
       </div>
 
-      <div className="rounded-xl border border-gray-700 bg-[#0a0a0a] p-3">
+      <div className="rounded-xl border border-gray-700 bg-black p-3">
         <div className="mb-2 font-mono text-xs text-gray-500">
           VPC — 10.0.0.0/16
+        </div>
+
+        <div className="my-3 rounded-lg border border-amber-600/50 bg-stone-900 py-2 text-center font-mono text-xs font-semibold text-amber-400">
+          Internet Gateway
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -209,22 +179,17 @@ export default function VpcDiagram() {
             </div>
           ))}
         </div>
-
-        <div className="mt-3 rounded-lg border border-amber-600/50 bg-stone-900 py-2 text-center font-mono text-xs font-semibold text-amber-400">
-          Internet Gateway
-        </div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-4">
         {[
-          { color: colors.publicBorder, label: "Public (IGW route)" },
-          { color: colors.privateBorder, label: "Private (NAT route)" },
-          { color: colors.isolatedBorder, label: "Isolated (no route)" },
-        ].map(({ color, label }) => (
+          { key: "public" as const, label: "Public (IGW route)" },
+          { key: "private" as const, label: "Private (NAT route)" },
+          { key: "isolated" as const, label: "Isolated (no route)" },
+        ].map(({ key, label }) => (
           <div key={label} className="flex items-center gap-1.5">
             <div
-              className="h-2.5 w-2.5 rounded-sm"
-              style={{ background: color + "44", border: `1px solid ${color}` }}
+              className={`h-3 w-3 rounded-sm ${subnetStyles[key].legendBg}`}
             />
             <span className="font-mono text-[10px] text-gray-400">{label}</span>
           </div>
@@ -235,8 +200,7 @@ export default function VpcDiagram() {
         <div className="mt-4 rounded-xl border border-white/10 bg-gray-900/80 p-4 font-mono text-sm">
           <div className="mb-2 flex items-center justify-between">
             <span
-              className="font-semibold"
-              style={{ color: getSubnetColors(selected.type).text }}
+              className={`font-semibold ${subnetStyles[selected.type].text}`}
             >
               {selected.label} — {selected.cidr}
             </span>
@@ -261,7 +225,7 @@ export default function VpcDiagram() {
             <span className="text-xs uppercase tracking-wider text-gray-400">
               Route Table
             </span>
-            <pre className="mt-1 whitespace-pre-wrap text-xs text-gray-300">
+            <pre className="mt-1 whitespace-pre-wrap p-1 text-xs text-gray-300">
               {selected.routeTable}
             </pre>
           </div>
