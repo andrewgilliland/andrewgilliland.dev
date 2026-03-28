@@ -9,7 +9,7 @@ draft: true
 
 ## Setting Up with uv
 
-## Tensors — The Building Block
+## Tensors - The Building Block
 
 ## What Is a Neural Network?
 

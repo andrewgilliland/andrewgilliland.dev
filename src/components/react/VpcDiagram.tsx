@@ -143,7 +143,7 @@ export default function VpcDiagram() {
 
       <div className="rounded-xl border border-gray-700 bg-black p-3">
         <div className="mb-2 font-mono text-xs text-gray-500">
-          VPC — 10.0.0.0/16
+          VPC - 10.0.0.0/16
         </div>
 
         <div className="my-3 rounded-lg border border-amber-600/50 bg-stone-900 py-2 text-center font-mono text-xs font-semibold text-amber-400">
@@ -202,7 +202,7 @@ export default function VpcDiagram() {
             <span
               className={`font-semibold ${subnetStyles[selected.type].text}`}
             >
-              {selected.label} — {selected.cidr}
+              {selected.label} - {selected.cidr}
             </span>
             <span className="text-xs text-gray-500">AZ {selected.az}</span>
           </div>

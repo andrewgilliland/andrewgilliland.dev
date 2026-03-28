@@ -1,7 +1,7 @@
 ---
 title: Building an ML-Powered API from Scratch
 date: 2026-09-05
-excerpt: The capstone — train a model, package it, and deploy it as a serverless API with Lambda, API Gateway, and CDK.
+excerpt: The capstone - train a model, package it, and deploy it as a serverless API with Lambda, API Gateway, and CDK.
 draft: true
 ---
 

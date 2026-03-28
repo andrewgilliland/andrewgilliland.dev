@@ -7,7 +7,7 @@ draft: false
 
 ## Prefer `type` for Object Shapes
 
-Use `type` for most things — it's more flexible and composes better with unions and intersections.
+Use `type` for most things - it's more flexible and composes better with unions and intersections.
 
 ```ts
 type User = {

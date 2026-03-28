@@ -17,7 +17,7 @@ draft: true
 
 ## Using Notebooks for Data Exploration
 
-## Notebooks vs Scripts — When to Use Which
+## Notebooks vs Scripts - When to Use Which
 
 ## Sharing Notebooks on GitHub
 

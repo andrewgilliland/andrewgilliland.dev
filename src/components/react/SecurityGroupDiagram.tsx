@@ -305,12 +305,12 @@ export default function SecurityGroupDiagram() {
       {/* Status bar */}
       {sim.type === "blocked" && (
         <div className="mt-2 rounded-lg border border-red-800/50 bg-red-950/50 px-4 py-2 font-mono text-xs text-red-400">
-          ✕ request blocked — app-sg only allows port 8080 from alb-sg
+          ✕ request blocked - app-sg only allows port 8080 from alb-sg
         </div>
       )}
       {sim.type === "done" && (
         <div className="mt-2 rounded-lg border border-green-800/50 bg-green-950/50 px-4 py-2 font-mono text-xs text-green-400">
-          ✓ request completed — all security group rules matched
+          ✓ request completed - all security group rules matched
         </div>
       )}
 

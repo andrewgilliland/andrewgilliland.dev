@@ -9,7 +9,7 @@ draft: true
 
 ## DynamoDB vs SQL Databases
 
-## Key Concepts — Tables, Items, and Keys
+## Key Concepts - Tables, Items, and Keys
 
 ## Setting Up a Table with CDK
 
