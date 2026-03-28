@@ -11,10 +11,10 @@ Astro is a web framework designed for building content-driven websites. It ships
 
 ## Why Astro?
 
-- **Fast by default** — no JavaScript runtime overhead
-- **UI agnostic** — use React, Svelte, Vue, or plain HTML
-- **Content collections** — first-class support for Markdown and MDX with type-safe frontmatter
-- **Static output** — deploy anywhere as plain HTML files
+- **Fast by default** - no JavaScript runtime overhead
+- **UI agnostic** - use React, Svelte, Vue, or plain HTML
+- **Content collections** - first-class support for Markdown and MDX with type-safe frontmatter
+- **Static output** - deploy anywhere as plain HTML files
 
 ## Getting Started
 

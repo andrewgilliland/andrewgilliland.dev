@@ -62,4 +62,4 @@ Perform a recursive search on all unused dependencies and remove them from the f
 ## Resources
 
 [Using React DOM in Expo native apps](https://docs.expo.dev/guides/dom-components/)
-[Web Once, Native Everywhere: Introducing Expo DOM Components — Evan Bacon | RUC 2024](https://www.youtube.com/watch?v=JUOxTLu8ZsM&ab_channel=CallstackEngineers)
+[Web Once, Native Everywhere: Introducing Expo DOM Components - Evan Bacon | RUC 2024](https://www.youtube.com/watch?v=JUOxTLu8ZsM&ab_channel=CallstackEngineers)

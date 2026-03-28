@@ -13,11 +13,11 @@ draft: true
 
 ## Defining a Pipeline in CDK
 
-## Step 1 — Fetch Data from S3
+## Step 1 - Fetch Data from S3
 
-## Step 2 — Transform and Clean
+## Step 2 - Transform and Clean
 
-## Step 3 — Store Results
+## Step 3 - Store Results
 
 ## Error Handling and Retries
 

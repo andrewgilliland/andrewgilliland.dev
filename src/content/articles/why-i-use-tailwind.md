@@ -24,12 +24,14 @@ Tailwind flips this model. Instead of writing CSS, you compose styles directly i
 ## A Simple Example
 
 ```html
-<button class="rounded bg-pink-500 px-4 py-2 font-bold text-white hover:bg-pink-600">
+<button
+  class="rounded bg-pink-500 px-4 py-2 font-bold text-white hover:bg-pink-600"
+>
   Click me
 </button>
 ```
 
-Compare this with writing custom CSS for the same result — Tailwind is just faster.
+Compare this with writing custom CSS for the same result - Tailwind is just faster.
 
 ## The Tradeoff
 

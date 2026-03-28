@@ -1,0 +1,388 @@
+---
+title: Three-Tier Architecture on AWS
+date: 2026-03-25
+excerpt: The classic three-tier architecture - presentation, application, and data layers inside a VPC - is the foundation of most production AWS deployments. Here's how it works, how subnets and security groups enforce it, and how to deploy it with CDK.
+draft: false
+---
+
+import VpcDiagram from "@/components/react/VpcDiagram";
+import SecurityGroupDiagram from "@/components/react/SecurityGroupDiagram";
+import TrafficFlowDiagram from "@/components/react/TrafficFlowDiagram";
+
+## What Is Three-Tier Architecture?
+
+Three-tier architecture (sometimes called multi-tier or layered architecture) divides your application into three distinct layers, each with a specific responsibility:
+
+- **Presentation tier** - accepts inbound traffic from the internet and routes it to the application
+- **Application tier** - runs your business logic; not directly reachable from the internet
+- **Data tier** - stores your data; reachable only by the application tier
+
+On AWS, this pattern lives inside a **Virtual Private Cloud (VPC)** and is primarily enforced through two mechanisms: **subnet placement** (what can route where at the network layer) and **security groups** (what traffic is allowed at the resource layer).
+
+It's the baseline pattern behind most production AWS deployments - the kind of thing you find under e-commerce platforms, APIs, SaaS applications, and internal tools before teams optimize toward microservices, serverless, or ECS-based architectures. Understanding this pattern well means understanding how VPC networking actually works.
+
+## The VPC Layout
+
+A production-grade three-tier VPC spans **two Availability Zones** (the minimum for high availability) and uses **three classes of subnet** - one per tier per AZ, six subnets total.
+
+<VpcDiagram client:visible />
+
+| Subnet        | CIDR        | Tier         | Route to Internet               |
+| ------------- | ----------- | ------------ | ------------------------------- |
+| public-az-a   | 10.0.0.0/24 | Presentation | Via Internet Gateway            |
+| public-az-b   | 10.0.1.0/24 | Presentation | Via Internet Gateway            |
+| private-az-a  | 10.0.2.0/24 | Application  | Via NAT Gateway (outbound only) |
+| private-az-b  | 10.0.3.0/24 | Application  | Via NAT Gateway (outbound only) |
+| isolated-az-a | 10.0.4.0/24 | Data         | None                            |
+| isolated-az-b | 10.0.5.0/24 | Data         | None                            |
+
+## Subnets and Their Roles
+
+Subnet type is defined entirely by the **route table** attached to it. That's it. There's no AWS console toggle that makes something "private" - the distinction is only in routing.
+
+### Public Subnets
+
+A public subnet has a route table entry that sends `0.0.0.0/0` (all traffic) to the **Internet Gateway (IGW)**. Resources in a public subnet also need a public IP address (or Elastic IP) to be reachable from the internet. In a three-tier architecture, only the **Application Load Balancer** lives here.
+
+The IGW is attached to the VPC and provides bidirectional internet access. Without it, no route to the internet exists at all.
+
+### Private Subnets
+
+A private subnet has a route table entry that sends `0.0.0.0/0` to a **NAT Gateway** - which lives in a public subnet. This means:
+
+- Resources in private subnets **cannot be reached from the internet** (no inbound path)
+- Resources in private subnets **can initiate outbound connections** (e.g., downloading packages, calling external APIs, fetching Secrets Manager values)
+
+The NAT Gateway translates the private IP to its own public IP for outbound traffic. Return traffic comes back to the NAT Gateway and is forwarded back to the originating EC2 instance. Your EC2 instances are never directly exposed.
+
+### Isolated Subnets
+
+An isolated subnet has **no route to the internet at all** - not via IGW, not via NAT. The route table only contains the `local` route for VPC-internal traffic (`10.0.0.0/16`). This is the most locked-down subnet type.
+
+Your database belongs here. There's no legitimate reason for an RDS instance to initiate or receive traffic from the internet. Placing it in an isolated subnet makes this constraint infrastructural - not just a firewall rule someone could accidentally open.
+
+### Why Subnet Per AZ?
+
+Distributing subnets across two AZs means each tier has redundancy. If AZ-A goes down:
+
+- The ALB continues routing to AZ-B nodes
+- The Auto Scaling Group replaces EC2 instances in AZ-B
+- RDS fails over to the Multi-AZ standby in AZ-B
+
+Each AZ gets its own NAT Gateway in the public subnet. If you only deploy one NAT Gateway in one AZ, private subnets in the other AZ still route outbound through it - which means an AZ failure takes down outbound connectivity everywhere. Two NAT Gateways costs more but keeps each AZ self-sufficient.
+
+## Tier 1 - The Presentation Layer
+
+The **Application Load Balancer (ALB)** is the entry point for all inbound traffic. It lives in the public subnets across both AZs.
+
+The ALB's job:
+
+- Terminates HTTPS (offloads TLS from your EC2 instances)
+- Routes requests to healthy EC2 instances via a target group
+- Performs health checks on the application tier
+- Can route based on path (`/api/*`) or host headers for multiple services
+
+Traffic from the internet hits the ALB's DNS name (e.g., `my-alb-1234567890.us-east-1.elb.amazonaws.com`). Your domain's CNAME points to this DNS name. The ALB never exposes a static IP.
+
+## Tier 2 - The Application Layer
+
+**EC2 instances** in the private subnets run your application - a Node.js API, a Python Flask app, a Java service, whatever it is. They're placed in an **Auto Scaling Group (ASG)** spread across both private subnets.
+
+Key properties:
+
+- No public IP address - they're unreachable from the internet directly
+- Receive traffic only from the ALB through the target group
+- Outbound traffic (e.g., calling AWS APIs, downloading dependencies, fetching secrets) exits through the NAT Gateway in the same AZ's public subnet
+- Communicate with RDS over the VPC-internal network
+
+The ASG handles horizontal scaling. When CPU climbs, new instances launch in both AZs and register themselves with the ALB target group automatically.
+
+## Tier 3 - The Data Layer
+
+**Amazon RDS** (PostgreSQL) runs in the isolated subnets. The primary instance sits in AZ-A; the Multi-AZ standby sits in AZ-B. RDS synchronously replicates writes to the standby, and if the primary fails, AWS promotes the standby automatically - typically within 60–120 seconds.
+
+Key properties:
+
+- No route to the internet - completely unreachable except from within the VPC
+- EC2 instances connect using the RDS **endpoint hostname** (e.g., `mydb.xxxxxx.us-east-1.rds.amazonaws.com`) which resolves to the correct AZ's IP via Route 53
+- Credentials managed via Secrets Manager - your application fetches them at startup and never hard-codes them
+- Automated backups and snapshots managed by RDS
+
+## Security Groups - The Per-Tier Firewall
+
+If subnets define **where** traffic can route at the network level, security groups define **what** traffic is allowed at the resource level. Together they're the two-layer defense of a three-tier architecture.
+
+A security group is a **stateful virtual firewall attached to a resource's network interface (ENI)**. Stateful means if an outbound request from EC2 succeeds, the response is automatically allowed back in - you don't need a matching inbound rule. Rules are evaluated in aggregate (there's no rule ordering), and the default deny means anything not explicitly allowed is blocked.
+
+Three security groups enforce the three-tier boundary. Click a node to inspect its rules, and simulate a request or an attack to see the SG chain in action:
+
+<SecurityGroupDiagram client:visible />
+
+### alb-sg - Presentation Tier
+
+| Direction | Port | Source / Dest | Reason                         |
+| --------- | ---- | ------------- | ------------------------------ |
+| Inbound   | 443  | 0.0.0.0/0     | Accept HTTPS from the internet |
+| Inbound   | 80   | 0.0.0.0/0     | Accept HTTP (redirect to 443)  |
+| Outbound  | 8080 | app-sg        | Forward to EC2 instances only  |
+
+The outbound rule uses `app-sg` as the destination - not a CIDR range. This means the ALB can only send traffic to resources that have `app-sg` attached. Nothing else in the VPC can receive ALB traffic, even if it shares the same subnet.
+
+### app-sg - Application Tier
+
+| Direction | Port | Source / Dest | Reason                                |
+| --------- | ---- | ------------- | ------------------------------------- |
+| Inbound   | 8080 | alb-sg        | Accept traffic from ALB only          |
+| Outbound  | 5432 | db-sg         | Connect to RDS only                   |
+| Outbound  | 443  | 0.0.0.0/0     | Reach AWS APIs, Secrets Manager, etc. |
+
+The inbound rule uses `alb-sg` as the source. This means EC2 instances only accept traffic that originated from something with `alb-sg` attached. An attacker who somehow reached the private subnet's IP directly would still be blocked - because they're not coming from a resource with `alb-sg`.
+
+### db-sg - Data Tier
+
+| Direction | Port | Source / Dest | Reason                                      |
+| --------- | ---- | ------------- | ------------------------------------------- |
+| Inbound   | 5432 | app-sg        | Accept PostgreSQL connections from EC2 only |
+| Outbound  | -    | -             | No outbound rules needed                    |
+
+The database accepts connections on port 5432 only from resources with `app-sg` attached. Nothing else - not the ALB, not an admin workstation, not the internet - can reach RDS.
+
+### Why SG-to-SG Instead of CIDR Ranges?
+
+You might think: "why not just use a CIDR like `10.0.2.0/24` as the source instead of `alb-sg`?"
+
+The answer is **Auto Scaling**. As the ASG scales out, new EC2 instances spin up with different private IPs. If your security group rule allowed traffic from `10.0.2.0/24`, any IP in that subnet range would be allowed - which is technically correct but unnecessarily broad.
+
+With SG-to-SG references:
+
+- Only resources **explicitly assigned `app-sg`** can reach `db-sg` - regardless of their IP
+- Adding a new EC2 instance to the ASG automatically grants it database access (because ASG assigns the security group)
+- Removing an instance automatically revokes its access
+- The rule self-maintenances as your fleet grows and shrinks
+
+This is the preferred pattern for any dynamic resource (ASG, ECS tasks, Lambda in a VPC). Use CIDR ranges only for static, known IPs - like an on-premises network connected via VPN.
+
+### NACLs - The Second Layer
+
+**Network ACLs (NACLs)** are subnet-level, stateless firewalls that evaluate rules in order. They're the second line of defense after security groups.
+
+The key difference from security groups:
+
+- **Stateless** - you must explicitly allow both the request and the response (return traffic uses ephemeral ports 1024–65535)
+- **Applied to subnets**, not individual resources
+- **Ordered rules** - first match wins; each rule is numbered and evaluated top-down
+
+Most teams rely primarily on security groups and leave NACLs at their defaults (allow all). NACLs become useful for explicit subnet-level deny rules - like blocking a known bad IP range across an entire private subnet - which security groups can't express (they have no "deny" rule type, only "allow").
+
+## Traffic Flow Walkthrough
+
+Here's what happens when a user makes a request to your application. Use the diagram below to step through both the inbound request path and the outbound path EC2 uses to reach AWS APIs:
+
+<TrafficFlowDiagram client:visible />
+
+The key insight for inbound traffic: the user's request touches three security groups in sequence - `alb-sg`, `app-sg`, `db-sg` - and is allowed through each only because of the SG-to-SG chain defined above. The EC2 instance's private IP is never exposed; only the ALB's DNS name is public.
+
+For outbound traffic, the EC2 instance's private IP is translated by the NAT Gateway before it reaches the internet. The AWS API (Secrets Manager, S3, etc.) only ever sees the NAT Gateway's Elastic IP.
+
+## Deploying with CDK
+
+### Install the Dependencies
+
+```bash
+npm install aws-cdk-lib constructs
+```
+
+### Define the VPC
+
+The CDK `Vpc` construct handles subnet creation, route tables, the Internet Gateway, and NAT Gateways automatically when you specify `subnetConfiguration`.
+
+```typescript
+import * as cdk from "aws-cdk-lib";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
+import { Construct } from "constructs";
+
+const vpc = new ec2.Vpc(this, "AppVpc", {
+  ipAddresses: ec2.IpAddresses.cidr("10.0.0.0/16"),
+  maxAzs: 2,
+  natGateways: 2, // one per AZ for HA; use 1 to reduce cost in non-prod
+  subnetConfiguration: [
+    {
+      name: "public",
+      subnetType: ec2.SubnetType.PUBLIC,
+      cidrMask: 24,
+    },
+    {
+      name: "private",
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      cidrMask: 24,
+    },
+    {
+      name: "isolated",
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+      cidrMask: 24,
+    },
+  ],
+});
+```
+
+`PRIVATE_WITH_EGRESS` creates private subnets with NAT Gateway routes. `PRIVATE_ISOLATED` creates isolated subnets with no outbound route. CDK manages the route table entries behind both.
+
+### Define the Security Groups
+
+```typescript
+// alb-sg: accepts internet traffic
+const albSg = new ec2.SecurityGroup(this, "AlbSg", {
+  vpc,
+  description: "ALB security group",
+  allowAllOutbound: false,
+});
+albSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), "Allow HTTPS");
+albSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80), "Allow HTTP");
+
+// app-sg: accepts traffic from ALB only
+const appSg = new ec2.SecurityGroup(this, "AppSg", {
+  vpc,
+  description: "Application tier security group",
+  allowAllOutbound: false,
+});
+appSg.addIngressRule(albSg, ec2.Port.tcp(8080), "Allow from ALB");
+appSg.addEgressRule(
+  ec2.Peer.anyIpv4(),
+  ec2.Port.tcp(443),
+  "Allow HTTPS outbound",
+);
+
+// db-sg: accepts traffic from app tier only
+const dbSg = new ec2.SecurityGroup(this, "DbSg", {
+  vpc,
+  description: "Database tier security group",
+  allowAllOutbound: false,
+});
+dbSg.addIngressRule(appSg, ec2.Port.tcp(5432), "Allow from app tier");
+
+// Allow ALB to forward to app tier
+albSg.addEgressRule(appSg, ec2.Port.tcp(8080), "Forward to app tier");
+
+// Allow app tier to connect to database
+appSg.addEgressRule(dbSg, ec2.Port.tcp(5432), "Connect to RDS");
+```
+
+Note that `addIngressRule(albSg, ...)` passes the security group object directly as the source peer - CDK generates the SG-to-SG reference in CloudFormation automatically.
+
+### Define the Application Load Balancer
+
+```typescript
+import * as elbv2 from "aws-cdk-lib/aws-elasticloadbalancingv2";
+
+const alb = new elbv2.ApplicationLoadBalancer(this, "AppAlb", {
+  vpc,
+  internetFacing: true,
+  securityGroup: albSg,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+});
+
+const listener = alb.addListener("HttpsListener", {
+  port: 443,
+  certificates: [certificate], // ACM certificate
+});
+
+const targetGroup = listener.addTargets("AppTargets", {
+  port: 8080,
+  protocol: elbv2.ApplicationProtocol.HTTP,
+  healthCheck: {
+    path: "/health",
+    interval: cdk.Duration.seconds(30),
+    healthyHttpCodes: "200",
+  },
+});
+```
+
+### Define the Auto Scaling Group
+
+```typescript
+import * as autoscaling from "aws-cdk-lib/aws-autoscaling";
+
+const asg = new autoscaling.AutoScalingGroup(this, "AppAsg", {
+  vpc,
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.T3,
+    ec2.InstanceSize.SMALL,
+  ),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  securityGroup: appSg,
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  minCapacity: 2,
+  maxCapacity: 10,
+  desiredCapacity: 2,
+});
+
+// Register ASG with the ALB target group
+targetGroup.addTarget(asg);
+
+// Scale on CPU
+asg.scaleOnCpuUtilization("CpuScaling", {
+  targetUtilizationPercent: 60,
+});
+```
+
+The ASG spans both private subnets automatically (CDK distributes across AZs). New instances inherit `appSg`, so they're immediately allowed to reach the database without any manual security group changes.
+
+### Define RDS
+
+```typescript
+import * as rds from "aws-cdk-lib/aws-rds";
+
+const dbInstance = new rds.DatabaseInstance(this, "AppDb", {
+  engine: rds.DatabaseInstanceEngine.postgres({
+    version: rds.PostgresEngineVersion.VER_16,
+  }),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.T3,
+    ec2.InstanceSize.MEDIUM,
+  ),
+  vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+  securityGroups: [dbSg],
+  multiAz: true,
+  allocatedStorage: 100,
+  storageEncrypted: true,
+  deletionProtection: true,
+  credentials: rds.Credentials.fromGeneratedSecret("dbadmin"), // stored in Secrets Manager
+});
+```
+
+`rds.Credentials.fromGeneratedSecret` tells CDK to auto-generate a strong password and store it in AWS Secrets Manager. Your application retrieves it via the SDK - no plaintext credentials anywhere.
+
+## Production Considerations
+
+**SSM Session Manager instead of SSH** - Never open port 22 on your EC2 instances or create a bastion host. AWS Systems Manager Session Manager gives you shell access to private instances through the AWS console or CLI, with full audit logging, no open ports, and no SSH keys to manage. Add the `AmazonSSMManagedInstanceCore` managed policy to your EC2 instance role.
+
+**Secrets Manager for database credentials** - RDS with `fromGeneratedSecret` stores the username, password, host, and port as a JSON secret. Your application fetches it on startup:
+
+```typescript
+import {
+  SecretsManagerClient,
+  GetSecretValueCommand,
+} from "@aws-sdk/client-secrets-manager";
+
+const client = new SecretsManagerClient({});
+const response = await client.send(
+  new GetSecretValueCommand({ SecretId: process.env.DB_SECRET_ARN }),
+);
+const { username, password, host, port } = JSON.parse(response.SecretString!);
+```
+
+**VPC Endpoints for AWS services** - Your EC2 instances call AWS APIs (Secrets Manager, S3, CloudWatch) over the internet via NAT Gateway. For high-traffic environments, add VPC Interface Endpoints to keep that traffic inside the AWS network and eliminate NAT Gateway data processing charges.
+
+**CloudWatch alarms** - At minimum, alarm on ALB 5xx error rate, ALB target response time, EC2 CPU utilization, ASG instance count, and RDS freeable memory. Send alerts to SNS → your on-call channel.
+
+**Multi-AZ is non-negotiable for production** - RDS Multi-AZ is synchronous replication to a hot standby. Failover is automatic. The cost is ~2x, and it's worth it. A single-AZ RDS instance means your entire application goes down for a database restart or AZ outage.
+
+## The Takeaway
+
+- **Subnet type is just routing.** Public = route to IGW. Private = route to NAT. Isolated = no route out. That's the entire distinction, and it's what makes each tier reachable or unreachable from the internet.
+- **Security groups form a chain, not a perimeter.** Each tier's SG allows traffic only from the SG above it. SG-to-SG references are better than CIDRs because they follow your resources dynamically - especially important when Auto Scaling changes your EC2 fleet.
+- **Defense in depth comes from layering.** Isolated subnets ensure RDS can't be reached even if a security group is misconfigured. Security groups ensure only the right resources can communicate even within the same VPC. NACLs add a third layer for subnet-level denies.
+- **CDK's VPC construct does the heavy lifting.** Subnets, route tables, IGW, and NAT Gateways are all handled. Your job is to define the subnet types, place resources correctly, and wire up security groups with least-privilege rules.
+
+This architecture is not exciting - that's the point. It's battle-tested, well-understood, and maps cleanly to AWS's building blocks. Before reaching for serverless or containers, make sure you understand why this pattern works. Everything else is a variation on it.
