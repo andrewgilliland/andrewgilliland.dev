@@ -11,21 +11,9 @@ import type { Topic } from "@/types";
 import { getCollection } from "astro:content";
 
 const topics: Topic[] = [
-  {
-    name: "JavaScript",
-    path: "./notes/javascript",
-    color: "yellow",
-  },
-  {
-    name: "React Native",
-    path: "./notes/javascript/react/react-native",
-    color: "emerald",
-  },
-  {
-    name: "Expo",
-    path: "./notes/javascript/react/react-native/expo",
-    color: "pink",
-  },
+  { name: "TypeScript", path: "articles?q=typescript", color: "cyan" },
+  { name: "Python", path: "articles?q=python", color: "yellow" },
+  { name: "AWS", path: "articles?q=aws", color: "orange" },
 ];
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
@@ -50,16 +38,16 @@ const [featured, ...sideArticles] = sortedArticles;
               I am a community taught full stack developer. This site is to
               share what I am learning and hopefully help others along the way.
             </p>
-            <PrimaryButton href="/notes" className="mt-12" text="Read Notes" />
+            <PrimaryButton href="/articles" className="mt-12" text="Read Articles" />
           </div>
         </div>
         <div slot="section-two">
           <div>
-            <h2 class="text-center text-4xl text-black">Notes</h2>
+            <h2 class="text-center text-4xl text-black">Articles</h2>
 
             <div class="flex flex-col items-center justify-center">
               <div class="flex items-center gap-4">
-                <h2 class="text-lg text-black">Some topics to explore</h2>
+                <h2 class="text-lg text-black">Browse by topic</h2>
               </div>
               <div class="mt-6 flex flex-col justify-center gap-4">
                 {topics.map((topic) => <TopicCard topic={topic} />)}
