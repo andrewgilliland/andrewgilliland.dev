@@ -5,10 +5,8 @@ interface Props {
   sectionTwoColor?: string;
 }
 
-const {
-  sectionOneColor = 'bg-pink-300',
-  sectionTwoColor = 'bg-cyan-300',
-} = Astro.props;
+const { sectionOneColor = "bg-cyan-300", sectionTwoColor = "bg-pink-300" } =
+  Astro.props;
 ---
 
 <section class="flex flex-col border-b-2 border-white md:flex-row">

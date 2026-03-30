@@ -1,41 +1,25 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import SectionHeader from "@/components/SectionHeader.astro";
-import CardLink from "@/components/CardLink.astro";
-import FormattedDate from "@/components/FormattedDate.astro";
+import ArticleSearch from "@/components/react/ArticleSearch";
 import { getCollection } from "astro:content";
 
 const articles = await getCollection("articles", ({ data }) => !data.draft);
 const sorted = articles.sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
+
+const articleData = sorted.map((a) => ({
+  id: a.id.replace(/\.mdx?$/, ""),
+  title: a.data.title,
+  excerpt: a.data.excerpt,
+  date: a.data.date.toISOString(),
+}));
 ---
 
 <BaseLayout title="Articles - Andrew Gilliland">
   <div class="mx-auto mt-14 min-h-screen w-full max-w-3xl px-8">
     <SectionHeader title="Articles" />
-    <section class="grid grid-cols-1 gap-8 sm:grid-cols-2">
-      {
-        sorted.map((article, index) => (
-          <article class={index === 0 ? "sm:col-span-2" : ""}>
-            <CardLink
-              href={`/articles/${article.id.replace(/\.mdx?$/, "")}`}
-              class={index === 0 ? "min-h-[280px]" : "min-h-[220px]"}
-            >
-              <div class="flex h-full grow flex-col space-y-2 p-6">
-                <h2 class="flex-none text-2xl leading-tight">
-                  {article.data.title}
-                </h2>
-                <div class="flex-1" />
-                <FormattedDate
-                  date={article.data.date}
-                  class="flex-none text-sm text-gray-400"
-                />
-              </div>
-            </CardLink>
-          </article>
-        ))
-      }
-    </section>
+    <ArticleSearch articles={articleData} client:load />
   </div>
 </BaseLayout>
