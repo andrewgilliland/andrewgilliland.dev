@@ -1,11 +1,11 @@
 ---
-title: AWS Glossary - Networking, Compute, and Managed Databases
+title: AWS Glossary - Networking, Serverless, Compute, and Databases
 date: 2026-03-29
-excerpt: Definitions for the AWS services and concepts that appear in the Three-Tier Architecture on AWS and RDS vs Aurora articles. VPCs, subnets, security groups, RDS, Aurora, and everything in between.
+excerpt: Definitions for the AWS services and concepts covered across the architecture articles on this site. VPCs, subnets, Lambda, API Gateway, EventBridge, SQS, Step Functions, RDS, Aurora, security groups, and everything in between.
 draft: false
 ---
 
-A reference glossary for the AWS terms, services, and patterns covered in depth across the architecture articles on this site. Entries are grouped thematically and written to explain not just what a thing is, but why it exists and how it fits into the broader picture.
+A reference glossary for the AWS terms, services, and patterns covered in depth across the architecture articles on this site. Entries span networking, serverless compute and eventing, load balancing, managed databases, security, and operations tooling - grouped thematically and written to explain not just what a thing is, but why it exists and how it fits into the broader picture.
 
 ## Networking
 
@@ -126,6 +126,106 @@ _Covered in depth in [Three-Tier Architecture on AWS](/articles/three-tier-archi
 The ALB periodically sends an HTTP request to each registered target (e.g., `GET /health`) to determine if it's healthy enough to receive traffic. If a target fails the configured number of consecutive checks, the ALB stops sending it requests. Healthy instances continue to receive traffic, and the ASG uses health check failures as a signal to replace the instance.
 
 _Covered in depth in [Three-Tier Architecture on AWS](/articles/three-tier-architecture-on-aws)._
+
+---
+
+## Serverless and Eventing
+
+### AWS Lambda
+
+Lambda is AWS's serverless compute service. You deploy a function - a unit of code with a defined handler - and AWS runs it in response to events without you managing servers, EC2 instances, or operating systems. Lambda handles provisioning, scaling, and decommissioning the underlying execution environment. You pay only for the duration your code runs, measured in milliseconds.
+
+_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk) and [Building a REST API with API Gateway and Lambda](/articles/building-a-rest-api-with-api-gateway-and-lambda)._
+
+### Lambda Handler
+
+The Lambda handler is the entry point function that Lambda invokes when your function is triggered. It receives two arguments: `event` (the triggering payload - varies by event source) and `context` (runtime metadata like function name, memory limit, and request ID). For Python, a typical handler looks like `def handler(event, context):`. For Node.js it's `export const handler = async (event) => {}`.
+
+_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+
+### Cold Start
+
+A cold start occurs when Lambda has to initialize a new execution environment from scratch before running your function - pulling the code package, starting the runtime, and executing any initialization code outside the handler. A warm start reuses an already-initialized environment. Cold starts add latency ranging from tens of milliseconds (small Node.js or Python functions) to several seconds for large packages or heavy runtimes like the JVM. VPC-attached functions previously had dramatically longer cold starts due to ENI provisioning, but AWS resolved this in 2019 with Hyperplane ENIs - shared network interfaces provisioned at deploy time rather than per cold start. Provisioned concurrency eliminates cold starts entirely for latency-sensitive workloads by keeping environments pre-initialized.
+
+_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+
+### Lambda Execution Role
+
+The IAM role attached to a Lambda function. Lambda's execution environment assumes this role to make AWS API calls - reading from S3, writing to DynamoDB, publishing to SQS, writing logs to CloudWatch. The principle of least privilege applies: each function should have its own role with only the permissions it actually needs. This role is separate from the role that deploys or invokes the function.
+
+_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+
+### Lambda Layers
+
+A Lambda Layer is a ZIP archive of shared dependencies, utilities, or configuration that you attach to multiple functions rather than bundling into each deployment package. Common use cases: shared library code, heavy ML model files, binary executables like `ffmpeg`, or the Lambda Powertools observability library. A function can reference up to five layers simultaneously. Layers don't change how the function is invoked; they simply make their content available at a known path inside the execution environment.
+
+_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+
+### Concurrency
+
+Lambda concurrency is the number of function instances running simultaneously. Each concurrent execution handles exactly one event at a time. When a second event arrives while the first is still in progress, Lambda spins up a second execution environment - a cold start if no warm environment is available. Reserved concurrency caps a function's maximum simultaneous executions, preventing it from starving other functions in the same account or overwhelming a downstream database. Provisioned concurrency pre-warms a fixed number of environments to absorb traffic without cold-start latency.
+
+_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+
+### Event Source Mapping
+
+An Event Source Mapping is a Lambda-managed resource that polls a queue or stream on your behalf - SQS, Kinesis, DynamoDB Streams, or Kafka - and invokes your function with batches of records. Unlike push-based triggers (API Gateway, S3 notifications), the mapping is a continuous poll loop managed by the Lambda service. You configure batch size, batching window, and error handling behavior. Failed batches can be routed to a dead-letter queue for inspection or discarded after a configurable number of retries.
+
+_Covered in depth in [Amazon EventBridge - Event-Driven Architecture on AWS](/articles/amazon-eventbridge)._
+
+### Amazon API Gateway
+
+API Gateway is a managed service for creating, publishing, and securing HTTP APIs that invoke Lambda functions, proxy HTTP backends, or interact with other AWS services directly. There are two main types: REST API (feature-rich, supports caching, request transformation, API keys, and usage plans) and HTTP API (lower cost and latency, fewer features, best for straightforward Lambda proxy use cases). API Gateway handles request routing, payload transformation, authorization, throttling, and TLS termination.
+
+_Covered in depth in [Building a REST API with API Gateway and Lambda](/articles/building-a-rest-api-with-api-gateway-and-lambda)._
+
+### Lambda Proxy Integration
+
+The most common API Gateway → Lambda integration pattern. API Gateway forwards the entire HTTP request to Lambda as a structured JSON event - including headers, query string parameters, path parameters, and body - and expects Lambda to return a JSON object with `statusCode`, `headers`, and `body`. This design gives your function full control over the HTTP response without any API Gateway response mapping. With HTTP APIs, proxy integration is the only available integration type.
+
+_Covered in depth in [Building a REST API with API Gateway and Lambda](/articles/building-a-rest-api-with-api-gateway-and-lambda)._
+
+### Stage
+
+An API Gateway Stage is a named deployment snapshot of your API that has an actual invocable URL. Stages let you run multiple versions simultaneously: `prod`, `staging`, `v1`, `v2`. The stage name is embedded in the URL: `https://{api-id}.execute-api.{region}.amazonaws.com/{stage}/{resource}`. Stage variables act as environment-specific configuration, allowing different stages to point to different Lambda function aliases or backend URLs without duplicating the API definition.
+
+_Covered in depth in [Building a REST API with API Gateway and Lambda](/articles/building-a-rest-api-with-api-gateway-and-lambda)._
+
+### Authorizer
+
+An API Gateway Authorizer is a Lambda function or Cognito User Pool that API Gateway invokes before passing a request to your backend. A Lambda Authorizer receives the request token or full request context, validates it, and returns an IAM policy document that allows or denies access. Cognito Authorizers validate JWTs directly without a Lambda round-trip. Authorizers let you protect API endpoints without embedding authentication logic inside your handler functions.
+
+_Covered in depth in [Building a REST API with API Gateway and Lambda](/articles/building-a-rest-api-with-api-gateway-and-lambda)._
+
+### Amazon SQS
+
+Simple Queue Service (SQS) is a managed message queue that decouples producers from consumers. Producers write messages to a queue; consumers poll and process them at their own pace. Standard queues offer maximum throughput with at-least-once delivery (duplicates possible, ordering not guaranteed). FIFO queues guarantee exactly-once processing and strict ordering within a message group, at lower throughput ceilings. Messages not processed within the visibility timeout reappear in the queue; messages that fail repeatedly route to a dead-letter queue (DLQ) for inspection.
+
+_Covered in depth in [Amazon EventBridge - Event-Driven Architecture on AWS](/articles/amazon-eventbridge)._
+
+### Amazon SNS
+
+Simple Notification Service (SNS) is a managed pub/sub messaging service. Publishers write to an SNS topic; every subscribed endpoint receives a copy of the message. Subscribers can be Lambda functions, SQS queues, HTTP endpoints, email addresses, or SMS numbers - making SNS the standard fan-out mechanism for event-driven systems. SNS is also the delivery target for CloudWatch alarms: when an alarm fires (5xx rate too high, CPU spike, low memory), the alarm publishes to a topic that routes to your Slack channel, email, or PagerDuty integration.
+
+_Covered in depth in [Amazon EventBridge - Event-Driven Architecture on AWS](/articles/amazon-eventbridge) and [Three-Tier Architecture on AWS](/articles/three-tier-architecture-on-aws)._
+
+### Amazon EventBridge
+
+EventBridge is a serverless event bus that routes events between AWS services, your own applications, and third-party SaaS providers. You define rules that match events by their content - source, detail-type, or specific JSON field values - and route matching events to targets: Lambda functions, SQS queues, Step Functions state machines, and more. EventBridge decouples event producers from consumers entirely: the producer publishes to the bus without knowing who's listening. The Schema Registry documents event shapes and generates typed SDKs for producers and consumers.
+
+_Covered in depth in [Amazon EventBridge - Event-Driven Architecture on AWS](/articles/amazon-eventbridge)._
+
+### AWS Step Functions
+
+Step Functions is a serverless orchestration service for building multi-step workflows as visual state machines. Each state can invoke a Lambda function, call an AWS service directly (DynamoDB, S3, ECS), run parallel branches, wait for an external callback, or pause on a timer. Standard workflows maintain full execution history (every state transition visible in the console) and support long-running processes up to one year. Express workflows are higher-throughput and lower-cost, better suited for short event-processing pipelines that run in under five minutes.
+
+_Covered in depth in [Building Data Pipelines with Step Functions and Lambda](/articles/building-data-pipelines-with-step-functions-and-lambda)._
+
+### Event-Driven Architecture
+
+Event-driven architecture is a design pattern where services communicate by producing and consuming events rather than making direct synchronous API calls. A service publishes an event when something meaningful happens - an order was placed, a file uploaded, a payment processed - and other services subscribe and react independently. This decoupling makes services independently deployable and scalable, eliminates the brittleness of synchronous request/response chains, and lets new consumers attach without modifying the producer. EventBridge, SQS, and SNS are the primary AWS primitives for building event-driven systems.
+
+_Covered in depth in [Amazon EventBridge - Event-Driven Architecture on AWS](/articles/amazon-eventbridge)._
 
 ---
 
@@ -289,12 +389,6 @@ CloudWatch is AWS's observability service for metrics, logs, and alarms. EC2, RD
 
 _Covered in depth in [Three-Tier Architecture on AWS](/articles/three-tier-architecture-on-aws) and [AWS RDS vs Aurora: Choosing the Right Managed Database](/articles/aws-rds-vs-aurora)._
 
-### Amazon SNS
-
-Simple Notification Service (SNS) is a managed pub/sub messaging service. In the architecture context, SNS is the delivery target for CloudWatch alarms - when an alarm fires (ALB 5xx rate too high, RDS freeable memory low), the alarm sends a message to an SNS topic that fan-outs to your Slack channel, email, or PagerDuty integration. SNS also serves as the event bus for higher-level event-driven architectures.
-
-_Covered in depth in [Three-Tier Architecture on AWS](/articles/three-tier-architecture-on-aws)._
-
 ### Amazon Route 53
 
 Route 53 is AWS's managed DNS service. In a three-tier architecture, your domain's DNS record is a CNAME or Route 53 Alias record pointing to the ALB's DNS name. Route 53 also handles internal DNS resolution within a VPC - when you connect to an RDS instance, the endpoint hostname (`mydb.xxxxxx.us-east-1.rds.amazonaws.com`) resolves via Route 53 to the correct IP address, and after a failover the same hostname resolves to the new primary's IP without any application-side change.
@@ -307,5 +401,8 @@ _Covered in depth in [Three-Tier Architecture on AWS](/articles/three-tier-archi
 
 - **Routing determines subnet type.** Public, private, and isolated subnets are the same AWS resource with different route tables. Understanding routing is understanding VPC networking.
 - **Security groups work in chains, not perimeters.** The SG-to-SG reference pattern - alb-sg → app-sg → db-sg - is more robust than CIDR-based rules because it follows your resources as they scale, not their current IPs.
-- **Aurora and RDS share an interface, not an architecture.** Aurora's storage layer is why it has faster failover, lower replica lag, and higher read replica limits. The terms here - ACU, distributed volume, pointer swap failover - are the vocabulary for understanding that difference.
+- **Lambda's execution model is the key to understanding serverless.** Cold starts, concurrency, execution roles, and event source mappings define the boundaries of what Lambda can do and what gotchas to watch for.
+- **API Gateway and Lambda own the request/response contract together.** With Lambda proxy integration, your function controls the entire HTTP response - API Gateway is the router, not the processor.
+- **Event-driven systems decouple at the cost of complexity.** EventBridge, SQS, SNS, and Step Functions each solve a distinct coordination problem - routing rules, queueing, fan-out, and orchestration. Choosing the right primitive matters.
+- **Aurora and RDS share an interface, not an architecture.** Aurora's distributed storage layer is why it has faster failover, lower replica lag, and higher read replica limits. The terms here - ACU, distributed volume, pointer swap failover - are the vocabulary for understanding that difference.
 - **Managed services shift responsibility, not ownership.** RDS handles OS patches and Multi-AZ standby provisioning, but you still own subnet placement, security group rules, encryption settings, and backup retention. Knowing the vocabulary for each service is what makes those decisions deliberate.
