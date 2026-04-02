@@ -135,37 +135,37 @@ _Covered in depth in [Three-Tier Architecture on AWS](/articles/three-tier-archi
 
 Lambda is AWS's serverless compute service. You deploy a function - a unit of code with a defined handler - and AWS runs it in response to events without you managing servers, EC2 instances, or operating systems. Lambda handles provisioning, scaling, and decommissioning the underlying execution environment. You pay only for the duration your code runs, measured in milliseconds.
 
-_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk) and [Building a REST API with API Gateway and Lambda](/articles/building-a-rest-api-with-api-gateway-and-lambda)._
+_Covered in depth in [Intro to AWS Lambda](/articles/intro-to-aws-lambda) and [Building a REST API with API Gateway and Lambda](/articles/building-a-rest-api-with-api-gateway-and-lambda)._
 
 ### Lambda Handler
 
 The Lambda handler is the entry point function that Lambda invokes when your function is triggered. It receives two arguments: `event` (the triggering payload - varies by event source) and `context` (runtime metadata like function name, memory limit, and request ID). For Python, a typical handler looks like `def handler(event, context):`. For Node.js it's `export const handler = async (event) => {}`.
 
-_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+_Covered in depth in [Intro to AWS Lambda](/articles/intro-to-aws-lambda)._
 
 ### Cold Start
 
 A cold start occurs when Lambda has to initialize a new execution environment from scratch before running your function - pulling the code package, starting the runtime, and executing any initialization code outside the handler. A warm start reuses an already-initialized environment. Cold starts add latency ranging from tens of milliseconds (small Node.js or Python functions) to several seconds for large packages or heavy runtimes like the JVM. VPC-attached functions previously had dramatically longer cold starts due to ENI provisioning, but AWS resolved this in 2019 with Hyperplane ENIs - shared network interfaces provisioned at deploy time rather than per cold start. Provisioned concurrency eliminates cold starts entirely for latency-sensitive workloads by keeping environments pre-initialized.
 
-_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+_Covered in depth in [Intro to AWS Lambda](/articles/intro-to-aws-lambda)._
 
 ### Lambda Execution Role
 
 The IAM role attached to a Lambda function. Lambda's execution environment assumes this role to make AWS API calls - reading from S3, writing to DynamoDB, publishing to SQS, writing logs to CloudWatch. The principle of least privilege applies: each function should have its own role with only the permissions it actually needs. This role is separate from the role that deploys or invokes the function.
 
-_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+_Covered in depth in [Intro to AWS Lambda](/articles/intro-to-aws-lambda)._
 
 ### Lambda Layers
 
 A Lambda Layer is a ZIP archive of shared dependencies, utilities, or configuration that you attach to multiple functions rather than bundling into each deployment package. Common use cases: shared library code, heavy ML model files, binary executables like `ffmpeg`, or the Lambda Powertools observability library. A function can reference up to five layers simultaneously. Layers don't change how the function is invoked; they simply make their content available at a known path inside the execution environment.
 
-_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+_Covered in depth in [Intro to AWS Lambda](/articles/intro-to-aws-lambda)._
 
 ### Concurrency
 
 Lambda concurrency is the number of function instances running simultaneously. Each concurrent execution handles exactly one event at a time. When a second event arrives while the first is still in progress, Lambda spins up a second execution environment - a cold start if no warm environment is available. Reserved concurrency caps a function's maximum simultaneous executions, preventing it from starving other functions in the same account or overwhelming a downstream database. Provisioned concurrency pre-warms a fixed number of environments to absorb traffic without cold-start latency.
 
-_Covered in depth in [Deploying Lambda Functions with AWS CDK](/articles/deploying-lambda-functions-with-aws-cdk)._
+_Covered in depth in [Intro to AWS Lambda](/articles/intro-to-aws-lambda)._
 
 ### Event Source Mapping
 
