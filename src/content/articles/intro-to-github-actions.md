@@ -21,7 +21,7 @@ No external CI/CD service to configure. No webhooks to wire up. The workflow liv
 
 **Enforce code quality.** Run linters, formatters, and type checkers on every push. Fail the workflow if the code doesn't meet the standard.
 
-**Build and publish artifacts.** Build a Docker image and push it to ECR. Build a Python package and publish it to PyPI. Build a Node package and publish it to npm.
+**Build and publish artifacts.** Build a Docker image and push it to ECR. Build a Python package and publish it to PyPI.
 
 **Run database migrations as part of deploy.** Apply schema changes to your database automatically when you deploy new code.
 
@@ -30,6 +30,8 @@ No external CI/CD service to configure. No webhooks to wire up. The workflow liv
 **Automate anything with a CLI.** If you can run it in a terminal, you can run it in GitHub Actions.
 
 ## Common Terms
+
+GitHub Actions has its own vocabulary. Learn it once and the docs will suddenly make sense.
 
 | Term            | What It Is                                                                                                                                        |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -97,8 +99,12 @@ jobs:
 - `${{ secrets.NAME }}` injects a secret. It's redacted in logs automatically.
 - `${{ env.NAME }}` injects an environment variable defined at the workflow level.
 - Steps within a job run sequentially. Jobs within a workflow run in parallel unless you use `needs`.
+- Use `if:` to conditionally skip steps or entire jobs. `if: github.ref == 'refs/heads/main'` only runs on main. `if: github.event_name != 'pull_request'` skips on PRs. Common for gating deploys to specific branches.
+- Add a `concurrency` group to cancel in-progress runs when a new one starts. Without it, two quick pushes can have two deploys racing each other.
 
 ## Use Case Examples
+
+Here are the most common patterns you'll reach for, with working YAML for each.
 
 ### Lint and Type Check on Push
 
@@ -165,6 +171,30 @@ jobs:
 ```
 
 To require this check before merging, go to your repo's **Settings → Branches → Branch protection rules** and add the job name as a required status check.
+
+### Cache Dependencies
+
+Re-downloading packages on every run wastes time and minutes. `setup-uv` has built-in caching - enable it with one flag and it automatically keys the cache to your `uv.lock` file:
+
+```yaml
+- uses: astral-sh/setup-uv@v5
+  with:
+    enable-cache: true
+```
+
+For tools without built-in caching, use `actions/cache` directly. Hash your lock file so the cache invalidates automatically when dependencies change:
+
+```yaml
+- name: Cache pip packages
+  uses: actions/cache@v4
+  with:
+    path: ~/.cache/pip
+    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+    restore-keys: |
+      ${{ runner.os }}-pip-
+```
+
+`hashFiles()` generates a hash of the file. If it hasn't changed, the cache key matches and packages are restored in seconds. If it has changed, the cache misses, packages re-download, and a new cache is saved for the next run.
 
 ### Run Database Migrations on Deploy
 
@@ -409,12 +439,19 @@ jobs:
 
 Cron syntax is standard Unix cron, in UTC. `workflow_dispatch` adds a manual "Run workflow" button in the GitHub Actions UI so you can trigger it without waiting for the schedule. Always add `workflow_dispatch` to scheduled workflows - you'll want it when debugging.
 
+A few gotchas worth knowing:
+
+- **Scheduled workflows only run on the default branch.** Testing a cron workflow on a feature branch does nothing - the schedule only fires from `main` (or whatever your default branch is set to).
+- **GitHub doesn't guarantee exact timing.** Scheduled runs can be delayed during high load. `"0 0 * * *"` means "around midnight," not "exactly midnight."
+- **`workflow_dispatch` supports inputs.** Define parameters - a date range, an environment name, a flag - that appear as form fields in the UI when triggering manually. Useful when your script needs context to run.
+
 ## The Takeaway
 
 - **GitHub Actions lives in your repo.** Workflows are YAML files in `.github/workflows/` - versioned alongside your code, reviewable in PRs, no external service to configure.
 - **Use OIDC for AWS authentication, not access keys.** OIDC issues short-lived credentials per run. No long-lived keys to rotate or accidentally leak.
 - **Pin action versions to a tag, not `@main`.** `actions/checkout@v4` is stable. `actions/checkout@main` can break without warning.
+- **Cache your dependencies.** Use `enable-cache: true` in `setup-uv` or `actions/cache` for other tools. A warm cache cuts install time from 30–60 seconds to under 5. Free speed.
 - **Use `needs` to sequence jobs.** Jobs run in parallel by default. Add `needs: job-id` to create dependencies - migrate before deploy, build before push.
-- **Secrets are automatically redacted in logs.** Never echo them explicitly, but don't worry about them appearing in normal command output.
+- **Secrets are automatically redacted in logs.** GitHub redacts exact string matches - but if a secret ends up serialized inside a JSON object or structured output, it may not be caught. Never print secrets intentionally.
 - **Always add `workflow_dispatch` to scheduled workflows.** It gives you a manual trigger button in the UI, which you'll need when testing or debugging the workflow.
 - **Keep workflows focused.** A lint workflow, a test workflow, and a deploy workflow are easier to reason about and faster to debug than one monolithic workflow that does everything.
