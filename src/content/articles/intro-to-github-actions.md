@@ -168,7 +168,7 @@ To require this check before merging, go to your repo's **Settings → Branches 
 
 ### Run Database Migrations on Deploy
 
-Apply Alembic migrations against Aurora before deploying new app code. The migration step runs first — if it fails, the deploy doesn't proceed.
+Apply Alembic migrations against Aurora before deploying new app code. The migration step runs first - if it fails, the deploy doesn't proceed.
 
 ```yaml
 # .github/workflows/deploy.yml
@@ -205,7 +205,7 @@ jobs:
       - run: echo "Deploy your app here"
 ```
 
-`needs: migrate` creates a dependency — the `deploy` job won't start until `migrate` completes successfully.
+`needs: migrate` creates a dependency - the `deploy` job won't start until `migrate` completes successfully.
 
 ### Deploy Lambda to AWS
 
@@ -334,7 +334,7 @@ jobs:
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 ```
 
-`github.sha` is the full commit SHA — using it as the image tag means every image is traceable to a specific commit and tags never collide.
+`github.sha` is the full commit SHA - using it as the image tag means every image is traceable to a specific commit and tags never collide.
 
 ### Publish to PyPI
 
@@ -371,7 +371,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 ```
 
-Set up the Trusted Publisher in your PyPI project settings first — add GitHub as a publisher with your repo name, workflow filename, and environment name. No API token needed.
+Set up the Trusted Publisher in your PyPI project settings first - add GitHub as a publisher with your repo name, workflow filename, and environment name. No API token needed.
 
 ### Scheduled Cron Job
 
@@ -407,14 +407,14 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
 ```
 
-Cron syntax is standard Unix cron, in UTC. `workflow_dispatch` adds a manual "Run workflow" button in the GitHub Actions UI so you can trigger it without waiting for the schedule. Always add `workflow_dispatch` to scheduled workflows — you'll want it when debugging.
+Cron syntax is standard Unix cron, in UTC. `workflow_dispatch` adds a manual "Run workflow" button in the GitHub Actions UI so you can trigger it without waiting for the schedule. Always add `workflow_dispatch` to scheduled workflows - you'll want it when debugging.
 
 ## The Takeaway
 
-- **GitHub Actions lives in your repo.** Workflows are YAML files in `.github/workflows/` — versioned alongside your code, reviewable in PRs, no external service to configure.
+- **GitHub Actions lives in your repo.** Workflows are YAML files in `.github/workflows/` - versioned alongside your code, reviewable in PRs, no external service to configure.
 - **Use OIDC for AWS authentication, not access keys.** OIDC issues short-lived credentials per run. No long-lived keys to rotate or accidentally leak.
 - **Pin action versions to a tag, not `@main`.** `actions/checkout@v4` is stable. `actions/checkout@main` can break without warning.
-- **Use `needs` to sequence jobs.** Jobs run in parallel by default. Add `needs: job-id` to create dependencies — migrate before deploy, build before push.
+- **Use `needs` to sequence jobs.** Jobs run in parallel by default. Add `needs: job-id` to create dependencies - migrate before deploy, build before push.
 - **Secrets are automatically redacted in logs.** Never echo them explicitly, but don't worry about them appearing in normal command output.
 - **Always add `workflow_dispatch` to scheduled workflows.** It gives you a manual trigger button in the UI, which you'll need when testing or debugging the workflow.
 - **Keep workflows focused.** A lint workflow, a test workflow, and a deploy workflow are easier to reason about and faster to debug than one monolithic workflow that does everything.

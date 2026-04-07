@@ -54,7 +54,7 @@ uv add sqlalchemy alembic psycopg2-binary
 
 For Aurora MySQL, swap `psycopg2-binary` for `pymysql`.
 
-uv creates a virtual environment automatically and pins dependencies in `pyproject.toml`. No manual venv activation needed — prefix commands with `uv run` to run them inside the project environment.
+uv creates a virtual environment automatically and pins dependencies in `pyproject.toml`. No manual venv activation needed - prefix commands with `uv run` to run them inside the project environment.
 
 ## Step 2: Set Up the Database Connection
 
