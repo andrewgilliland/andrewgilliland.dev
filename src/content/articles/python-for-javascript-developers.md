@@ -119,7 +119,7 @@ create_event(date="2026-06-15", name="CDK Workshop")  # order doesn't matter
 create_event("CDK Workshop", "2026-06-15", capacity=50)
 ```
 
-**`*args` and `**kwargs`\*\*
+**\*args and \*\*kwargs**
 
 The Python equivalent of rest/spread:
 
