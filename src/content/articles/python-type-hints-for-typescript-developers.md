@@ -7,11 +7,11 @@ draft: false
 
 ## Why Type Hints Matter
 
-Python is dynamically typed — you can write an entire application without a single type annotation and it will run fine. TypeScript developers coming to Python often find this unsettling at first, then liberating, then a source of subtle bugs.
+Python is dynamically typed - you can write an entire application without a single type annotation and it will run fine. TypeScript developers coming to Python often find this unsettling at first, then liberating, then a source of subtle bugs.
 
-Type hints (added in Python 3.5, significantly improved through 3.9–3.12) are Python's answer. They don't change how the code runs — Python ignores them at runtime — but they give you the same benefits you're used to from TypeScript: editor autocomplete, inline error detection, and static analysis tools that catch mistakes before you deploy.
+Type hints (added in Python 3.5, significantly improved through 3.9–3.12) are Python's answer. They don't change how the code runs - Python ignores them at runtime - but they give you the same benefits you're used to from TypeScript: editor autocomplete, inline error detection, and static analysis tools that catch mistakes before you deploy.
 
-The mental model shift: TypeScript enforces types at compile time. Python type hints are documentation that tools can check if you ask them to. You opt in to the checking with a tool like `mypy` or your editor's language server. The hints themselves are always optional — you can annotate as much or as little as you want.
+The mental model shift: TypeScript enforces types at compile time. Python type hints are documentation that tools can check if you ask them to. You opt in to the checking with a tool like `mypy` or your editor's language server. The hints themselves are always optional - you can annotate as much or as little as you want.
 
 ## Basic Type Annotations
 
@@ -31,7 +31,7 @@ count: int = 0
 active: bool = True
 ```
 
-In practice, you rarely annotate local variables — type inference handles them. Annotations are most useful on function signatures and class fields.
+In practice, you rarely annotate local variables - type inference handles them. Annotations are most useful on function signatures and class fields.
 
 **Built-in types**
 
@@ -85,7 +85,7 @@ def log_event(event: str) -> None:
     print(event)
 ```
 
-Return type goes after `->`. Use `None` for functions that don't return a value — equivalent to `void`.
+Return type goes after `->`. Use `None` for functions that don't return a value - equivalent to `void`.
 
 **Multiple parameters**
 
@@ -139,7 +139,7 @@ from typing import Optional
 def find_user(id: str) -> Optional[User]: ...
 ```
 
-`Optional[T]` is exactly equivalent to `T | None` — it's just shorthand. Pick one and be consistent.
+`Optional[T]` is exactly equivalent to `T | None` - it's just shorthand. Pick one and be consistent.
 
 **Union types**
 
@@ -184,11 +184,11 @@ Status = Literal["active", "archived", "draft"]
 def set_status(status: Literal["active", "archived", "draft"]) -> None: ...
 ```
 
-`mypy` will catch calls like `set_status("deleted")` as an error — same as TypeScript's compiler.
+`mypy` will catch calls like `set_status("deleted")` as an error - same as TypeScript's compiler.
 
 ## Generics in Python
 
-TypeScript generics — `function identity<T>(value: T): T` — have a direct Python equivalent.
+TypeScript generics - `function identity<T>(value: T): T` - have a direct Python equivalent.
 
 ```ts
 // TypeScript
@@ -257,7 +257,7 @@ In practice, you won't write generic classes often in Python application code. T
 
 TypeScript interfaces define the shape of an object. Python has a few equivalents, each with different tradeoffs.
 
-**TypedDict** — a dict with a known, typed structure at the type-checking level only. No runtime enforcement. Best for dicts you're passing around, especially JSON-shaped data from APIs.
+**TypedDict** - a dict with a known, typed structure at the type-checking level only. No runtime enforcement. Best for dicts you're passing around, especially JSON-shaped data from APIs.
 
 ```ts
 // TypeScript
@@ -270,7 +270,7 @@ interface Event {
 ```
 
 ```python
-# Python — TypedDict
+# Python - TypedDict
 from typing import TypedDict, NotRequired
 
 class Event(TypedDict):
@@ -280,9 +280,9 @@ class Event(TypedDict):
     capacity: NotRequired[int]  # optional key
 ```
 
-A `TypedDict` is still just a regular dict at runtime — `isinstance(event, dict)` returns `True`. You get type checking, but the structure is not enforced when the program runs.
+A `TypedDict` is still just a regular dict at runtime - `isinstance(event, dict)` returns `True`. You get type checking, but the structure is not enforced when the program runs.
 
-**dataclass** — a class with typed fields, generated `__init__`, and dot access. The more natural equivalent to a TypeScript interface when you want named properties and object behavior.
+**dataclass** - a class with typed fields, generated `__init__`, and dot access. The more natural equivalent to a TypeScript interface when you want named properties and object behavior.
 
 ```python
 from dataclasses import dataclass, field
@@ -303,7 +303,7 @@ Use `TypedDict` when the shape of a plain dict matters (JSON payloads, boto3 res
 
 ## Checking Types with mypy
 
-`mypy` is the standard static type checker for Python. It reads your type annotations and reports errors — the equivalent of running `tsc --noEmit`.
+`mypy` is the standard static type checker for Python. It reads your type annotations and reports errors - the equivalent of running `tsc --noEmit`.
 
 **Install and run**
 
@@ -334,17 +334,17 @@ strict = true
 ignore_missing_imports = true
 ```
 
-`strict` enables a set of checks that require annotations throughout your code — roughly equivalent to TypeScript's `strict: true`. Start without it and add `--strict` once your codebase has good coverage.
+`strict` enables a set of checks that require annotations throughout your code - roughly equivalent to TypeScript's `strict: true`. Start without it and add `--strict` once your codebase has good coverage.
 
 **When mypy flags aren't actionable**
 
 Third-party libraries without type stubs will produce `Missing imports` errors. Add `ignore_missing_imports = true` in `mypy.ini` or install the stubs package (`pip install boto3-stubs`).
 
-Most editors (VS Code with Pylance, PyCharm) run type checking inline as you type — you may not need to run `mypy` explicitly unless you want it in CI.
+Most editors (VS Code with Pylance, PyCharm) run type checking inline as you type - you may not need to run `mypy` explicitly unless you want it in CI.
 
 ## Runtime Validation with Pydantic
 
-Type hints and `mypy` catch errors at analysis time, not at runtime. If a Lambda function receives a JSON payload with a missing field, Python won't raise an error — it'll just be absent from the dict. That's where Pydantic comes in.
+Type hints and `mypy` catch errors at analysis time, not at runtime. If a Lambda function receives a JSON payload with a missing field, Python won't raise an error - it'll just be absent from the dict. That's where Pydantic comes in.
 
 Pydantic parses and validates data at runtime using your type annotations. It's the Python equivalent of a TypeScript runtime validator like `zod`.
 
@@ -412,7 +412,7 @@ Event.model_validate(data)  # parse from dict (explicit, preferred over Event(**
 
 ## Type Hints in Practice: A Typed Lambda Handler
 
-Here's what all of this looks like in a real Lambda function — a typed request/response pattern using Pydantic for body validation and type hints throughout.
+Here's what all of this looks like in a real Lambda function - a typed request/response pattern using Pydantic for body validation and type hints throughout.
 
 ```python
 import json
@@ -458,16 +458,16 @@ def handler(event: dict, context: object) -> dict:
 What each type tool is doing here:
 
 - **Type hints** on `handler` tell your editor what `event` and `context` are, enabling autocomplete on their properties.
-- **Pydantic** validates the incoming JSON body at runtime — missing or wrong-typed fields raise `ValidationError` before they can cause a deeper error.
-- **`ApiResponse`** standardizes the response shape — `model_dump()` produces the dict that API Gateway expects.
+- **Pydantic** validates the incoming JSON body at runtime - missing or wrong-typed fields raise `ValidationError` before they can cause a deeper error.
+- **`ApiResponse`** standardizes the response shape - `model_dump()` produces the dict that API Gateway expects.
 
 This pattern scales: as the request shape grows, you add fields to `CreateEventRequest`. Pydantic handles validation; mypy catches type mismatches in the handler logic.
 
 ## The Takeaway
 
-- **Type hints are optional but worth it.** Python won't enforce them at runtime, but your editor and mypy will. Annotate function signatures at minimum — it costs almost nothing and pays off when reading code weeks later.
-- **`T | None` is Optional.** Use it for any value that might be absent. `Optional[T]` from `typing` is identical — pick one style.
+- **Type hints are optional but worth it.** Python won't enforce them at runtime, but your editor and mypy will. Annotate function signatures at minimum - it costs almost nothing and pays off when reading code weeks later.
+- **`T | None` is Optional.** Use it for any value that might be absent. `Optional[T]` from `typing` is identical - pick one style.
 - **Use `Literal` for string/int enums.** `Literal["active", "archived"]` is the Python equivalent of TypeScript's union string literals. mypy will catch invalid values.
 - **`TypedDict` for dict shapes, `@dataclass` for objects.** `TypedDict` adds type checking to plain dicts (good for JSON payloads). `@dataclass` gives you a real class with dot access and generated `__init__`.
 - **mypy is `tsc --noEmit` for Python.** Run it in CI or install Pylance in VS Code for inline checking. Start without `--strict` and add it as coverage improves.
-- **Pydantic validates at runtime.** Type hints catch mistakes at analysis time. Pydantic catches them when your program actually receives data — from an API, a config file, or an event payload. Use it at system boundaries.
+- **Pydantic validates at runtime.** Type hints catch mistakes at analysis time. Pydantic catches them when your program actually receives data - from an API, a config file, or an event payload. Use it at system boundaries.
