@@ -59,19 +59,21 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
 
   return (
     <>
-      <div className="relative mb-8">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search articles…"
-          className="w-full rounded-lg border border-white/20 bg-black px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-white"
-        />
-        {query && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 font-mono text-xs text-gray-500">
-            {filtered.length} result{filtered.length !== 1 ? "s" : ""}
-          </span>
-        )}
+      <div className="sticky top-10 z-10 pb-4 pt-2">
+        <div className="relative">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search articles…"
+            className="w-full rounded-lg border border-white/20 bg-black px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-pink-500"
+          />
+          {query && (
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 font-mono text-xs text-gray-500">
+              {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
       </div>
 
       {filtered.length > 0 ? (
