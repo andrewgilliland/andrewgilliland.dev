@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
 
 type Article = {
   id: string;
@@ -59,19 +60,23 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
 
   return (
     <>
-      <div className="sticky top-10 z-10 pb-4 pt-2">
+      <div className="sticky top-16 z-10 pb-4 pt-2">
         <div className="relative">
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search articles…"
-            className="w-full rounded-lg border border-white/20 bg-black px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-pink-500"
+            className="w-full rounded-lg border border-white/20 bg-black px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-pink-500 [&::-webkit-search-cancel-button]:appearance-none"
           />
           {query && (
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 font-mono text-xs text-gray-500">
-              {filtered.length} result{filtered.length !== 1 ? "s" : ""}
-            </span>
+            <button
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="group absolute right-3 top-1/2 -translate-y-1/2"
+            >
+              <Trash2 className="h-4 w-4 text-gray-500 transition-colors group-hover:text-white" />
+            </button>
           )}
         </div>
       </div>
