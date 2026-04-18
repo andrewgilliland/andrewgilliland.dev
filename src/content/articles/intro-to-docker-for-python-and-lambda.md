@@ -125,6 +125,8 @@ curl -X POST "http://localhost:9000/2015-03-31/functions/function/invocations" \
 
 You should get back `{"statusCode": 200, "body": "{\"message\": \"Hello, Docker!\"}"}`. If the handler returns that response locally, it will return the same response in Lambda.
 
+> **Reference project:** The [docker-python-lambda](https://github.com/andrewgilliland/docker-python-lambda) repo has a full FastAPI + Lambda setup with a `Makefile` for building, running locally, and invoking via the RIE — a good starting point if you want working code to reference alongside this article.
+
 ## Lambda Container Image Support
 
 When you deploy a container image to Lambda, a few things happen under the hood that are worth knowing:
