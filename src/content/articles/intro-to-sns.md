@@ -1,6 +1,6 @@
 ---
 title: Intro to Amazon SNS
-date: 2026-04-22
+date: 2026-04-23
 excerpt: SNS is AWS's pub/sub messaging service. One message in, many subscribers notified. Here's what it is, when to use it, and how to implement the common patterns.
 draft: false
 ---
