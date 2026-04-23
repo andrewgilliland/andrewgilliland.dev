@@ -15,7 +15,6 @@
     "@astrojs/mdx": "^5.0.3",
     "@astrojs/react": "^5.0.3",
     "@astrojs/sitemap": "^3.7.2",
-    "@astrojs/tailwind": "^6.0.2",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/space-grotesk": "^5.2.10",
     "@types/d3": "^7.4.3",
