@@ -12,16 +12,13 @@ const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 {
   filtered.length > 0 && (
     <nav aria-label="Table of contents">
-      <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-500">
-        On this page
-      </p>
       <ul class="flex flex-col border-l border-white/10">
         {filtered.map((heading) => (
           <li>
             <a
               href={`#${heading.slug}`}
               class:list={[
-                "toc-link block py-1.5 text-sm text-gray-400 transition-colors hover:text-white",
+                "toc-link block py-1 text-sm text-gray-400 transition-colors hover:text-white",
                 heading.depth === 2 ? "pl-4" : "pl-7",
               ]}
             >
