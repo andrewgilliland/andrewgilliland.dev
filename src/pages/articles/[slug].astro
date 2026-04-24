@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
+import MobileTOC from "@/components/MobileTOC.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -78,4 +79,5 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
       )
     }
   </div>
+  {hasHeadings && <MobileTOC headings={headings} />}
 </BaseLayout>
