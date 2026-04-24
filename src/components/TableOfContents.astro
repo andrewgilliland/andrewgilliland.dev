@@ -1,77 +1,38 @@
 ---
 import type { MarkdownHeading } from "astro";
-import { List } from "lucide-react";
 
 interface Props {
   headings: MarkdownHeading[];
 }
 
 const { headings } = Astro.props;
+const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
 {
-  headings.length > 0 && (
-    <div class="relative">
-      <button
-        popovertarget="popover"
-        aria-label="Table of contents"
-        class="popover-button rounded border-2 border-white p-2 text-sm text-white transition hover:bg-white hover:text-black"
-      >
-        <List className="h-4 w-4" />
-      </button>
-      <div
-        id="popover"
-        popover
-        class="popover m-0 rounded border-2 border-white bg-black p-6 text-white"
-      >
-        <ul class="flex flex-col gap-1">
-          {headings.map((heading) => (
-            <li>
-              <a
-                href={`#${heading.slug}`}
-                class:list={[
-                  "toc-link block py-1 text-sm text-gray-400 transition-colors hover:text-white",
-                  heading.depth === 2 ? "pl-4" : "pl-8",
-                ]}
-              >
-                {heading.text}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+  filtered.length > 0 && (
+    <nav aria-label="Table of contents">
+      <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-500">
+        On this page
+      </p>
+      <ul class="flex flex-col border-l border-white/10">
+        {filtered.map((heading) => (
+          <li>
+            <a
+              href={`#${heading.slug}`}
+              class:list={[
+                "toc-link block py-1.5 text-sm text-gray-400 transition-colors hover:text-white",
+                heading.depth === 2 ? "pl-4" : "pl-7",
+              ]}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
   )
 }
-
-<style>
-  .popover-button {
-    anchor-name: --popover-button;
-  }
-
-  .popover {
-    position: absolute;
-    position-anchor: --popover-button;
-    top: anchor(bottom);
-    left: anchor(left);
-    margin-top: 8px;
-
-    width: 16rem;
-    transition:
-      display 0.2s allow-discrete,
-      overlay 0.2s allow-discrete,
-      opacity 0.2s;
-    opacity: 0;
-  }
-  .popover:popover-open {
-    opacity: 1;
-  }
-  @starting-style {
-    .popover:popover-open {
-      opacity: 0;
-    }
-  }
-</style>
 
 <script is:inline>
   const links = document.querySelectorAll(".toc-link");
@@ -88,7 +49,7 @@ const { headings } = Astro.props;
               l.classList.remove(
                 "text-white",
                 "border-l-2",
-                "border-white",
+                "border-pink-400",
                 "-ml-px",
               ),
             );
@@ -99,7 +60,7 @@ const { headings } = Astro.props;
               active.classList.add(
                 "text-white",
                 "border-l-2",
-                "border-white",
+                "border-pink-400",
                 "-ml-px",
               );
           }
@@ -109,12 +70,5 @@ const { headings } = Astro.props;
     );
 
     headingEls.forEach((el) => observer.observe(el));
-  }
-
-  const popover = document.getElementById("popover");
-  if (popover) {
-    links.forEach((link) => {
-      link.addEventListener("click", () => popover.hidePopover());
-    });
   }
 </script>
