@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
+import MobileTOC from "@/components/MobileTOC.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -12,11 +14,12 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-const { Content } = await render(article);
+const { Content, headings } = await render(article);
+const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
 <BaseLayout title={`${article.data.title} - Andrew Gilliland`}>
-  <div class="mx-auto my-14 min-h-screen w-full max-w-3xl px-8">
+  <div class="mx-auto my-14 min-h-screen w-full max-w-6xl px-8">
     <div class="mb-12">
       <a
         class="mt-4 flex items-center font-medium text-pink-400 hover:text-pink-300"
@@ -35,16 +38,46 @@ const { Content } = await render(article);
         Back to Articles
       </a>
     </div>
-    <header class="mb-8">
-      <h1 class="mb-4 text-[2.5rem] font-normal leading-[1.2] text-white">
-        {article.data.title}
-      </h1>
-      <FormattedDate date={article.data.date} class="text-lg text-gray-400" />
-    </header>
-    <article
-      class="prose prose-invert mx-auto mt-8 max-w-3xl border-t border-white py-12"
-    >
-      <Content />
-    </article>
+    {
+      hasHeadings ? (
+        <div class="lg:grid lg:grid-cols-[1fr_16rem]">
+          <div class="mx-auto max-w-prose">
+            <header class="mb-8">
+              <h1 class="mb-4 text-[2.5rem] font-normal leading-[1.2] text-white">
+                {article.data.title}
+              </h1>
+              <FormattedDate
+                date={article.data.date}
+                class="text-lg text-gray-400"
+              />
+            </header>
+            <article class="prose prose-invert mt-8 border-t border-white py-12">
+              <Content />
+            </article>
+          </div>
+          <aside class="hidden lg:block">
+            <div class="sticky top-10 pt-24">
+              <TableOfContents headings={headings} />
+            </div>
+          </aside>
+        </div>
+      ) : (
+        <div class="mx-auto max-w-3xl">
+          <header class="mb-8">
+            <h1 class="mb-4 text-[2.5rem] font-normal leading-[1.2] text-white">
+              {article.data.title}
+            </h1>
+            <FormattedDate
+              date={article.data.date}
+              class="text-lg text-gray-400"
+            />
+          </header>
+          <article class="prose prose-invert mt-8 border-t border-white py-12">
+            <Content />
+          </article>
+        </div>
+      )
+    }
   </div>
+  {hasHeadings && <MobileTOC headings={headings} />}
 </BaseLayout>

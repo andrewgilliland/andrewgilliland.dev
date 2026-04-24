@@ -1,0 +1,118 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{
+  filtered.length > 0 && (
+    <>
+      <button
+        popovertarget="mobile-toc"
+        class="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-white text-black shadow-lg transition hover:bg-gray-200 lg:hidden"
+        aria-label="Open table of contents"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="15" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      <div
+        id="mobile-toc"
+        popover
+        class="mobile-toc-sheet m-0 w-full rounded-t-2xl border-t border-white/10 bg-black p-6 lg:hidden"
+      >
+        <div class="mb-4 flex items-center justify-end">
+          <button
+            popovertarget="mobile-toc"
+            popovertargetaction="hide"
+            class="text-gray-400 transition hover:text-white"
+            aria-label="Close table of contents"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <ul class="flex flex-col border-l border-white/10">
+          {filtered.map((heading) => (
+            <li>
+              <a
+                href={`#${heading.slug}`}
+                class:list={[
+                  "mobile-toc-link block py-2 text-sm text-gray-400 transition-colors hover:text-white",
+                  heading.depth === 2 ? "pl-4" : "pl-7",
+                ]}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
+  )
+}
+
+<style>
+  .mobile-toc-sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    width: 100%;
+    height: 50vh;
+    margin: 0;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition:
+      transform 0.3s ease,
+      display 0.3s allow-discrete,
+      overlay 0.3s allow-discrete;
+  }
+
+  .mobile-toc-sheet:popover-open {
+    transform: translateY(0);
+  }
+
+  @starting-style {
+    .mobile-toc-sheet:popover-open {
+      transform: translateY(100%);
+    }
+  }
+</style>
+
+<script is:inline>
+  const popover = document.getElementById("mobile-toc");
+  if (popover) {
+    document.querySelectorAll(".mobile-toc-link").forEach((link) => {
+      link.addEventListener("click", () => popover.hidePopover());
+    });
+  }
+</script>
