@@ -106,6 +106,24 @@ const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
       transform: translateY(100%);
     }
   }
+
+  .mobile-toc-sheet::backdrop {
+    background-color: rgba(0, 0, 0, 0);
+    transition:
+      background-color 0.3s ease,
+      display 0.3s allow-discrete,
+      overlay 0.3s allow-discrete;
+  }
+
+  .mobile-toc-sheet:popover-open::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
+  @starting-style {
+    .mobile-toc-sheet:popover-open::backdrop {
+      background-color: rgba(0, 0, 0, 0);
+    }
+  }
 </style>
 
 <script is:inline>
