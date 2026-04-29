@@ -18,7 +18,12 @@ const { Content, headings } = await render(article);
 const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
-<BaseLayout title={`${article.data.title} - Andrew Gilliland`}>
+<BaseLayout
+  title={`${article.data.title} - Andrew Gilliland`}
+  description={article.data.excerpt}
+  type="article"
+  publishedTime={article.data.date.toISOString()}
+>
   <div class="mx-auto my-14 min-h-screen w-full max-w-6xl px-8">
     <div class="mb-12">
       <a
