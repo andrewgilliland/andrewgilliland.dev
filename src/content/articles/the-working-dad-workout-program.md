@@ -29,6 +29,38 @@ A few principles that drive it:
 
 ## The Program
 
+Each workout follows the same structure: a brief warm-up, three supersets, and a cooldown. A superset means performing two exercises back-to-back with no rest between them, then resting 60–90 seconds before repeating. This keeps your heart rate up and cuts down on wasted time between sets.
+
+**Rep ranges:** 12–15 reps per exercise. Stop 2–5 reps short of failure - you should feel challenged but never like your form is breaking down. If it is, drop the weight. Focused form and controlled reps. We're not ego lifting here.
+
+Run the three workouts on non-consecutive days. Monday / Wednesday / Friday works well, but any three days with a rest day between each is fine.
+
+---
+
+### Workout 1
+
+| Superset | Exercise 1             | Exercise 2 | Sets |
+| -------- | ---------------------- | ---------- | ---- |
+| A        | Squat                  | —          | 3    |
+| B        | Dumbbell Incline Press | —          | 3    |
+| C        | Triceps Extension      | —          | 4    |
+
+### Workout 2
+
+| Superset | Exercise 1   | Exercise 2 | Sets |
+| -------- | ------------ | ---------- | ---- |
+| A        | Deadlift     | —          | 3    |
+| B        | Lat Pulldown | —          | 3    |
+| C        | Barbell Curl | —          | 4    |
+
+### Workout 3
+
+| Superset | Exercise 1                | Exercise 2 | Sets |
+| -------- | ------------------------- | ---------- | ---- |
+| A        | Alternating Reverse Lunge | —          | 3    |
+| B        | Overhead Dumbbell Press   | —          | 3    |
+| C        | Dumbbell Lateral Raise    | —          | 4    |
+
 ## The Exercises
 
 ## The Diet
