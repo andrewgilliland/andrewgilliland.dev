@@ -60,7 +60,7 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
 
   return (
     <>
-      <div className="sticky top-16 z-10 pb-4 pt-2">
+      <div className="pb-4 pt-2">
         <div className="relative">
           <input
             type="search"
