@@ -35,34 +35,42 @@ Each workout follows the same structure: a brief warm-up, three supersets, and a
 
 Run the three workouts on non-consecutive days. Monday / Wednesday / Friday works well, but any three days with a rest day between each is fine.
 
+**Timed exercises:** Mountain Climbers, Lying Leg Raises, Planks, Flutter Kicks, and Wall Sits are done for time rather than reps. Aim for 30–45 seconds per set to start. As they get easier, push toward 60 seconds before adding sets.
+
 ---
 
 ### Workout 1
 
-| Superset | Exercise 1             | Exercise 2 | Sets |
-| -------- | ---------------------- | ---------- | ---- |
-| A        | Squat                  | —          | 3    |
-| B        | Dumbbell Incline Press | —          | 3    |
-| C        | Triceps Extension      | —          | 4    |
+| Superset | Exercise 1             | Exercise 2         | Sets |
+| -------- | ---------------------- | ------------------ | ---- |
+| A        | Squat                  | Mountain Climber   | 3    |
+| B        | Dumbbell Incline Press | Dumbbell Chest Fly | 3    |
+| C        | Triceps Extension      | Lying Leg Raises   | 4    |
 
 ### Workout 2
 
-| Superset | Exercise 1   | Exercise 2 | Sets |
-| -------- | ------------ | ---------- | ---- |
-| A        | Deadlift     | —          | 3    |
-| B        | Lat Pulldown | —          | 3    |
-| C        | Barbell Curl | —          | 4    |
+| Superset | Exercise 1   | Exercise 2    | Sets |
+| -------- | ------------ | ------------- | ---- |
+| A        | Deadlift     | Plank         | 3    |
+| B        | Lat Pulldown | Dumbbell Row  | 3    |
+| C        | Barbell Curl | Flutter Kicks | 4    |
 
 ### Workout 3
 
-| Superset | Exercise 1                | Exercise 2 | Sets |
-| -------- | ------------------------- | ---------- | ---- |
-| A        | Alternating Reverse Lunge | —          | 3    |
-| B        | Overhead Dumbbell Press   | —          | 3    |
-| C        | Dumbbell Lateral Raise    | —          | 4    |
+| Superset | Exercise 1                | Exercise 2           | Sets |
+| -------- | ------------------------- | -------------------- | ---- |
+| A        | Alternating Reverse Lunge | Wall Sits            | 3    |
+| B        | Overhead Dumbbell Press   | Dumbbell Front Raise | 3    |
+| C        | Dumbbell Lateral Raise    | Lying Leg Raises     | 4    |
 
 ## The Exercises
 
+_Coming soon._
+
 ## The Diet
 
+_Coming soon._
+
 ## The Results
+
+_Coming soon._
