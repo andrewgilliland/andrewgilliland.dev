@@ -1,0 +1,19 @@
+<div
+  id="reading-progress"
+  class="pointer-events-none fixed left-0 top-0 z-50 h-[3px] w-0 bg-pink-400 transition-none"
+>
+</div>
+
+<script>
+  const bar = document.getElementById("reading-progress") as HTMLDivElement;
+
+  function update() {
+    const scrolled = window.scrollY;
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = total > 0 ? (scrolled / total) * 100 : 0;
+    bar.style.width = `${pct}%`;
+  }
+
+  window.addEventListener("scroll", update, { passive: true });
+  update();
+</script>
