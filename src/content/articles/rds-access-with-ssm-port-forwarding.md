@@ -3,6 +3,7 @@ title: "No Bastion Required: Accessing Private RDS with SSM Port Forwarding"
 date: 2026-04-27
 excerpt: RDS in a private subnet doesn't need a bastion host or an open port 22. AWS Systems Manager port forwarding creates an encrypted tunnel from your laptop to a private endpoint - no public IP, no SSH key management required. Here's how to set it up with CDK.
 draft: false
+tags: ["aws", "python", "databases", "cdk"]
 ---
 
 ## The Problem

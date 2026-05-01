@@ -3,6 +3,7 @@ title: "AWS Lambda: What It Is, When to Use It, and How to Deploy It"
 date: 2026-03-29
 excerpt: Lambda is AWS's serverless compute service - run code without managing servers, pay only for what you use. Here's what it is, why it's worth knowing, when to reach for something else, and how to deploy it with CDK.
 draft: false
+tags: ["aws", "serverless", "cdk"]
 ---
 
 ## What Is AWS Lambda?

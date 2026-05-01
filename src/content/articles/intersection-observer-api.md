@@ -3,6 +3,7 @@ title: "Understanding the Intersection Observer API"
 date: 2026-04-24
 excerpt: The Intersection Observer API lets you detect when elements enter or leave the viewport - without scroll event listeners. Here's what it solves, how it works, and real patterns you can use today.
 draft: false
+tags: ["javascript", "web"]
 ---
 
 ## The Problem It Solves

@@ -3,6 +3,7 @@ title: Building a REST API with API Gateway and Lambda
 date: 2026-04-07
 excerpt: Wire up API Gateway to Lambda functions and build a serverless REST API using Python and CDK.
 draft: false
+tags: ["aws", "serverless", "python", "cdk"]
 ---
 
 ## What We're Building

@@ -3,6 +3,7 @@ title: "Infrastructure as Code: CDK vs CloudFormation"
 date: 2026-04-11
 excerpt: CloudFormation uses YAML. CDK uses TypeScript. Here's when to use each and why CDK feels like a superpower.
 draft: false
+tags: ["aws", "cdk"]
 ---
 
 ## What Is Infrastructure as Code?

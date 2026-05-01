@@ -3,6 +3,7 @@ title: "Intro to GitHub Actions"
 date: 2026-04-06
 excerpt: GitHub Actions is CI/CD built directly into GitHub. No external service to configure. Push code, merge a PR, cut a release - automation runs. Here's what it is, how workflows are structured, and real examples for the most common use cases.
 draft: false
+tags: ["ci-cd", "github-actions"]
 ---
 
 ## What Is GitHub Actions?

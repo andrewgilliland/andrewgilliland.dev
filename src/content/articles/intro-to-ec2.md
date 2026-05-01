@@ -3,6 +3,7 @@ title: "Intro to Amazon EC2"
 date: 2026-04-26
 excerpt: EC2 is AWS's virtual machine service - rent compute capacity in the cloud, pay by the hour. Here's what it is, when to use it over serverless options, the configuration knobs that matter, and how to provision it with CDK.
 draft: false
+tags: ["aws", "cdk"]
 ---
 
 ## What Is EC2?

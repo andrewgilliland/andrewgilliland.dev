@@ -3,6 +3,7 @@ title: Intro to AWS CDK
 date: 2026-04-13
 excerpt: AWS CDK lets you define cloud infrastructure with real code instead of YAML. Here's how to get started with TypeScript.
 draft: false
+tags: ["aws", "cdk", "typescript"]
 ---
 
 ## What Is the CDK?

@@ -3,6 +3,7 @@ title: "Amazon S3: What It Is, What It's For, and How to Deploy It with CDK"
 date: 2026-03-31
 excerpt: S3 is AWS's object storage service - store any file at any scale. Here's what it is, what it's built for, what it isn't, what it works with, and how to deploy it with CDK.
 draft: false
+tags: ["aws", "cdk"]
 ---
 
 ## What Is Amazon S3?

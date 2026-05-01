@@ -3,6 +3,7 @@ title: Why I Use Tailwind CSS
 date: 2025-03-04
 excerpt: Tailwind CSS changed how I think about styling. Here's why utility-first CSS has become my default approach.
 draft: false
+tags: ["css"]
 ---
 
 ## The Case for Utility-First CSS

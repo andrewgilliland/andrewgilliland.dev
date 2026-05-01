@@ -3,6 +3,7 @@ title: Python Type Hints for TypeScript Developers
 date: 2026-04-15
 excerpt: You already think in types from TypeScript. Here's how to bring that mindset to Python with type hints, mypy, and Pydantic.
 draft: false
+tags: ["python", "typescript"]
 ---
 
 ## Why Type Hints Matter

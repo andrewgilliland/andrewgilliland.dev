@@ -14,6 +14,7 @@ const articleData = sorted.map((a) => ({
   title: a.data.title,
   excerpt: a.data.excerpt,
   date: a.data.date.toISOString(),
+  tags: a.data.tags ?? [],
 }));
 ---
 

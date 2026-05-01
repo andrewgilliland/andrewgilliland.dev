@@ -3,6 +3,7 @@ title: Intro to DynamoDB for Python Developers
 date: 2026-04-07
 excerpt: DynamoDB is the serverless database that pairs naturally with Lambda. Here's how to use it from Python.
 draft: false
+tags: ["aws", "python", "databases"]
 ---
 
 ## What Is DynamoDB?

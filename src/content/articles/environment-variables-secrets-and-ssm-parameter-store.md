@@ -3,6 +3,7 @@ title: Environment Variables, Secrets, and SSM Parameter Store
 date: 2026-04-29
 excerpt: Hardcoded config doesn't scale and hardcoded secrets are a security incident waiting to happen. Here's how to manage environment variables, secrets, and configuration for Lambda functions on AWS - from local development to production.
 draft: false
+tags: ["aws", "python", "serverless"]
 ---
 
 ## The Problem with Hardcoded Config

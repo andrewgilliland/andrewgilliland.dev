@@ -3,6 +3,7 @@ title: TypeScript Tips I Use Every Day
 date: 2025-06-20
 excerpt: A handful of TypeScript patterns that have made my code more expressive, safer, and easier to refactor.
 draft: false
+tags: ["typescript"]
 ---
 
 ## Prefer `type` for Object Shapes
