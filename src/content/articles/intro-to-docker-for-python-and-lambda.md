@@ -3,6 +3,7 @@ title: Intro to Docker for Python and Lambda
 date: 2026-04-04
 excerpt: When zip files aren't enough, container images let you package anything for Lambda. Here's how to use Docker with Python.
 draft: false
+tags: ["aws", "docker", "python"]
 ---
 
 Lambda's default deployment model is a ZIP file - your code and its dependencies bundled together and uploaded. For most functions, this works fine. But it has a hard ceiling: 50 MB compressed, 250 MB unzipped. Once you add `pandas`, `scikit-learn`, or anything with native binary dependencies, you'll hit that ceiling fast. Container images raise the limit to 10 GB and eliminate an entire class of packaging problems. This article covers how Docker works, how to use it with Lambda, and when it's worth the tradeoff.

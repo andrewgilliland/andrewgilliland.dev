@@ -6,6 +6,7 @@ type Article = {
   title: string;
   excerpt: string;
   date: string;
+  tags: string[];
 };
 
 function ArticleCard({
@@ -49,13 +50,16 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
     if (q) setQuery(q);
   }, []);
 
+  const allTags = [...new Set(articles.flatMap((a) => a.tags))].sort();
+
   const filtered =
     query.trim() === ""
       ? articles
       : articles.filter(
           (a) =>
             a.title.toLowerCase().includes(query.toLowerCase()) ||
-            a.excerpt.toLowerCase().includes(query.toLowerCase()),
+            a.excerpt.toLowerCase().includes(query.toLowerCase()) ||
+            a.tags.some((t) => t.toLowerCase().includes(query.toLowerCase())),
         );
 
   return (
@@ -78,6 +82,21 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
               <Trash2 className="h-4 w-4 text-gray-500 transition-colors group-hover:text-white" />
             </button>
           )}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {allTags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => setQuery(query === tag ? "" : tag)}
+              className={`rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
+                query === tag
+                  ? "border-pink-400 text-pink-400"
+                  : "border-gray-600 text-gray-400 hover:border-pink-400 hover:text-pink-400"
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
         </div>
       </div>
 

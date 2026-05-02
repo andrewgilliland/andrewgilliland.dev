@@ -3,6 +3,7 @@ title: Monitoring and Observability on AWS
 date: 2026-04-21
 excerpt: Your code is deployed. Now make sure it stays healthy. Here's how to monitor Lambda functions with CloudWatch.
 draft: false
+tags: ["aws", "monitoring"]
 ---
 
 Deploying a Lambda function is straightforward. Knowing what it's doing after it's deployed is a different problem. Lambda's execution model - ephemeral environments, no persistent process, logs scattered across execution environments - makes traditional debugging impossible. You can't SSH in. You can't attach a debugger. You can't tail a server log. Everything you know about a running Lambda function comes from what it explicitly emits.

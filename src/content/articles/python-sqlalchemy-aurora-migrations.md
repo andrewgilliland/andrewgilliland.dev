@@ -3,6 +3,7 @@ title: "Setting Up SQLAlchemy Data Models with AWS Aurora"
 date: 2026-04-01
 excerpt: You have an Aurora database running in AWS. Now you need to get your schema into it. Here's how to define your data models with SQLAlchemy, manage migrations with Alembic, and run them against Aurora - step by step.
 draft: false
+tags: ["python", "aws", "databases"]
 ---
 
 ## The Problem

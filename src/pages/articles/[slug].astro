@@ -4,6 +4,7 @@ import FormattedDate from "@/components/FormattedDate.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import MobileTOC from "@/components/MobileTOC.astro";
 import ProgressBar from "@/components/ProgressBar.astro";
+import Tag from "@/components/Tag.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -56,6 +57,13 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
                 date={article.data.date}
                 class="text-lg text-gray-400"
               />
+              {article.data.tags && article.data.tags.length > 0 && (
+                <div class="mt-3 flex flex-wrap gap-2">
+                  {article.data.tags.map((tag) => (
+                    <Tag tag={tag} />
+                  ))}
+                </div>
+              )}
             </header>
             <article class="prose prose-invert mt-8 border-t border-white py-12">
               <Content />
@@ -77,6 +85,13 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
               date={article.data.date}
               class="text-lg text-gray-400"
             />
+            {article.data.tags && article.data.tags.length > 0 && (
+              <div class="mt-3 flex flex-wrap gap-2">
+                {article.data.tags.map((tag) => (
+                  <Tag tag={tag} />
+                ))}
+              </div>
+            )}
           </header>
           <article class="prose prose-invert mt-8 border-t border-white py-12">
             <Content />

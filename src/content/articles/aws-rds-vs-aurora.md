@@ -2,6 +2,7 @@
 title: "AWS RDS vs Aurora: Choosing the Right Managed Database"
 date: 2026-03-27
 excerpt: Both RDS and Aurora are managed relational databases, but they're built differently. Here's how to choose between them for a new project.
+tags: ["aws", "databases"]
 ---
 
 ## What Is Amazon RDS?

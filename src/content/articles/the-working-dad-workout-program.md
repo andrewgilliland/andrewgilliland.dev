@@ -3,6 +3,7 @@ title: "The Working Dad Workout Program"
 date: 2026-04-30
 excerpt: "Finding time to work out with a full-time job and kids is hard. Here's the program that actually works."
 draft: false
+tags: ["fitness"]
 ---
 
 ## The Problem

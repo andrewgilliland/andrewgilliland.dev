@@ -3,6 +3,7 @@ title: Getting Started with Astro
 date: 2025-01-15
 excerpt: Astro is a modern web framework that lets you build fast, content-focused websites using your favorite UI components.
 draft: false
+tags: ["astro", "typescript"]
 ---
 
 ## What is Astro?

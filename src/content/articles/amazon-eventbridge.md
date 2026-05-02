@@ -3,6 +3,7 @@ title: Amazon EventBridge - Event-Driven Architecture on AWS
 date: 2026-03-24
 excerpt: EventBridge is a serverless event bus that connects your applications with data from AWS services, SaaS apps, and custom sources. Learn what it is, the problems it solves, and how to implement it with CDK.
 draft: false
+tags: ["aws", "serverless"]
 ---
 
 ## What is Amazon EventBridge?

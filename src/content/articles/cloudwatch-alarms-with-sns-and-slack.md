@@ -3,6 +3,7 @@ title: CloudWatch Alarms with SNS, Email, and Slack
 date: 2026-04-22
 excerpt: CloudWatch Alarms don't notify anyone on their own. Here's how to wire them to SNS for email alerts and a Lambda function for Slack notifications.
 draft: false
+tags: ["aws", "monitoring"]
 ---
 
 A CloudWatch Alarm changing state is a signal, not a notification. By itself it changes a color in the console and that's it. To actually alert someone, you need to connect the alarm to an action - and the standard action is publishing to an **SNS topic**. From there, SNS can fan out to email, SMS, or a Lambda function that forwards the alert to Slack, PagerDuty, or anywhere else.

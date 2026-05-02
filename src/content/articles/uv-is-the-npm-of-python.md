@@ -3,6 +3,7 @@ title: uv Is the npm of Python
 date: 2026-03-22
 excerpt: If you're a JavaScript developer curious about Python, uv makes the tooling feel familiar. Here's how it maps to what you already know.
 draft: false
+tags: ["python"]
 ---
 
 ## Why I Switched to uv

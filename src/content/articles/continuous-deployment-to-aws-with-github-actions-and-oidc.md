@@ -3,6 +3,7 @@ title: Continuous Deployment to AWS with GitHub Actions and OIDC
 date: 2026-04-16
 excerpt: How to set up keyless, secure continuous deployment to AWS using GitHub Actions and OIDC - and why it beats AWS-native CI/CD tools for most teams.
 draft: false
+tags: ["aws", "ci-cd", "github-actions"]
 ---
 
 Most teams start their AWS deployment pipeline the same way: create an IAM user, generate an access key, paste the key into GitHub Secrets, and move on. It works, but you've just created a long-lived credential with blast radius across your AWS account that lives indefinitely in a third-party system. When that key leaks - and it does - the cleanup is painful.

@@ -3,6 +3,7 @@ title: AWS Glossary - Networking, Serverless, Compute, and Databases
 date: 2026-03-29
 excerpt: Definitions for the AWS services and concepts covered across the architecture articles on this site. VPCs, subnets, Lambda, API Gateway, EventBridge, SQS, Step Functions, RDS, Aurora, security groups, and everything in between.
 draft: false
+tags: ["aws"]
 ---
 
 A reference glossary for the AWS terms, services, and patterns covered in depth across the architecture articles on this site. Entries span networking, serverless compute and eventing, load balancing, managed databases, security, and operations tooling - grouped thematically and written to explain not just what a thing is, but why it exists and how it fits into the broader picture.

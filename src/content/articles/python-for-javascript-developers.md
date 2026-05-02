@@ -3,6 +3,7 @@ title: Python for JavaScript Developers
 date: 2026-04-14
 excerpt: A side-by-side look at Python through the lens of JavaScript. If you know JS, you're closer to writing Python than you think.
 draft: false
+tags: ["python", "javascript"]
 ---
 
 ## Why This Matters

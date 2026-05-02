@@ -3,6 +3,7 @@ title: Intro to Amazon SNS
 date: 2026-04-23
 excerpt: SNS is AWS's pub/sub messaging service. One message in, many subscribers notified. Here's what it is, when to use it, and how to implement the common patterns.
 draft: false
+tags: ["aws", "serverless"]
 ---
 
 Amazon Simple Notification Service (SNS) is a fully managed pub/sub messaging service. A **publisher** sends a message to a **topic**, and SNS delivers that message to every **subscriber** simultaneously. The publisher doesn't know or care who the subscribers are. The subscribers don't know or care who published. SNS is the hub in between.
