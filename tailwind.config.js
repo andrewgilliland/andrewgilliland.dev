@@ -11,6 +11,21 @@ module.exports = {
         brand: ["var(--font-space-grotesk)"],
         mono: ["var(--font-jetbrains-mono)"],
       },
+      keyframes: {
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        "marquee-reverse": {
+          from: { transform: "translateX(-50%)" },
+          to: { transform: "translateX(0)" },
+        },
+      },
+      animation: {
+        marquee: "marquee 30s linear infinite",
+        "marquee-slow": "marquee 40s linear infinite",
+        "marquee-reverse": "marquee-reverse 35s linear infinite",
+      },
     },
   },
   plugins: [require("@tailwindcss/typography")],
