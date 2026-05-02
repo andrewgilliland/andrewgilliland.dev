@@ -11,12 +11,12 @@ const { sectionOneColor = "bg-cyan-300", sectionTwoColor = "bg-pink-300" } =
 
 <section class="flex flex-col border-b-2 border-white md:flex-row">
   <div
-    class={`flex min-w-0 flex-1 flex-col items-center justify-center border-b-2 border-white ${sectionOneColor} px-[6.5vw] py-16 md:border-b-0 md:border-r-2`}
+    class={`flex min-w-0 md:w-1/2 flex-col items-center justify-center border-b-2 border-white ${sectionOneColor} px-[6.5vw] py-16 md:border-b-0 md:border-r-2`}
   >
     <slot name="section-one" />
   </div>
   <div
-    class={`flex min-w-0 flex-1 flex-col items-center justify-center ${sectionTwoColor} py-16`}
+    class={`flex min-w-0 md:w-1/2 flex-col items-center justify-center ${sectionTwoColor} py-16`}
   >
     <slot name="section-two" />
   </div>
