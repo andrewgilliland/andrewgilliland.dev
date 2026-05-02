@@ -1,0 +1,24 @@
+---
+import MarqueeChip from "@/components/MarqueeChip.astro";
+
+interface Props {
+  tags: [string, number][];
+  animation: "marquee" | "marquee-reverse" | "marquee-slow";
+}
+
+const { tags, animation } = Astro.props;
+
+const animationClass = {
+  marquee: "motion-safe:animate-marquee",
+  "marquee-reverse": "motion-safe:animate-marquee-reverse",
+  "marquee-slow": "motion-safe:animate-marquee-slow",
+}[animation];
+---
+
+<div class="flex">
+  <div
+    class={`flex w-max gap-3 group-hover:[animation-play-state:paused] ${animationClass}`}
+  >
+    {[...tags, ...tags].map(([tag]) => <MarqueeChip tag={tag} />)}
+  </div>
+</div>

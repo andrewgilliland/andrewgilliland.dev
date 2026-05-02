@@ -1,0 +1,14 @@
+---
+interface Props {
+  tag: string;
+}
+
+const { tag } = Astro.props;
+---
+
+<a
+  href={`/articles?q=${tag}`}
+  class="whitespace-nowrap rounded-full border border-black bg-white px-4 py-2 text-lg font-medium text-black no-underline transition-all hover:shadow-[4px_4px_0_0_#000000] motion-safe:hover:-translate-x-1 motion-safe:hover:-translate-y-1 md:text-xl"
+>
+  {tag}
+</a>
