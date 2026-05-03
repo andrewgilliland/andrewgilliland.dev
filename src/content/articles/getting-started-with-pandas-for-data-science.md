@@ -10,6 +10,8 @@ If you've worked with tables in SQL or spreadsheets in Excel, you already unders
 
 This article is a practical intro. You'll load real data, filter rows, transform columns, group by categories, and export results. No prior data science experience required.
 
+All the code from this article is available in the companion repo: [andrewgilliland/intro-to-pandas](https://github.com/andrewgilliland/intro-to-pandas).
+
 ## What Is Pandas?
 
 Pandas is an open source Python library built on top of NumPy. It gives you two primary data structures: **DataFrame** (a table with rows and columns) and **Series** (a single column). Almost everything you do in pandas involves one or both of these.
@@ -22,13 +24,24 @@ Pandas is not a database and it's not built for real-time processing. It loads d
 
 The examples below assume you're using [uv](https://docs.astral.sh/uv/) as your Python package manager. If you're not, `pip install pandas` works fine too.
 
+To follow along with the companion repo:
+
+```bash
+git clone https://github.com/andrewgilliland/intro-to-pandas
+cd intro-to-pandas
+uv sync
+uv run main.py
+```
+
+Or start a fresh project from scratch:
+
 ```bash
 uv init data-project
 cd data-project
 uv add pandas
 ```
 
-Start an interactive Python session or create a `explore.py` file. All the examples below run in either context.
+Start an interactive Python session or create an `explore.py` file. All the examples below run in either context.
 
 ```python
 import pandas as pd
