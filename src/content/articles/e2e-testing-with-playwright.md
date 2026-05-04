@@ -12,9 +12,9 @@ This article walks through adding Playwright to a React project, writing a focus
 
 ## Why Playwright
 
-Playwright is a strong choice for testing React apps. Its `webServer` config lets you point it at your dev server or preview server, so it starts and stops automatically as part of the test run — no manual server management. It's TypeScript-first with no extra configuration needed. And it uses auto-waiting by default — instead of sprinkling `await waitFor()` calls throughout your tests, Playwright retries assertions until they pass or a timeout is hit, which means tests are less flaky without extra effort.
+Playwright is a strong choice for testing React apps. Its `webServer` config lets you point it at your dev server or preview server, so it starts and stops automatically as part of the test run - no manual server management. It's TypeScript-first with no extra configuration needed. And it uses auto-waiting by default - instead of sprinkling `await waitFor()` calls throughout your tests, Playwright retries assertions until they pass or a timeout is hit, which means tests are less flaky without extra effort.
 
-The other main option is Cypress. Playwright is generally faster, has better multi-browser support in a single run, and tends to have less configuration overhead for most project setups. For a React app there's no meaningful difference in what they can test — Playwright just has less friction to get started.
+The other main option is Cypress. Playwright is generally faster, has better multi-browser support in a single run, and tends to have less configuration overhead for most project setups. For a React app there's no meaningful difference in what they can test - Playwright just has less friction to get started.
 
 ## Installing Playwright
 
@@ -67,7 +67,7 @@ A few things worth explaining here:
 
 **`webServer`** tells Playwright to run `npm run preview` (Vite's preview server) before the tests begin, wait until `localhost:4173` responds, then shut it down when tests finish. `reuseExistingServer: !process.env.CI` means locally it will reuse a server you already have running, but in CI it always starts fresh.
 
-**`forbidOnly: !!process.env.CI`** prevents accidentally committing a `test.only()` call — if Playwright sees one in CI it fails immediately rather than silently running only that test.
+**`forbidOnly: !!process.env.CI`** prevents accidentally committing a `test.only()` call - if Playwright sees one in CI it fails immediately rather than silently running only that test.
 
 **`retries: process.env.CI ? 2 : 0`** retries flaky tests up to 2 times in CI before marking them as failures. Locally you want failures to be immediate.
 
@@ -99,7 +99,7 @@ test("hero section is present", async ({ page }) => {
 });
 ```
 
-Notice the selectors: `getByRole("heading")` and `getByRole("link")`. Playwright's role-based locators match the way assistive technologies see the page — they're more resilient to markup changes than CSS selectors and they enforce that elements are semantically correct. If you rename a CSS class, the test still passes. If you accidentally remove the `<h1>`, it fails.
+Notice the selectors: `getByRole("heading")` and `getByRole("link")`. Playwright's role-based locators match the way assistive technologies see the page - they're more resilient to markup changes than CSS selectors and they enforce that elements are semantically correct. If you rename a CSS class, the test still passes. If you accidentally remove the `<h1>`, it fails.
 
 ### Navigation
 
@@ -120,11 +120,11 @@ test("navigates to about page", async ({ page }) => {
 });
 ```
 
-These tests catch broken routing — if a page slug changes, a route gets deleted, or a link's `href` goes stale. They also implicitly verify that the navbar renders and its links are reachable.
+These tests catch broken routing - if a page slug changes, a route gets deleted, or a link's `href` goes stale. They also implicitly verify that the navbar renders and its links are reachable.
 
 ### Testing Interactive Components
 
-This is the highest-value test in the suite. Interactive React components are the most likely place for a build regression to surface silently — the component might fail to render or lose state, and the page would look mostly fine until someone tried to use it.
+This is the highest-value test in the suite. Interactive React components are the most likely place for a build regression to surface silently - the component might fail to render or lose state, and the page would look mostly fine until someone tried to use it.
 
 ```ts
 // e2e/search.spec.ts
@@ -151,11 +151,11 @@ test("product detail page renders a heading", async ({ page }) => {
 });
 ```
 
-`getByPlaceholder` locates the search input by its placeholder text, `fill()` types into it, and then we assert that filtered results appear. The clearing test verifies the reset path — typing and then clearing should restore the full list. If the component's state management breaks, this fails.
+`getByPlaceholder` locates the search input by its placeholder text, `fill()` types into it, and then we assert that filtered results appear. The clearing test verifies the reset path - typing and then clearing should restore the full list. If the component's state management breaks, this fails.
 
 ## Testing Checkout Flows
 
-For e-commerce sites, the checkout flow is the most critical path to cover with E2E tests. A broken checkout means lost revenue, and it's exactly the kind of multi-step interaction that unit tests can't verify — adding to cart, updating quantities, entering shipping details, and confirming an order all depend on state persisting across multiple pages and components.
+For e-commerce sites, the checkout flow is the most critical path to cover with E2E tests. A broken checkout means lost revenue, and it's exactly the kind of multi-step interaction that unit tests can't verify - adding to cart, updating quantities, entering shipping details, and confirming an order all depend on state persisting across multiple pages and components.
 
 ### Add to Cart
 
@@ -177,14 +177,11 @@ test("cart persists across navigation", async ({ page }) => {
 });
 ```
 
-`getByTestId` locates elements by their `data-testid` attribute. It's the right choice when there's no semantic role or label to target — like a cart badge that's a plain `<span>`. Add `data-testid="cart-count"` to the element in your markup. Unlike `getByRole` and `getByLabel`, it doesn't enforce any accessibility semantics, so use it sparingly and only when a better locator isn't available.
-
-```ts
-```
+`getByTestId` locates elements by their `data-testid` attribute. It's the right choice when there's no semantic role or label to target - like a cart badge that's a plain `<span>`. Add `data-testid="cart-count"` to the element in your markup. Unlike `getByRole` and `getByLabel`, it doesn't enforce any accessibility semantics, so use it sparingly and only when a better locator isn't available.
 
 ### Checkout Steps
 
-Multi-step checkouts are where E2E tests earn their keep. The test below walks the full flow — cart → shipping → payment → confirmation:
+Multi-step checkouts are where E2E tests earn their keep. The test below walks the full flow - cart → shipping → payment → confirmation:
 
 ```ts
 test("completes checkout flow", async ({ page }) => {
@@ -207,13 +204,15 @@ test("completes checkout flow", async ({ page }) => {
 
   // Confirm order success
   await expect(page).toHaveURL(/\/order-confirmation/);
-  await expect(page.getByRole("heading", { name: /order confirmed/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /order confirmed/i }),
+  ).toBeVisible();
 });
 ```
 
-**`getByLabel`** is the right locator for form fields — it finds the input associated with a `<label>` element, which is both more resilient than targeting by placeholder text and enforces that your labels are correctly wired up.
+**`getByLabel`** is the right locator for form fields - it finds the input associated with a `<label>` element, which is both more resilient than targeting by placeholder text and enforces that your labels are correctly wired up.
 
-**Environment isolation**: checkout tests should always run against a dedicated test environment with a test payment gateway — never against production. Use environment variables to control which API keys and endpoints the app uses, and make sure the CI workflow sets the right values.
+**Environment isolation**: checkout tests should always run against a dedicated test environment with a test payment gateway - never against production. Use environment variables to control which API keys and endpoints the app uses, and make sure the CI workflow sets the right values.
 
 If your payment UI is a custom form, fill card fields directly with `getByLabel`. If you're using Stripe's embedded `PaymentElement`, the inputs live inside an iframe and require `frameLocator` to reach them:
 
@@ -230,7 +229,7 @@ await stripeFrame.getByLabel("Expiry").fill("12/29");
 await stripeFrame.getByLabel("CVC").fill("123");
 ```
 
-Use `4242 4242 4242 4242` as your test card number with Stripe — it always succeeds in test mode. Never put real card numbers in tests.
+Use `4242 4242 4242 4242` as your test card number with Stripe - it always succeeds in test mode. Never put real card numbers in tests.
 
 ### Handling Authentication
 
@@ -318,7 +317,7 @@ Running 8 tests using 1 worker
 **Other useful commands during development:**
 
 ```bash
-# Interactive UI mode — best for writing new tests
+# Interactive UI mode - best for writing new tests
 npx playwright test --ui
 
 # Watch the browser as tests run
@@ -388,6 +387,6 @@ The workflow triggers on pull requests targeting `main`, so every PR gets a gree
 
 Smoke tests catch broken builds and routing. Checkout flow tests protect the path that actually makes money. Authentication setup via `storageState` keeps the suite fast without skipping login. One workflow runs it all on every PR.
 
-The pattern scales — start with the homepage and a nav test, then add checkout coverage as your critical paths become clear.
+The pattern scales - start with the homepage and a nav test, then add checkout coverage as your critical paths become clear.
 
-For more on GitHub Actions, [Intro to GitHub Actions](/articles/intro-to-github-actions) covers the core concepts of workflows, jobs, and steps. If you want to extend this pattern to deployment — automatically shipping to production after tests pass — [CI/CD for Lambda Functions with GitHub Actions](/articles/ci-cd-for-lambda-functions-with-github-actions) walks through that setup.
+For more on GitHub Actions, [Intro to GitHub Actions](/articles/intro-to-github-actions) covers the core concepts of workflows, jobs, and steps. If you want to extend this pattern to deployment - automatically shipping to production after tests pass - [CI/CD for Lambda Functions with GitHub Actions](/articles/ci-cd-for-lambda-functions-with-github-actions) walks through that setup.
