@@ -8,7 +8,7 @@ tags: ["testing", "playwright", "ci-cd"]
 
 Unit tests tell you that your functions work in isolation. E2E tests tell you that your app actually works when a real browser loads it. They catch a different class of failure: build pipeline regressions, broken routing, client-side JavaScript that fails to render, and interactions that depend on the full page rather than a component in isolation.
 
-This article walks through adding Playwright to a React project, writing a focused set of smoke tests, and running them automatically on every pull request with GitHub Actions.
+This article walks through adding Playwright to a React project, writing smoke tests and checkout flow tests, and running them automatically on every pull request with GitHub Actions.
 
 ## Why Playwright
 
