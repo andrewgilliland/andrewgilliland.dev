@@ -99,7 +99,7 @@ test("hero section is present", async ({ page }) => {
 });
 ```
 
-Notice the selectors: `getByRole("heading")`, `getByRole("link")`, `getByText()`. Playwright's role-based locators match the way assistive technologies see the page — they're more resilient to markup changes than CSS selectors and they enforce that elements are semantically correct. If you rename a CSS class, the test still passes. If you accidentally remove the `<h1>`, it fails.
+Notice the selectors: `getByRole("heading")` and `getByRole("link")`. Playwright's role-based locators match the way assistive technologies see the page — they're more resilient to markup changes than CSS selectors and they enforce that elements are semantically correct. If you rename a CSS class, the test still passes. If you accidentally remove the `<h1>`, it fails.
 
 ### Navigation
 
@@ -177,6 +177,11 @@ test("cart persists across navigation", async ({ page }) => {
 });
 ```
 
+`getByTestId` locates elements by their `data-testid` attribute. It's the right choice when there's no semantic role or label to target — like a cart badge that's a plain `<span>`. Add `data-testid="cart-count"` to the element in your markup. Unlike `getByRole` and `getByLabel`, it doesn't enforce any accessibility semantics, so use it sparingly and only when a better locator isn't available.
+
+```ts
+```
+
 ### Checkout Steps
 
 Multi-step checkouts are where E2E tests earn their keep. The test below walks the full flow — cart → shipping → payment → confirmation:
@@ -200,30 +205,32 @@ test("completes checkout flow", async ({ page }) => {
   await page.getByRole("button", { name: /continue/i }).click();
   await expect(page).toHaveURL("/checkout/payment");
 
-  // Fill payment details (use a test card number in non-production environments)
-  await page.getByLabel("Card number").fill("4242424242424242");
-  await page.getByLabel("Expiry").fill("12/29");
-  await page.getByLabel("CVC").fill("123");
-  await page.getByRole("button", { name: /place order/i }).click();
-
   // Confirm order success
   await expect(page).toHaveURL(/\/order-confirmation/);
   await expect(page.getByRole("heading", { name: /order confirmed/i })).toBeVisible();
 });
 ```
 
-A few things worth calling out:
-
 **`getByLabel`** is the right locator for form fields — it finds the input associated with a `<label>` element, which is both more resilient than targeting by placeholder text and enforces that your labels are correctly wired up.
 
-**Test card numbers**: if your payment provider is Stripe, use `4242 4242 4242 4242` in a test environment — it always succeeds. Never put real card numbers in tests. If you're using Stripe's embedded UI (`PaymentElement`), the input is inside an iframe and requires `frameLocator` first:
+**Environment isolation**: checkout tests should always run against a dedicated test environment with a test payment gateway — never against production. Use environment variables to control which API keys and endpoints the app uses, and make sure the CI workflow sets the right values.
+
+If your payment UI is a custom form, fill card fields directly with `getByLabel`. If you're using Stripe's embedded `PaymentElement`, the inputs live inside an iframe and require `frameLocator` to reach them:
 
 ```ts
-const stripe = page.frameLocator('iframe[name^="__privateStripeFrame"]');
-await stripe.getByLabel("Card number").fill("4242424242424242");
+// Custom payment form
+await page.getByLabel("Card number").fill("4242424242424242");
+await page.getByLabel("Expiry").fill("12/29");
+await page.getByLabel("CVC").fill("123");
+
+// Stripe PaymentElement (inputs are inside an iframe)
+const stripeFrame = page.frameLocator('iframe[name^="__privateStripeFrame"]');
+await stripeFrame.getByLabel("Card number").fill("4242424242424242");
+await stripeFrame.getByLabel("Expiry").fill("12/29");
+await stripeFrame.getByLabel("CVC").fill("123");
 ```
 
-**Environment isolation**: checkout tests should always run against a dedicated test environment with a test payment gateway — never against production. Use environment variables to control which API keys and endpoints the app uses, and make sure the CI workflow sets the right values.
+Use `4242 4242 4242 4242` as your test card number with Stripe — it always succeeds in test mode. Never put real card numbers in tests.
 
 ### Handling Authentication
 
@@ -246,16 +253,35 @@ setup("log in as test user", async ({ page }) => {
 });
 ```
 
-Then reference the saved state in your config so authenticated tests start already logged in:
+Then update your `playwright.config.ts` to run the setup project first and pass the saved session into your tests:
 
 ```ts
-// playwright.config.ts
+import { defineConfig, devices } from "@playwright/test";
+
 export default defineConfig({
+  testDir: "./e2e",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: "html",
+  use: {
+    baseURL: "http://localhost:4173",
+    trace: "on-first-retry",
+  },
+  webServer: {
+    command: "npm run preview",
+    url: "http://localhost:4173",
+    reuseExistingServer: !process.env.CI,
+  },
   projects: [
     { name: "setup", testMatch: /auth\.setup\.ts/ },
     {
-      name: "authenticated",
-      use: { storageState: ".playwright/auth.json" },
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: ".playwright/auth.json",
+      },
       dependencies: ["setup"],
     },
   ],
@@ -277,14 +303,14 @@ Playwright starts the preview server, runs all tests, then shuts it down. You'll
 ```
 Running 8 tests using 1 worker
 
-  ✓ homepage > renders hero heading and CTA (1.2s)
-  ✓ homepage > renders Browse by Topic marquee (0.8s)
-  ✓ homepage > recent articles section is present (0.7s)
-  ✓ navigation > navigates to articles page (1.1s)
+  ✓ homepage > renders homepage heading (0.9s)
+  ✓ homepage > renders call to action (0.8s)
+  ✓ homepage > hero section is present (0.7s)
+  ✓ navigation > navigates to products page (1.1s)
   ✓ navigation > navigates to about page (0.9s)
-  ✓ articles > article search filters by query (1.4s)
-  ✓ articles > clearing search restores all articles (1.3s)
-  ✓ articles > article page renders a heading (0.8s)
+  ✓ search > search filters results by query (1.4s)
+  ✓ search > clearing search restores all results (1.3s)
+  ✓ search > product detail page renders a heading (0.8s)
 
   8 passed (9.3s)
 ```
@@ -341,7 +367,12 @@ jobs:
 
       - name: Run E2E tests
         run: npm run test:e2e
+        env:
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 ```
+
+Add `TEST_USER_EMAIL` and `TEST_USER_PASSWORD` as [repository secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions) in your repo's Settings → Secrets and variables → Actions.
 
 A few things to note:
 
