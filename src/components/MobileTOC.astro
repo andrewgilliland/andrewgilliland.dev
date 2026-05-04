@@ -39,7 +39,8 @@ const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         popover
         class="mobile-toc-sheet m-0 w-full rounded-t-2xl border-t border-white/10 bg-black p-6 lg:hidden"
       >
-        <div class="mb-4 flex items-center justify-end">
+        <div class="mb-4 flex items-center justify-between">
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Table of Contents</p>
           <button
             popovertarget="mobile-toc"
             popovertargetaction="hide"

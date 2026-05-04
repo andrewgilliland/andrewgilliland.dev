@@ -12,6 +12,7 @@ const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 {
   filtered.length > 0 && (
     <nav aria-label="Table of contents">
+      <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Table of Contents</p>
       <ul class="flex flex-col border-l border-white/10">
         {filtered.map((heading) => (
           <li>
