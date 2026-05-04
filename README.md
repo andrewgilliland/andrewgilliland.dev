@@ -1,6 +1,6 @@
 # andrewgilliland.dev
 
-The personal website of Andrew Gilliland - a community-taught full stack developer, Yacht Rock enthusiast, and person who owns more pets than houseplants (currently).
+The personal website of Andrew Gilliland - a community-taught software engineer, Yacht Rock enthusiast, and person who owns more pets than houseplants (currently).
 
 Built with [Astro](https://astro.build), [Tailwind CSS](https://tailwindcss.com), and an unreasonable number of notes about JavaScript.
 

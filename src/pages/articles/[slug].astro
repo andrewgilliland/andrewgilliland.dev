@@ -5,6 +5,7 @@ import TableOfContents from "@/components/TableOfContents.astro";
 import MobileTOC from "@/components/MobileTOC.astro";
 import ProgressBar from "@/components/ProgressBar.astro";
 import Tag from "@/components/Tag.astro";
+import CopyCodeButton from "@/components/CopyCodeButton.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -102,4 +103,5 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
   </div>
   {hasHeadings && <MobileTOC headings={headings} />}
   <ProgressBar />
+  <CopyCodeButton />
 </BaseLayout>
