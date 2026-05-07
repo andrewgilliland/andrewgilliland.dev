@@ -126,6 +126,8 @@ uv pip install -r requirements.txt --no-dev -t lambda/
 
 For data science workloads where large packages are unavoidable, consider container images - they support up to 10 GB and Lambda caches image layers, so only changed layers are re-pulled on deployment.
 
+**Watch out for web frameworks.** FastAPI, Flask, and Django are a common source of unexpected cold start overhead. FastAPI alone pulls in Starlette, Pydantic v2, AnyIO, and several transitive dependencies — a minimal FastAPI handler with [Mangum](https://github.com/jordaneremieff/mangum) (the ASGI adapter for Lambda) typically cold-starts in 500ms–1.5s, compared to under 300ms for an equivalent plain Lambda handler. The framework's routing layer is also largely redundant when API Gateway is already handling routing upstream. If you need request validation, Pydantic alone is significantly lighter than the full FastAPI stack. If you need structured logging, tracing, and event parsing, [AWS Lambda Powertools for Python](https://docs.powertools.aws.dev/lambda/python/) is purpose-built for Lambda and adds minimal import weight.
+
 ### Move Expensive Init Outside the Handler
 
 Code at module level runs once per execution environment and is reused across all warm invocations. Code inside the handler runs on every invocation. Put expensive one-time setup at module level:
