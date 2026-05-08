@@ -54,7 +54,7 @@ events-api/
 └── package.json
 ```
 
-Each function directory contains exactly what that function needs. `list_events/requirements.txt` might only have `boto3` (or nothing at all, since boto3 is available in the Lambda runtime). `create_event/requirements.txt` might add `pydantic` for request validation. A future analytics route that needs `pandas` gets its own directory with its own heavy requirements — its package size doesn't affect any other function.
+Each function directory contains exactly what that function needs. `list_events/requirements.txt` might only have `boto3` (or nothing at all, since boto3 is available in the Lambda runtime). `create_event/requirements.txt` might add `pydantic` for request validation. A future analytics route that needs `pandas` gets its own directory with its own heavy requirements - its package size doesn't affect any other function.
 
 Contrast this with a monolith Lambda where a single handler routes all requests internally. That single package has to include every dependency any route needs. A route that only does a DynamoDB `get_item` still imports pandas at cold start time because another route needs it. The cold start is the sum of all routes' init costs, paid on every cold start, regardless of which route was actually called.
 
@@ -68,7 +68,7 @@ import json
 import os
 import boto3
 
-# ✅ Module-level init — runs once per environment, reused across warm invocations
+# ✅ Module-level init - runs once per environment, reused across warm invocations
 _dynamodb = boto3.resource("dynamodb")
 _table = _dynamodb.Table(os.environ["TABLE_NAME"])
 
@@ -93,9 +93,9 @@ def _response(status_code: int, body: dict) -> dict:
 
 Three things to notice:
 
-**The boto3 client is initialized at module level.** This runs once when the execution environment is created and is reused on every warm invocation. If you initialize the client inside `main()`, Lambda creates a new client object on every single invocation — warm or cold — for no reason.
+**The boto3 client is initialized at module level.** This runs once when the execution environment is created and is reused on every warm invocation. If you initialize the client inside `main()`, Lambda creates a new client object on every single invocation - warm or cold - for no reason.
 
-**Environment variables are read at module level too.** `os.environ["TABLE_NAME"]` at module level reads the env var once. Inside the handler it reads it on every call. For env vars this is a micro-optimization, but the pattern matters — anything that doesn't change between invocations belongs at module level.
+**Environment variables are read at module level too.** `os.environ["TABLE_NAME"]` at module level reads the env var once. Inside the handler it reads it on every call. For env vars this is a micro-optimization, but the pattern matters - anything that doesn't change between invocations belongs at module level.
 
 **The handler function is named `main`, not `handler`.** This is a convention choice. The CDK config sets `handler: "handler.main"` (module `handler`, function `main`). Using `handler` as both the module name and function name creates a confusing collision. `handler.main` is unambiguous.
 
@@ -138,7 +138,7 @@ def _response(status_code: int, body: dict) -> dict:
     }
 ```
 
-`uuid` and `json` are standard library modules — no package size cost, no install step. Reach for the standard library first before adding a dependency.
+`uuid` and `json` are standard library modules - no package size cost, no install step. Reach for the standard library first before adding a dependency.
 
 ## Per-Function Dependencies
 
@@ -146,7 +146,7 @@ Each function has its own `requirements.txt`. For most CRUD handlers backed by D
 
 ```
 # lambdas/get_event/requirements.txt
-# boto3 is provided by the Lambda runtime — do not bundle it
+# boto3 is provided by the Lambda runtime - do not bundle it
 ```
 
 `boto3` is pre-installed in every Lambda execution environment. Bundling it in your deployment package adds ~10 MB to every ZIP for no benefit. Exclude it explicitly from your install step:
@@ -163,7 +163,7 @@ For a function that needs request validation with Pydantic:
 pydantic==2.7.1
 ```
 
-Pydantic v2 alone (with its Rust core) is roughly 3–4 MB. That's acceptable. Adding FastAPI on top brings in Starlette, AnyIO, and several more packages — pushing the total past 15 MB — for a routing layer you don't need because API Gateway already routes requests before Lambda is invoked. [The cold starts article](/articles/lambda-cold-starts) covers the framework overhead in detail.
+Pydantic v2 alone (with its Rust core) is roughly 3–4 MB. That's acceptable. Adding FastAPI on top brings in Starlette, AnyIO, and several more packages - pushing the total past 15 MB - for a routing layer you don't need because API Gateway already routes requests before Lambda is invoked. [The cold starts article](/articles/lambda-cold-starts) covers the framework overhead in detail.
 
 CDK's `lambda.Code.fromAsset()` bundles everything in the function directory into the deployment ZIP. Dependencies installed with `--target` end up in the same directory as the handler and get bundled automatically.
 
@@ -290,10 +290,10 @@ A few decisions baked into this stack worth calling out explicitly.
 `lambda.Architecture.ARM_64` is one of the highest-value CDK lines you can write. Graviton-based Lambda functions:
 
 - **Cost 20% less** per GB-second than x86
-- **Cold-start faster** — Python's interpreter initializes slightly faster on ARM
+- **Cold-start faster** - Python's interpreter initializes slightly faster on ARM
 - **Run on AWS-designed silicon** purpose-built for steady throughput workloads
 
-The only reason not to use ARM64 is a binary dependency that doesn't have an ARM wheel available. For pure-Python code and `boto3`, there's no reason to stay on x86. Switch any existing Lambda to ARM64 by changing one line in CDK — no code changes required.
+The only reason not to use ARM64 is a binary dependency that doesn't have an ARM wheel available. For pure-Python code and `boto3`, there's no reason to stay on x86. Switch any existing Lambda to ARM64 by changing one line in CDK - no code changes required.
 
 ## Memory and CPU
 
@@ -306,7 +306,7 @@ Lambda doesn't let you configure CPU directly. CPU is allocated proportionally t
 | 1 GB   | ~2 vCPU           |
 | 2 GB   | ~4 vCPU           |
 
-More CPU doesn't just make your handler run faster — it makes **function init run faster**. Python's module-level code runs on the CPU during phase 3 of the cold start. At 128 MB (0.25 vCPU), function init is measurably slower than at 512 MB, even if your handler barely uses any CPU.
+More CPU doesn't just make your handler run faster - it makes **function init run faster**. Python's module-level code runs on the CPU during phase 3 of the cold start. At 128 MB (0.25 vCPU), function init is measurably slower than at 512 MB, even if your handler barely uses any CPU.
 
 For most CRUD API functions, **512 MB is the right default**. It gives you a full vCPU equivalent, which means fast init code and reasonable handler performance, without paying for memory headroom you don't use. Bump to 1 GB for functions doing non-trivial computation (sorting large result sets, JSON serialization of big responses). For pure I/O-bound handlers that just proxy DynamoDB calls, 512 MB is plenty.
 
@@ -355,7 +355,7 @@ def main(event, context):
     return ok(item) if item else error("Event not found", 404)
 ```
 
-**Lambda Layers** are the alternative — define the shared code once, attach the layer to all functions, and Lambda makes it available at `/opt/python`. In CDK:
+**Lambda Layers** are the alternative - define the shared code once, attach the layer to all functions, and Lambda makes it available at `/opt/python`. In CDK:
 
 ```typescript
 const sharedLayer = new lambda.LayerVersion(this, "SharedLayer", {
@@ -374,7 +374,7 @@ const listEvents = new lambda.Function(this, "ListEvents", {
 
 Layers are the right choice when the shared code is substantial enough that copying it creates a maintenance problem. For a single `utils.py` under 100 lines, copying is simpler. For a shared data access layer, auth middleware, or typed model library, a layer is worth the extra CDK setup.
 
-One thing layers do **not** do is speed up cold starts. Lambda extracts layer ZIPs during container init alongside the function package — adding a layer adds data to extract, not less. The cold start benefit often cited for layers is a side effect of keeping the main deployment package smaller, which you can achieve just as well by only packaging what each function needs.
+One thing layers do **not** do is speed up cold starts. Lambda extracts layer ZIPs during container init alongside the function package - adding a layer adds data to extract, not less. The cold start benefit often cited for layers is a side effect of keeping the main deployment package smaller, which you can achieve just as well by only packaging what each function needs.
 
 ## Verifying the Result
 
@@ -386,10 +386,10 @@ REPORT RequestId: abc-123  Duration: 38.42 ms  Billed Duration: 39 ms  Memory Si
 
 A minimal DynamoDB-backed handler on Graviton at 512 MB should cold-start in **100–250ms**. If you're seeing 500ms or more, check:
 
-1. **Package size** — is boto3 bundled unnecessarily? Any transitive dependencies you don't use?
-2. **Module-level init** — are you doing any I/O (API calls, file reads) at module level?
-3. **Architecture** — is the function on x86 when it could be ARM64?
-4. **Memory** — is it set to 128 MB?
+1. **Package size** - is boto3 bundled unnecessarily? Any transitive dependencies you don't use?
+2. **Module-level init** - are you doing any I/O (API calls, file reads) at module level?
+3. **Architecture** - is the function on x86 when it could be ARM64?
+4. **Memory** - is it set to 128 MB?
 
 For a visual breakdown per invocation, X-Ray traces (enabled by `tracing: lambda.Tracing.ACTIVE`) show `Initialization`, `Invocation`, and `Overhead` segments in the CloudWatch console. [Lambda Cold Starts](/articles/lambda-cold-starts) covers the Logs Insights query and X-Ray setup in detail.
 
@@ -399,8 +399,8 @@ For a visual breakdown per invocation, X-Ray traces (enabled by `tracing: lambda
 - **Initialize boto3 clients at module level**, not inside the handler. They're reused across warm invocations at no cost.
 - **Don't bundle boto3**. It's already in the Lambda runtime. Bundling it adds ~10 MB to every ZIP for nothing.
 - **ARM64 (Graviton) is a free win**. Faster cold starts, 20% cheaper, one line in CDK.
-- **512 MB is the right default memory**. More CPU means faster function init. Don't set 128 MB to save money — you often spend more.
+- **512 MB is the right default memory**. More CPU means faster function init. Don't set 128 MB to save money - you often spend more.
 - **Skip the web framework**. FastAPI on Lambda adds 500ms–1s to cold start time for a routing layer API Gateway already handles. A plain handler with a `utils.py` response helper is all you need.
-- **Shared code via copy or Layer**. For small utilities, copy the file. For a substantial shared library, use a Lambda Layer. Neither approach speeds up cold starts — that comes from package size and init code.
+- **Shared code via copy or Layer**. For small utilities, copy the file. For a substantial shared library, use a Lambda Layer. Neither approach speeds up cold starts - that comes from package size and init code.
 
-For the full cold start optimization toolkit — measuring with Logs Insights and X-Ray, lazy imports, provisioned concurrency, and when cold starts don't matter — see [Lambda Cold Starts](/articles/lambda-cold-starts). For the foundational HTTP API and DynamoDB wiring this article builds on, see [Building a REST API with API Gateway and Lambda](/articles/building-a-rest-api-with-api-gateway-and-lambda).
+For the full cold start optimization toolkit - measuring with Logs Insights and X-Ray, lazy imports, provisioned concurrency, and when cold starts don't matter - see [Lambda Cold Starts](/articles/lambda-cold-starts). For the foundational HTTP API and DynamoDB wiring this article builds on, see [Building a REST API with API Gateway and Lambda](/articles/building-a-rest-api-with-api-gateway-and-lambda).
