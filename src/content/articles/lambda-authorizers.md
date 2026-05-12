@@ -10,11 +10,27 @@ tags: ["aws", "serverless", "python", "cdk"]
 
 This article adds auth to that stack using a Lambda authorizer.
 
-## Why Not the Built-In Options
+## Built-in Options
 
 API Gateway HTTP APIs have two built-in auth mechanisms:
 
 **JWT authorizer** - validates tokens from a specific OIDC/OAuth2 issuer using the issuer's public JWKS endpoint. Works out of the box with Cognito, Auth0, Okta. Zero code required; configure the issuer URL and audience in CDK and API Gateway handles validation.
+
+For Cognito, the entire authorizer is a few lines of CDK, no Lambda function needed:
+
+```typescript
+import { HttpJwtAuthorizer } from "aws-cdk-lib/aws-apigatewayv2-authorizers";
+
+const authorizer = new HttpJwtAuthorizer(
+  "CognitoAuthorizer",
+  `https://cognito-idp.${this.region}.amazonaws.com/${userPool.userPoolId}`,
+  {
+    jwtAudience: [userPoolClient.userPoolClientId],
+  },
+);
+```
+
+API Gateway fetches Cognito's public JWKS endpoint, validates the token signature, and checks expiry and audience. All inside API Gateway itself. No cold starts, no Lambda invocations, no code you maintain.
 
 **IAM authorization** - requires requests to be signed with AWS Signature Version 4. Works well for service-to-service calls within AWS. Not practical for client-facing APIs.
 
