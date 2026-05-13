@@ -28,28 +28,26 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
   publishedTime={article.data.date.toISOString()}
 >
   <div class="mx-auto my-14 min-h-screen w-full max-w-6xl px-8">
-    <div class="mb-12">
-      <a
-        class="mt-4 flex items-center font-medium text-pink-400 hover:text-pink-300"
-        href="/articles"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="18"
-          height="18"
-          fill="currentColor"
-          class="mr-1.5"
-        >
-          <path d="m6 12 6 5v-4h6v-2h-6V7z"></path>
-        </svg>
-        Back to Articles
-      </a>
-    </div>
     {
       hasHeadings ? (
         <div class="lg:grid lg:grid-cols-[1fr_16rem]">
           <div class="mx-auto max-w-prose">
+            <a
+              class="my-8 flex items-center font-medium text-pink-400 hover:text-pink-300"
+              href="/articles"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="currentColor"
+                class="mr-1.5"
+              >
+                <path d="m6 12 6 5v-4h6v-2h-6V7z" />
+              </svg>
+              Back to Articles
+            </a>
             <header class="mb-8">
               <h1 class="mb-4 text-[2.5rem] font-normal leading-[1.2] text-white">
                 {article.data.title}
