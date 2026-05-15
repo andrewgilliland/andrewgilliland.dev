@@ -27,6 +27,17 @@ test("clearing search restores all articles", async ({ page }) => {
   await expect(page.locator("article").nth(2)).toBeVisible();
 });
 
+test("clear button clears search and restores all articles", async ({
+  page,
+}) => {
+  await page.goto("/articles");
+  const input = page.getByPlaceholder("Search articles…");
+  await input.fill("lambda");
+  await page.getByRole("button", { name: "Clear search" }).click();
+  await expect(input).toHaveValue("");
+  await expect(page.locator("article").nth(2)).toBeVisible();
+});
+
 test("article page renders a heading", async ({ page }) => {
   await page.goto("/articles/intro-to-aws-lambda");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
