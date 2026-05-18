@@ -12,6 +12,8 @@ Before you can train a model, build a pipeline, or generate a chart, you need to
 
 This article covers the full cleaning workflow using the Titanic dataset - a real-world dataset with missing values, mixed types, and interesting distributions that make it ideal for this kind of work.
 
+All the code from this article is available in the companion repo: [andrewgilliland/titanic-cleaning](https://github.com/andrewgilliland/titanic-cleaning).
+
 ## Why Data Cleaning Matters
 
 Models, aggregations, and charts all depend on the quality of their input. A `mean()` on a column with missing values silently skips the gaps. A `groupby` on a column where `"Male"` and `"male"` are both present splits what should be one group into two. A date column stored as a string can't be sorted, bucketed, or compared with anything.
