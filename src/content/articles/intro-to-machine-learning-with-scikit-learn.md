@@ -10,7 +10,7 @@ tags: ["python", "data-science", "scikit-learn"]
 
 This article uses scikit-learn to train a logistic regression classifier on the Titanic dataset and evaluate how well it performs. No math prerequisites required - the goal is to understand the workflow, not derive the algorithm.
 
-All the code from this article is available in the companion repo: [andrewgilliland/titanic-ml](https://github.com/andrewgilliland/titanic-ml).
+All the code from this article is available in the companion repo: [andrewgilliland/titanic-cleaning](https://github.com/andrewgilliland/titanic-cleaning).
 
 ## What Is Machine Learning?
 
@@ -35,8 +35,8 @@ The examples below assume you're using [uv](https://docs.astral.sh/uv/) as your 
 To follow along with the companion repo:
 
 ```bash
-git clone https://github.com/andrewgilliland/titanic-ml
-cd titanic-ml
+git clone https://github.com/andrewgilliland/titanic-cleaning
+cd titanic-cleaning
 uv sync
 uv run main.py
 ```
@@ -44,8 +44,8 @@ uv run main.py
 Or start fresh:
 
 ```bash
-uv init titanic-ml
-cd titanic-ml
+uv init titanic-cleaning
+cd titanic-cleaning
 uv add scikit-learn pandas seaborn
 ```
 
