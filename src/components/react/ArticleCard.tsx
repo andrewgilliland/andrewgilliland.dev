@@ -104,7 +104,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       type: pick(SHAPES),
       cx: rand(70, 108),
       cy: rand(70, 108),
-      size: rand(55, 78),
+      size: rand(55, 64),
       fill: colors[0],
       rotate: rand(0, 45),
     },
