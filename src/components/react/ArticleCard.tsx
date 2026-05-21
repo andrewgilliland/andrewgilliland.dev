@@ -146,6 +146,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       width="120"
       height="120"
       viewBox="0 0 120 120"
+      overflow="visible"
       aria-hidden="true"
     >
       {shapes.map((s, i) => {
