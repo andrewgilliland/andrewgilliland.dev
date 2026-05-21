@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export type Article = {
   id: string;
   title: string;
@@ -39,17 +41,17 @@ interface ShapeProps {
 function renderShape(
   { type, cx, cy, size, fill, rotate }: ShapeProps,
   key: number,
+  style?: React.CSSProperties,
 ) {
   const shared = { fill, stroke: "white", strokeWidth: 2 };
   const t = `rotate(${rotate} ${cx} ${cy})`;
 
+  let shape;
   if (type === "circle") {
-    return <circle key={key} {...shared} cx={cx} cy={cy} r={size} />;
-  }
-  if (type === "rect") {
-    return (
+    shape = <circle {...shared} cx={cx} cy={cy} r={size} />;
+  } else if (type === "rect") {
+    shape = (
       <rect
-        key={key}
         {...shared}
         x={cx - size}
         y={cy - size}
@@ -58,8 +60,7 @@ function renderShape(
         transform={t}
       />
     );
-  }
-  if (type === "triangle") {
+  } else if (type === "triangle") {
     const pts = [
       [cx, cy - size],
       [cx - size * 0.866, cy + size * 0.5],
@@ -67,21 +68,27 @@ function renderShape(
     ]
       .map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`)
       .join(" ");
-    return <polygon key={key} {...shared} points={pts} transform={t} />;
+    shape = <polygon {...shared} points={pts} transform={t} />;
+  } else if (type === "diamond") {
+    const pts = [
+      [cx, cy - size],
+      [cx + size, cy],
+      [cx, cy + size],
+      [cx - size, cy],
+    ]
+      .map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`)
+      .join(" ");
+    shape = <polygon {...shared} points={pts} transform={t} />;
   }
-  // diamond
-  const pts = [
-    [cx, cy - size],
-    [cx + size, cy],
-    [cx, cy + size],
-    [cx - size, cy],
-  ]
-    .map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`)
-    .join(" ");
-  return <polygon key={key} {...shared} points={pts} transform={t} />;
+
+  return (
+    <g key={key} style={style}>
+      {shape}
+    </g>
+  );
 }
 
-function CardDecoration({ id }: { id: string }) {
+function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
   const rng = seededRng(strToSeed(id));
   const rand = (min: number, max: number) => min + rng() * (max - min);
   const pick = <T,>(arr: T[]): T => arr[Math.floor(rng() * arr.length)];
@@ -127,6 +134,12 @@ function CardDecoration({ id }: { id: string }) {
     },
   ];
 
+  const offsets = shapes.map(() => {
+    const dir = rng() * Math.PI * 2;
+    const mag = 3 + rng() * 5;
+    return { dx: Math.cos(dir) * mag, dy: Math.sin(dir) * mag };
+  });
+
   return (
     <svg
       className="pointer-events-none absolute bottom-0 right-0 select-none"
@@ -135,7 +148,15 @@ function CardDecoration({ id }: { id: string }) {
       viewBox="0 0 120 120"
       aria-hidden="true"
     >
-      {shapes.map((s, i) => renderShape(s, i))}
+      {shapes.map((s, i) => {
+        const { dx, dy } = offsets[i];
+        return renderShape(s, i, {
+          transition: "transform 0.3s ease",
+          transform: hovered
+            ? `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`
+            : "translate(0px, 0px)",
+        });
+      })}
     </svg>
   );
 }
@@ -147,13 +168,17 @@ export default function ArticleCard({
   article: Article;
   featured: boolean;
 }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <article className={featured ? "sm:col-span-2" : ""}>
       <a
         href={`/articles/${article.id}`}
         className={`relative grid overflow-hidden rounded-lg border border-white bg-black text-white no-underline transition-all duration-200 ease-in-out hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[3px_3px_#fff] ${featured ? "min-h-[280px]" : "min-h-[220px]"}`}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        <CardDecoration id={article.id} />
+        <CardDecoration id={article.id} hovered={hovered} />
         <div className="flex h-full grow flex-col space-y-2 p-6">
           <h2 className="flex-none text-2xl leading-tight">{article.title}</h2>
           <div className="flex-1" />
