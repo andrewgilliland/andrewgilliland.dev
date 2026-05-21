@@ -38,6 +38,31 @@ interface ShapeProps {
   rotate: number;
 }
 
+function roundedPolygonPath(points: number[][], r: number): string {
+  const n = points.length;
+  const parts: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const prev = points[(i - 1 + n) % n];
+    const curr = points[i];
+    const next = points[(i + 1) % n];
+    const d0x = prev[0] - curr[0];
+    const d0y = prev[1] - curr[1];
+    const len0 = Math.sqrt(d0x * d0x + d0y * d0y);
+    const a0x = curr[0] + (d0x / len0) * Math.min(r, len0 / 2);
+    const a0y = curr[1] + (d0y / len0) * Math.min(r, len0 / 2);
+    const d1x = next[0] - curr[0];
+    const d1y = next[1] - curr[1];
+    const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
+    const a1x = curr[0] + (d1x / len1) * Math.min(r, len1 / 2);
+    const a1y = curr[1] + (d1y / len1) * Math.min(r, len1 / 2);
+    parts.push(
+      `${i === 0 ? "M" : "L"} ${a0x.toFixed(1)} ${a0y.toFixed(1)} Q ${curr[0].toFixed(1)} ${curr[1].toFixed(1)} ${a1x.toFixed(1)} ${a1y.toFixed(1)}`,
+    );
+  }
+  parts.push("Z");
+  return parts.join(" ");
+}
+
 function renderShape(
   { type, cx, cy, size, fill, rotate }: ShapeProps,
   key: number,
@@ -45,6 +70,7 @@ function renderShape(
 ) {
   const shared = { fill, stroke: "white", strokeWidth: 2 };
   const t = `rotate(${rotate} ${cx} ${cy})`;
+  const r = size * 0.2;
 
   let shape;
   if (type === "circle") {
@@ -57,6 +83,7 @@ function renderShape(
         y={cy - size}
         width={size * 2}
         height={size * 2}
+        rx={r}
         transform={t}
       />
     );
@@ -65,20 +92,16 @@ function renderShape(
       [cx, cy - size],
       [cx - size * 0.866, cy + size * 0.5],
       [cx + size * 0.866, cy + size * 0.5],
-    ]
-      .map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`)
-      .join(" ");
-    shape = <polygon {...shared} points={pts} transform={t} />;
+    ];
+    shape = <path {...shared} d={roundedPolygonPath(pts, r)} transform={t} />;
   } else if (type === "diamond") {
     const pts = [
       [cx, cy - size],
       [cx + size, cy],
       [cx, cy + size],
       [cx - size, cy],
-    ]
-      .map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`)
-      .join(" ");
-    shape = <polygon {...shared} points={pts} transform={t} />;
+    ];
+    shape = <path {...shared} d={roundedPolygonPath(pts, r)} transform={t} />;
   }
 
   return (
