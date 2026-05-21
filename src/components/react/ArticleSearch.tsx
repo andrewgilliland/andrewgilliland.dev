@@ -11,6 +11,18 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
     if (q) setQuery(q);
   }, []);
 
+  const setQueryAndUrl = (value: string) => {
+    setQuery(value);
+    const params = new URLSearchParams(window.location.search);
+    if (value.trim()) {
+      params.set("q", value);
+    } else {
+      params.delete("q");
+    }
+    const qs = params.toString();
+    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+  };
+
   const allTags = [...new Set(articles.flatMap((a) => a.tags))].sort();
 
   const filtered =
@@ -30,13 +42,13 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
           <input
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => setQueryAndUrl(e.target.value)}
             placeholder="Search articles…"
             className="w-full rounded-lg border border-white/20 bg-black px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-pink-500 [&::-webkit-search-cancel-button]:appearance-none"
           />
           {query && (
             <button
-              onClick={() => setQuery("")}
+              onClick={() => setQueryAndUrl("")}
               aria-label="Clear search"
               className="group absolute right-3 top-1/2 -translate-y-1/2"
             >
@@ -48,7 +60,7 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
           {allTags.map((tag) => (
             <button
               key={tag}
-              onClick={() => setQuery(query === tag ? "" : tag)}
+              onClick={() => setQueryAndUrl(query === tag ? "" : tag)}
               className={`rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
                 query === tag
                   ? "border-pink-400 text-pink-400"
