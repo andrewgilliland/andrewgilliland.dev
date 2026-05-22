@@ -14,13 +14,13 @@ const currentYear = new Date().getFullYear();
   <div class="mt-6 flex items-center gap-10 lg:mt-0">
     {
       socialLinks.map(({ Icon, href, bgColor, title }) => (
-        <a href={href} aria-label={title} target="_blank" rel="noopener noreferrer">
-          <Block
-            backgroundColor={bgColor}
-            height="12"
-            width="12"
-            theme="dark"
-          >
+        <a
+          href={href}
+          aria-label={title}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Block className={`h-12 w-12 ${bgColor}`}>
             <Icon className="h-5 w-5 fill-white" />
           </Block>
         </a>
