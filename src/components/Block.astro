@@ -1,44 +1,13 @@
 ---
 interface Props {
   className?: string;
-  backgroundColor?: string;
-  size?: string;
-  height?: string;
-  width?: string;
 }
 
-const {
-  className = "",
-  backgroundColor = "",
-  size = "16",
-  height = size,
-  width = size,
-} = Astro.props;
-
-const sizeMap: Record<string, string> = {
-  "10": "h-10",
-  "11": "h-11",
-  "12": "h-12",
-  "14": "h-14",
-  "16": "h-16",
-  "24": "h-24",
-};
-const widthMap: Record<string, string> = {
-  "10": "w-10",
-  "11": "w-11",
-  "12": "w-12",
-  "14": "w-14",
-  "16": "w-16",
-  "24": "w-24",
-};
-const heightClass = sizeMap[height] ?? `h-${height}`;
-const widthClass = widthMap[width] ?? `w-${width}`;
+const { className = "" } = Astro.props;
 ---
 
-<div class={`group relative inline-block ${className}`}>
-  <div
-    class={`flex ${heightClass} ${widthClass} items-center justify-center rounded-lg border-2 border-white text-white transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#fff] ${backgroundColor}`}
-  >
-    <slot />
-  </div>
+<div
+  class={`flex items-center justify-center rounded-lg border-2 border-white text-white transition-all duration-200 ease-in-out hover:-translate-x-px hover:-translate-y-px hover:shadow-[2px_2px_0_0_#fff] ${className}`}
+>
+  <slot />
 </div>
