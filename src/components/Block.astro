@@ -5,7 +5,6 @@ interface Props {
   size?: string;
   height?: string;
   width?: string;
-  theme?: "dark" | "light";
 }
 
 const {
@@ -14,7 +13,6 @@ const {
   size = "16",
   height = size,
   width = size,
-  theme = "dark",
 } = Astro.props;
 
 const sizeMap: Record<string, string> = {
@@ -35,16 +33,11 @@ const widthMap: Record<string, string> = {
 };
 const heightClass = sizeMap[height] ?? `h-${height}`;
 const widthClass = widthMap[width] ?? `w-${width}`;
-const borderClass = theme === "dark" ? "border-white" : "border-black";
 ---
 
 <div class={`group relative inline-block ${className}`}>
   <div
-    class="absolute top-0 h-full w-full translate-x-1 translate-y-1 rounded-lg bg-white"
-  >
-  </div>
-  <div
-    class={`relative flex ${heightClass} ${widthClass} items-center justify-center rounded-lg border-2 ${borderClass} text-white transition-transform group-hover:translate-x-1 group-hover:translate-y-1 ${backgroundColor}`}
+    class={`flex ${heightClass} ${widthClass} items-center justify-center rounded-lg border-2 border-white text-white transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#fff] ${backgroundColor}`}
   >
     <slot />
   </div>
