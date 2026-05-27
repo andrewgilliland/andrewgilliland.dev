@@ -8,6 +8,7 @@ import TwinSections from "@/components/sections/TwinSections.astro";
 import PrimaryButton from "@/components/PrimaryButton.astro";
 import MarqueeRow from "@/components/MarqueeRow.astro";
 import { getCollection } from "astro:content";
+import { toSlug } from "@/lib/slug";
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 
@@ -66,7 +67,7 @@ const [featured, ...sideArticles] = sortedArticles;
           {/* Featured article card */}
           <article>
             <CardLink
-              href={`/articles/${featured.id.replace(/\.mdx?$/, "")}`}
+              href={`/articles/${toSlug(featured.id)}`}
               class="h-full min-h-[320px]"
             >
               <div class="flex h-full grow flex-col space-y-2 p-6">
@@ -90,7 +91,7 @@ const [featured, ...sideArticles] = sortedArticles;
                   <li class="py-4 first:pt-0">
                     <a
                       class="group flex items-end justify-between text-white no-underline hover:text-pink-400"
-                      href={`/articles/${article.id.replace(/\.mdx?$/, "")}`}
+                      href={`/articles/${toSlug(article.id)}`}
                     >
                       <div class="grid grid-cols-1 gap-1">
                         <h4 class="mb-0.5 text-2xl font-normal">
