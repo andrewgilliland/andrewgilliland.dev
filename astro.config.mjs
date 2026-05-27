@@ -7,17 +7,7 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://andrewgilliland.dev",
   output: "static",
-  integrations: [
-    sitemap(),
-    react(),
-    mdx({
-      syntaxHighlight: "shiki",
-      shikiConfig: {
-        theme: "github-dark-high-contrast",
-        wrap: true,
-      },
-    }),
-  ],
+  integrations: [sitemap(), react(), mdx()],
   vite: {
     resolve: {
       alias: {
