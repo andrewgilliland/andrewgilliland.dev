@@ -1,4 +1,5 @@
 ---
+import { Rss } from "lucide-react";
 import Block from "./Block.astro";
 import ColorDivider from "./ColorDivider.astro";
 import { socialLinks } from "@/lib/social";
@@ -26,5 +27,10 @@ const currentYear = new Date().getFullYear();
         </a>
       ))
     }
+    <a href="/rss.xml" aria-label="RSS Feed">
+      <Block className="h-12 w-12 bg-yellow-500">
+        <Rss className="h-5 w-5 text-white" />
+      </Block>
+    </a>
   </div>
 </footer>
