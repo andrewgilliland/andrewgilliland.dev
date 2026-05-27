@@ -31,6 +31,12 @@ const canonicalURL = Astro.url.href;
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="canonical" href={canonicalURL} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Andrew Gilliland"
+      href="/rss.xml"
+    />
     <meta name="generator" content={Astro.generator} />
 
     <!-- Open Graph -->

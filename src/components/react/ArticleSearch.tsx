@@ -41,6 +41,7 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
         <div className="relative">
           <input
             type="search"
+            aria-label="Search articles"
             value={query}
             onChange={(e) => setQueryAndUrl(e.target.value)}
             placeholder="Search articles…"
