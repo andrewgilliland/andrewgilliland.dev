@@ -12,7 +12,7 @@ import { getCollection } from "astro:content";
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 
 const tagCounts = allArticles
-  .flatMap((a) => a.data.tags ?? [])
+  .flatMap((a) => a.data.tags)
   .reduce(
     (acc, tag) => {
       acc[tag] = (acc[tag] ?? 0) + 1;
