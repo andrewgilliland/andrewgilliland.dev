@@ -1,6 +1,6 @@
 ---
 title: Reducing Alert Noise with CloudWatch Composite Alarms
-date: 2026-07-05
+date: 2026-05-18
 excerpt: When your database goes down, every service that depends on it starts throwing errors. Composite alarms let you express alarm logic so you get one page per root cause, not one per symptom.
 draft: false
 tags: ["aws", "cdk", "cloudwatch"]
@@ -14,9 +14,9 @@ A composite alarm derives its state from a **boolean rule expression** over othe
 
 The expression operators are simple:
 
-- `ALARM("alarm-name")` — true when the named alarm is in `ALARM` state
-- `OK("alarm-name")` — true when the named alarm is in `OK` state
-- `AND`, `OR`, `NOT` — standard boolean logic
+- `ALARM("alarm-name")` - true when the named alarm is in `ALARM` state
+- `OK("alarm-name")` - true when the named alarm is in `OK` state
+- `AND`, `OR`, `NOT` - standard boolean logic
 
 Composite alarms can reference metric alarms or other composite alarms. You can nest them to build multi-level alerting hierarchies.
 

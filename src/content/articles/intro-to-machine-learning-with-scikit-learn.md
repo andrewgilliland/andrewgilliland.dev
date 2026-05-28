@@ -1,6 +1,6 @@
 ---
 title: Intro to Machine Learning with scikit-learn
-date: 2026-06-07
+date: 2026-05-22
 excerpt: Machine learning sounds intimidating, but scikit-learn makes it approachable. Here's how to train your first model in Python.
 draft: false
 tags: ["python", "data-science", "scikit-learn"]
