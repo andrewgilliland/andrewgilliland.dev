@@ -4,6 +4,10 @@ import { toSlug } from "@/lib/slug";
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext) {
+  if (!context.site) {
+    throw new Error("Site URL not configured in astro.config.mjs");
+  }
+
   const articles = await getCollection("articles", ({ data }) => !data.draft);
 
   const sorted = articles.sort(
@@ -14,7 +18,7 @@ export async function GET(context: APIContext) {
     title: "Andrew Gilliland",
     description:
       "A software engineer writing about AWS, Python, and building things on the web.",
-    site: context.site!,
+    site: context.site,
     items: sorted.map((article) => ({
       title: article.data.title,
       description: article.data.excerpt,
