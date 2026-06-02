@@ -1,7 +1,7 @@
 ---
 title: Autonomous Test Generation with Playwright and Claude
 date: 2026-05-28
-excerpt: How to build an AI agent that crawls your site, observes each page, and writes Playwright spec files — without you authoring a single selector.
+excerpt: How to build an AI agent that crawls your site, observes each page, and writes Playwright spec files - without you authoring a single selector.
 draft: false
 tags: ["testing", "playwright", "ai", "anthropic"]
 ---
@@ -18,10 +18,10 @@ An AI agent is a loop: send a message to the model, execute whichever tool it ch
 
 The tools we expose:
 
-- `navigate` — go to a URL and wait for it to load
-- `get_snapshot` — return visible text and interactive elements from the current page
-- `get_links` — return internal navigation links
-- `write_spec_file` — write a generated `.spec.ts` file to disk
+- `navigate` - go to a URL and wait for it to load
+- `get_snapshot` - return visible text and interactive elements from the current page
+- `get_links` - return internal navigation links
+- `write_spec_file` - write a generated `.spec.ts` file to disk
 
 Claude decides the sequence: explore this page, follow that link, observe the next page, write a spec, move on. When it has covered the site and written files for each section, it stops.
 
@@ -34,13 +34,32 @@ npm install @anthropic-ai/sdk
 npx playwright install chromium
 ```
 
-Create `scripts/generate-tests.ts`. This is a standalone script you run once (or whenever you add new pages), not part of your test suite itself.
+The only new addition to your project is a `scripts/` directory with a single file:
+
+```
+your-project/
+├── e2e/
+│   ├── homepage.spec.ts          ← hand-written tests
+│   ├── articles.spec.ts
+│   ├── navigation.spec.ts
+│   └── generated/                ← agent output (review before committing)
+│       ├── homepage.spec.ts
+│       ├── articles.spec.ts
+│       └── about.spec.ts
+├── scripts/
+│   └── generate-tests.ts         ← tool definitions + executor + agent loop
+├── playwright.config.ts
+└── package.json
+```
+
+`generate-tests.ts` is self-contained — all the code in this article lives in that one file. The agent writes its output to `e2e/generated/`, which you review and clean up before moving files into `e2e/`.
 
 ## The Tool Definitions
 
-Claude needs a typed schema for each tool before it can call them:
+Claude needs a typed schema for each tool before it can call them. This goes at the top of `scripts/generate-tests.ts`:
 
 ```ts
+// scripts/generate-tests.ts
 import Anthropic from "@anthropic-ai/sdk";
 
 const tools: Anthropic.Tool[] = [
@@ -215,7 +234,7 @@ Instructions:
 2. For each section, take a snapshot to understand what the page contains
 3. Write one spec file per section (homepage.spec.ts, articles.spec.ts, etc.)
 4. Each spec should test: does the main content render? do interactive elements exist? does navigation work?
-5. Use semantic selectors: getByRole, getByText, getByPlaceholder — never CSS class selectors
+5. Use semantic selectors: getByRole, getByText, getByPlaceholder - never CSS class selectors
 6. Write tests that verify outcomes a user would care about, not implementation details
 7. When you have covered all main sections and written all spec files, stop.
 

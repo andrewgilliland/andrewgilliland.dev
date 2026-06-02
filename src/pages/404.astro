@@ -1,0 +1,109 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const path = Astro.url.pathname;
+---
+
+<BaseLayout title="404 - Page Not Found">
+  <div class="mx-auto mt-20 w-full max-w-3xl px-8">
+    <!-- Terminal window chrome -->
+    <div class="overflow-hidden rounded-lg border border-gray-700 shadow-2xl">
+      <!-- Title bar -->
+      <div class="flex items-center gap-2 bg-gray-800 px-4 py-3">
+        <span class="h-3 w-3 rounded-full bg-red-500"></span>
+        <span class="h-3 w-3 rounded-full bg-yellow-500"></span>
+        <span class="h-3 w-3 rounded-full bg-green-500"></span>
+        <span class="ml-3 font-mono text-xs text-gray-400">zsh — 80x24</span>
+      </div>
+
+      <!-- Terminal body -->
+      <div class="bg-gray-950 p-6 font-mono text-sm leading-relaxed">
+        <!-- Line 1 -->
+        <div class="flex gap-2">
+          <span class="text-green-400">➜</span>
+          <span class="text-cyan-400">~</span>
+          <span class="text-gray-100">cd {path}</span>
+        </div>
+        <div class="mt-1 text-red-400">
+          cd: no such file or directory: {path}
+        </div>
+
+        <!-- Line 2 -->
+        <div class="mt-4 flex gap-2">
+          <span class="text-green-400">➜</span>
+          <span class="text-cyan-400">~</span>
+          <span class="text-gray-100"
+            >find / -name "{path.replace(/\//g, "")}" 2&gt;/dev/null</span
+          >
+        </div>
+        <div class="mt-1 italic text-gray-500">...searching...</div>
+        <div class="text-gray-500">no results found</div>
+
+        <!-- Line 3 -->
+        <div class="mt-4 flex gap-2">
+          <span class="text-green-400">➜</span>
+          <span class="text-cyan-400">~</span>
+          <span class="text-gray-100"
+            >curl -I https://andrewgilliland.dev{path}</span
+          >
+        </div>
+        <div class="mt-1 space-y-0.5">
+          <div>
+            <span class="text-pink-400">HTTP/2</span>
+            <span class="font-bold text-red-400">404</span>
+          </div>
+          <div class="text-gray-500">content-type: text/html</div>
+          <div class="text-gray-500">x-error: page-not-found</div>
+        </div>
+
+        <!-- Line 4 -->
+        <div class="mt-4 flex gap-2">
+          <span class="text-green-400">➜</span>
+          <span class="text-cyan-400">~</span>
+          <span class="text-gray-100">echo $?</span>
+        </div>
+        <div class="mt-1 text-yellow-400">404</div>
+
+        <!-- Line 5 -->
+        <div class="mt-4 flex gap-2">
+          <span class="text-green-400">➜</span>
+          <span class="text-cyan-400">~</span>
+          <span class="text-gray-100">cat suggestion.txt</span>
+        </div>
+        <div class="mt-1 text-gray-300">
+          Looks like this page doesn't exist.<br />
+          Try heading back home or checking the URL.
+        </div>
+
+        <!-- Prompt with home link -->
+        <div class="mt-4 flex items-center gap-2">
+          <span class="text-green-400">➜</span>
+          <span class="text-cyan-400">~</span>
+          <a
+            href="/"
+            class="text-pink-400 underline underline-offset-2 transition-colors hover:text-pink-300"
+            >cd ~</a
+          >
+          <div id="cursor" class="ml-0.5 h-4 w-2 bg-gray-100 align-middle">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  #cursor {
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+</style>
