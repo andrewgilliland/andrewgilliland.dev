@@ -39,6 +39,14 @@
     translate: 0 0;
     opacity: 1;
   }
+
+  .copy-code-btn.error {
+    color: theme("colors.red.400");
+    border-color: theme("colors.red.400");
+    box-shadow: none;
+    translate: 0 0;
+    opacity: 1;
+  }
 </style>
 
 <script>
@@ -47,25 +55,36 @@
 
     const clipboardIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>`;
     const clipboardCheckIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>`;
+    const clipboardXIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m15 11-6 6"/><path d="m9 11 6 6"/></svg>`;
 
     const button = document.createElement("button");
     button.className = "copy-code-btn";
     button.setAttribute("aria-label", "Copy code");
     button.innerHTML = clipboardIcon;
 
-    button.addEventListener("click", async () => {
+    button.addEventListener("click", async (event) => {
       const code = pre.querySelector("code");
       if (!code) return;
 
-      await navigator.clipboard.writeText(code.innerText);
+      try {
+        await navigator.clipboard.writeText(code.innerText);
 
-      button.innerHTML = clipboardCheckIcon;
-      button.classList.add("copied");
+        button.innerHTML = clipboardCheckIcon;
+        button.classList.add("copied");
 
-      setTimeout(() => {
-        button.innerHTML = clipboardIcon;
-        button.classList.remove("copied");
-      }, 2000);
+        setTimeout(() => {
+          button.innerHTML = clipboardIcon;
+          button.classList.remove("copied");
+        }, 2000);
+      } catch {
+        button.innerHTML = clipboardXIcon;
+        button.classList.add("error");
+
+        setTimeout(() => {
+          button.innerHTML = clipboardIcon;
+          button.classList.remove("error");
+        }, 2000);
+      }
     });
 
     pre.appendChild(button);
