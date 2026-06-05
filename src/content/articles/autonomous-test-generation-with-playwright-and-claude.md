@@ -52,7 +52,7 @@ your-project/
 └── package.json
 ```
 
-`generate-tests.ts` is self-contained — all the code in this article lives in that one file. The agent writes its output to `e2e/generated/`, which you review and clean up before moving files into `e2e/`.
+`generate-tests.ts` is self-contained - all the code in this article lives in that one file. The agent writes its output to `e2e/generated/`, which you review and clean up before moving files into `e2e/`.
 
 ## The Tool Definitions
 

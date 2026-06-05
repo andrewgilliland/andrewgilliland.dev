@@ -62,7 +62,7 @@
     button.setAttribute("aria-label", "Copy code");
     button.innerHTML = clipboardIcon;
 
-    button.addEventListener("click", async (event) => {
+    button.addEventListener("click", async (_event) => {
       const code = pre.querySelector("code");
       if (!code) return;
 
