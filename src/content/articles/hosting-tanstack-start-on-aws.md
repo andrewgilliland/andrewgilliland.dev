@@ -24,6 +24,25 @@ TanStack Start uses an **adapter model** to target different deployment environm
 
 The client bundle is just static files. Once built, those can be served from S3 and cached aggressively by CloudFront. The server bundle needs actual compute to execute on every request.
 
+The adapter is configured in `vite.config.ts` via the Nitro plugin. A common pattern is to switch presets based on the environment:
+
+```typescript
+// vite.config.ts
+import { nitro } from "nitro/vite";
+
+export default defineConfig({
+  plugins: [
+    nitro({
+      preset:
+        process.env.NODE_ENV === "production" ? "aws-lambda" : "node-server",
+    }),
+    // ... other plugins
+  ],
+});
+```
+
+This means local dev runs a plain Node.js HTTP server (no Lambda emulation overhead), and production builds target the AWS Lambda handler format.
+
 This split - static assets on S3, dynamic rendering on compute - is the core pattern this article is built around.
 
 ## The AWS Architecture
@@ -86,7 +105,9 @@ Lambda runs the server bundle built with the `aws-lambda` adapter. Each incoming
 
 **Lambda Function URLs** provide a direct HTTPS endpoint to invoke a Lambda function without going through API Gateway. For an SSR use case, this is the right choice - you're not doing request routing, schema validation, or usage plans. Function URLs are free and reduce the number of services you need to manage.
 
-The function runs on `nodejs22.x` and needs enough memory to handle React SSR comfortably. 512MB is a reasonable starting point; tune based on profiling.
+The function runs on `nodejs22.x` and needs enough memory to handle React SSR comfortably. 1024MB is a good starting point - SSR involves parsing and rendering a full React tree on every request, and giving Lambda enough headroom reduces both latency and the chance of OOM errors. Tune down after profiling if cost is a concern.
+
+> **API Gateway vs Function URL:** This article uses Lambda Function URLs for simplicity - no extra service, no per-request API Gateway cost. If you need request validation, usage plans, or API keys, swap the Function URL for an API Gateway HTTP API pointing at the same Lambda function. The CloudFront origin configuration changes to point at the API Gateway endpoint instead.
 
 ### ECS Fargate
 
@@ -173,7 +194,7 @@ export class TanStackStartStack extends cdk.Stack {
       handler: "index.handler",
       // Built with the aws-lambda adapter; output goes to .output/server/
       code: lambda.Code.fromAsset("../.output/server"),
-      memorySize: 512,
+      memorySize: 1024,
       timeout: cdk.Duration.seconds(30),
       environment: {
         NODE_ENV: "production",
@@ -221,11 +242,49 @@ export class TanStackStartStack extends cdk.Stack {
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
       },
       additionalBehaviors: {
+        // Static JS/CSS bundles
         "/assets/*": {
           origin: s3Origin,
           viewerProtocolPolicy:
             cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+          compress: true,
+        },
+        // Nitro build chunks
+        "/_build/*": {
+          origin: s3Origin,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+          compress: true,
+        },
+        // Images and other static files
+        "/favicon.*": {
+          origin: s3Origin,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        },
+        "/*.jpg": {
+          origin: s3Origin,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+          compress: true,
+        },
+        "/*.png": {
+          origin: s3Origin,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+          compress: true,
+        },
+        "/*.svg": {
+          origin: s3Origin,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+          compress: true,
         },
       },
       domainNames: [domainName],
