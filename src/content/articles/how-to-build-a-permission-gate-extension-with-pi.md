@@ -1,5 +1,5 @@
 ---
-title: Building a Real-World Agent Harness with Pi
+title: How to Build a Permission Gate Extension for Pi
 date: 2026-06-07
 excerpt: Pi is a minimal, extensible coding agent. This article walks through building a permission gate extension that intercepts dangerous bash commands before they run.
 draft: false
