@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import ArticleCard, { type Article } from "./ArticleCard";
+import ArticleCard, { type Article } from "../ArticleCard";
 
 export function filterArticles(articles: Article[], query: string): Article[] {
   if (query.trim() === "") return articles;

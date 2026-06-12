@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { filterArticles, getUniqueTags } from "./ArticleSearch";
-import type { Article } from "./ArticleCard";
+import type { Article } from "../ArticleCard";
 
 const articles: Article[] = [
   {
