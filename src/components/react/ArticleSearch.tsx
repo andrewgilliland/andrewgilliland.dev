@@ -2,6 +2,21 @@ import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import ArticleCard, { type Article } from "./ArticleCard";
 
+export function filterArticles(articles: Article[], query: string): Article[] {
+  if (query.trim() === "") return articles;
+  const q = query.toLowerCase();
+  return articles.filter(
+    (a) =>
+      a.title.toLowerCase().includes(q) ||
+      a.excerpt.toLowerCase().includes(q) ||
+      a.tags.some((t) => t.toLowerCase().includes(q)),
+  );
+}
+
+export function getUniqueTags(articles: Article[]): string[] {
+  return [...new Set(articles.flatMap((a) => a.tags))].sort();
+}
+
 export default function ArticleSearch({ articles }: { articles: Article[] }) {
   const [query, setQuery] = useState("");
 
@@ -23,17 +38,8 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   };
 
-  const allTags = [...new Set(articles.flatMap((a) => a.tags))].sort();
-
-  const filtered =
-    query.trim() === ""
-      ? articles
-      : articles.filter(
-          (a) =>
-            a.title.toLowerCase().includes(query.toLowerCase()) ||
-            a.excerpt.toLowerCase().includes(query.toLowerCase()) ||
-            a.tags.some((t) => t.toLowerCase().includes(query.toLowerCase())),
-        );
+  const allTags = getUniqueTags(articles);
+  const filtered = filterArticles(articles, query);
 
   return (
     <>

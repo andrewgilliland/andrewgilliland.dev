@@ -9,6 +9,8 @@
     "start": "astro preview",
     "type-check": "astro check",
     "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:e2e": "playwright test",
     "prepare": "husky"
   },
@@ -50,6 +52,7 @@
     "prettier-plugin-astro": "^0.14.0",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "shiki": "^1.18.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^4.1.8"
   }
 }
