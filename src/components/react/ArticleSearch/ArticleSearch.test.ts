@@ -47,7 +47,7 @@ describe("filterArticles", () => {
     expect(result[0].id).toBe("intro-to-dynamodb");
   });
 
-  it("filters by tag", () => {
+  it("filters by tag substring in query", () => {
     const result = filterArticles(articles, "aws");
     expect(result).toHaveLength(2);
   });
@@ -56,10 +56,34 @@ describe("filterArticles", () => {
     expect(filterArticles(articles, "kubernetes")).toHaveLength(0);
   });
 
-  it("is case-insensitive for tags", () => {
+  it("is case-insensitive for query", () => {
     const result = filterArticles(articles, "REACT");
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe("intro-to-react");
+  });
+
+  describe("selectedTag (exact match)", () => {
+    it("returns only articles with an exact tag match", () => {
+      const result = filterArticles(articles, "", "aws");
+      expect(result).toHaveLength(2);
+      result.forEach((a) => expect(a.tags).toContain("aws"));
+    });
+
+    it("does not match partial tag names", () => {
+      // 'ai' should not match articles tagged 'training' even though 'training' contains 'ai'
+      const result = filterArticles(articles, "", "ai");
+      expect(result).toHaveLength(0);
+    });
+
+    it("combines tag filter and query filter", () => {
+      const result = filterArticles(articles, "lambda", "aws");
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe("intro-to-aws-lambda");
+    });
+
+    it("returns all articles when selectedTag is undefined", () => {
+      expect(filterArticles(articles, "", undefined)).toHaveLength(3);
+    });
   });
 });
 

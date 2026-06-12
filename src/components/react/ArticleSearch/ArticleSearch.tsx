@@ -2,15 +2,28 @@ import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import ArticleCard, { type Article } from "../ArticleCard";
 
-export function filterArticles(articles: Article[], query: string): Article[] {
-  if (query.trim() === "") return articles;
-  const q = query.toLowerCase();
-  return articles.filter(
-    (a) =>
-      a.title.toLowerCase().includes(q) ||
-      a.excerpt.toLowerCase().includes(q) ||
-      a.tags.some((t) => t.toLowerCase().includes(q)),
-  );
+export function filterArticles(
+  articles: Article[],
+  query: string,
+  selectedTag?: string,
+): Article[] {
+  let result = articles;
+
+  if (selectedTag) {
+    result = result.filter((a) => a.tags.includes(selectedTag));
+  }
+
+  if (query.trim() !== "") {
+    const q = query.toLowerCase();
+    result = result.filter(
+      (a) =>
+        a.title.toLowerCase().includes(q) ||
+        a.excerpt.toLowerCase().includes(q) ||
+        a.tags.some((t) => t.toLowerCase().includes(q)),
+    );
+  }
+
+  return result;
 }
 
 export function getUniqueTags(articles: Article[]): string[] {
@@ -19,27 +32,43 @@ export function getUniqueTags(articles: Article[]): string[] {
 
 export default function ArticleSearch({ articles }: { articles: Article[] }) {
   const [query, setQuery] = useState("");
+  const [selectedTag, setSelectedTag] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q");
+    const tag = params.get("tag");
     if (q) setQuery(q);
+    if (tag) setSelectedTag(tag);
   }, []);
 
-  const setQueryAndUrl = (value: string) => {
-    setQuery(value);
-    const params = new URLSearchParams(window.location.search);
-    if (value.trim()) {
-      params.set("q", value);
-    } else {
-      params.delete("q");
-    }
+  const updateUrl = (q: string, tag: string) => {
+    const params = new URLSearchParams();
+    if (q.trim()) params.set("q", q);
+    if (tag) params.set("tag", tag);
     const qs = params.toString();
     history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   };
 
+  const setQueryAndUrl = (value: string) => {
+    setQuery(value);
+    updateUrl(value, selectedTag);
+  };
+
+  const toggleTag = (tag: string) => {
+    const next = selectedTag === tag ? "" : tag;
+    setSelectedTag(next);
+    updateUrl(query, next);
+  };
+
+  const clearAll = () => {
+    setQuery("");
+    setSelectedTag("");
+    history.replaceState(null, "", window.location.pathname);
+  };
+
   const allTags = getUniqueTags(articles);
-  const filtered = filterArticles(articles, query);
+  const filtered = filterArticles(articles, query, selectedTag);
 
   return (
     <>
@@ -53,9 +82,9 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
             placeholder="Search articles…"
             className="w-full rounded-lg border border-white/20 bg-black px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-pink-500 [&::-webkit-search-cancel-button]:appearance-none"
           />
-          {query && (
+          {(query || selectedTag) && (
             <button
-              onClick={() => setQueryAndUrl("")}
+              onClick={clearAll}
               aria-label="Clear search"
               className="group absolute right-3 top-1/2 -translate-y-1/2"
             >
@@ -67,9 +96,9 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
           {allTags.map((tag) => (
             <button
               key={tag}
-              onClick={() => setQueryAndUrl(query === tag ? "" : tag)}
+              onClick={() => toggleTag(tag)}
               className={`rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
-                query === tag
+                selectedTag === tag
                   ? "border-pink-400 text-pink-400"
                   : "border-gray-600 text-gray-400 hover:border-pink-400 hover:text-pink-400"
               }`}
@@ -86,13 +115,13 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
             <ArticleCard
               key={article.id}
               article={article}
-              featured={index === 0 && query.trim() === ""}
+              featured={index === 0 && query.trim() === "" && !selectedTag}
             />
           ))}
         </section>
       ) : (
         <p className="py-16 text-center font-mono text-sm text-gray-500">
-          No articles match &ldquo;{query}&rdquo;
+          No articles match &ldquo;{selectedTag || query}&rdquo;
         </p>
       )}
     </>
