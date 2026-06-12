@@ -16,7 +16,10 @@ test("article search filters by tag", async ({ page }) => {
   for (let i = 0; i < count; i++) {
     await expect(articles.nth(i)).toBeVisible();
   }
-  await expect(page.getByPlaceholder("Search articles…")).toHaveValue("cdk");
+  // Tags are now separate from the search input — the input should remain empty
+  await expect(page.getByPlaceholder("Search articles…")).toHaveValue("");
+  // The URL should reflect the selected tag
+  await expect(page).toHaveURL(/tag=cdk/);
 });
 
 test("clearing search restores all articles", async ({ page }) => {
