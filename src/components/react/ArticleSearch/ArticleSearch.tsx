@@ -97,10 +97,10 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
             <button
               key={tag}
               onClick={() => toggleTag(tag)}
-              className={`rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
+              className={`rounded-full border px-2.5 py-0.5 text-xs transition-all duration-100 hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.35)] ${
                 selectedTag === tag
                   ? "border-pink-400 text-pink-400"
-                  : "border-gray-600 text-gray-400 hover:border-pink-400 hover:text-pink-400"
+                  : "border-white/35 text-gray-400"
               }`}
             >
               {tag}
