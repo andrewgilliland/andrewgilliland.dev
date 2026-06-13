@@ -8,6 +8,14 @@ export type Article = {
   tags: string[];
 };
 
+/**
+ * Converts a string into a deterministic 32-bit unsigned integer seed.
+ * Uses the djb2 hash algorithm: starts with the magic constant 5381 and
+ * for each character combines the accumulated hash with a left-shifted
+ * version of itself XORed with the character code. The `>>> 0` keeps the
+ * result within 32-bit unsigned integer range. Falls back to 1 if the
+ * result is 0 (which would break the RNG).
+ */
 export function strToSeed(str: string): number {
   let h = 5381;
   for (let i = 0; i < str.length; i++) {
@@ -16,6 +24,14 @@ export function strToSeed(str: string): number {
   return h || 1;
 }
 
+/**
+ * Returns a deterministic pseudo-random number generator (PRNG) seeded with
+ * the given value. Uses the xorshift32 algorithm: each call mutates the
+ * internal state with three XOR-shift operations, keeping it in 32-bit
+ * unsigned integer range. Dividing by 2^32 maps the output to [0, 1).
+ * Calling with the same seed always produces the same sequence, which
+ * ensures article card artwork is stable across renders.
+ */
 export function seededRng(seed: number) {
   let s = seed >>> 0 || 1;
   return () => {
