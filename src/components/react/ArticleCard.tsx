@@ -8,7 +8,7 @@ export type Article = {
   tags: string[];
 };
 
-function strToSeed(str: string): number {
+export function strToSeed(str: string): number {
   let h = 5381;
   for (let i = 0; i < str.length; i++) {
     h = (((h << 5) + h) ^ str.charCodeAt(i)) >>> 0;
@@ -16,7 +16,7 @@ function strToSeed(str: string): number {
   return h || 1;
 }
 
-function seededRng(seed: number) {
+export function seededRng(seed: number) {
   let s = seed >>> 0 || 1;
   return () => {
     s = (s ^ (s << 13)) >>> 0;
