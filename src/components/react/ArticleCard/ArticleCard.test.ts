@@ -64,6 +64,33 @@ describe("seededRng", () => {
   });
 });
 
+describe("strToSeed + seededRng integration", () => {
+  it("produces a stable first value for a known article id", () => {
+    const rng = seededRng(strToSeed("data-visualization-with-d3.mdx"));
+    expect(rng()).toBe(0.7328456409741193);
+  });
+
+  it("produces a stable sequence for a known article id", () => {
+    const rng = seededRng(strToSeed("data-visualization-with-d3.mdx"));
+    expect([rng(), rng(), rng()]).toEqual([
+      0.7328456409741193, 0.6490557885263115, 0.4031097625847906,
+    ]);
+  });
+
+  it("different article ids produce different sequences", () => {
+    const rng1 = seededRng(strToSeed("data-visualization-with-d3.mdx"));
+    const rng2 = seededRng(strToSeed("aws-glossary.md"));
+    expect(rng1()).not.toBe(rng2());
+  });
+
+  it("same id always produces the same sequence regardless of call site", () => {
+    const id = "building-a-rest-api-with-api-gateway-and-lambda.md";
+    const a = seededRng(strToSeed(id));
+    const b = seededRng(strToSeed(id));
+    expect([a(), a(), a()]).toEqual([b(), b(), b()]);
+  });
+});
+
 const triangle = [
   [60, 20],
   [20, 80],
