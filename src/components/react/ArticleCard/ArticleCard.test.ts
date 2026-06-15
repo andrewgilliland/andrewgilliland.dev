@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { strToSeed, seededRng } from "./ArticleCard";
+import { strToSeed, seededRng, roundedPolygonPath } from "./ArticleCard";
 
 describe("strToSeed", () => {
   it("returns the same seed for the same string", () => {
@@ -61,5 +61,79 @@ describe("seededRng", () => {
     const rng0 = seededRng(0);
     const rng1 = seededRng(1);
     expect(rng0()).toBe(rng1());
+  });
+});
+
+const triangle = [
+  [60, 20],
+  [20, 80],
+  [100, 80],
+];
+
+const diamond = [
+  [60, 20],
+  [100, 60],
+  [60, 100],
+  [20, 60],
+];
+
+describe("roundedPolygonPath", () => {
+  it("always starts with M and ends with Z", () => {
+    const path = roundedPolygonPath(triangle, 5);
+    expect(path.startsWith("M")).toBe(true);
+    expect(path.endsWith("Z")).toBe(true);
+  });
+
+  it("produces one segment per point (M for first, L for rest)", () => {
+    const triPath = roundedPolygonPath(triangle, 5);
+    expect((triPath.match(/\bM\b/g) ?? []).length).toBe(1);
+    expect((triPath.match(/\bL\b/g) ?? []).length).toBe(2);
+
+    const diamondPath = roundedPolygonPath(diamond, 5);
+    expect((diamondPath.match(/\bM\b/g) ?? []).length).toBe(1);
+    expect((diamondPath.match(/\bL\b/g) ?? []).length).toBe(3);
+  });
+
+  it("uses quadratic bezier curves (Q) for rounded corners", () => {
+    const path = roundedPolygonPath(triangle, 5);
+    expect((path.match(/\bQ\b/g) ?? []).length).toBe(triangle.length);
+  });
+
+  it("snapshot: triangle with r=5", () => {
+    expect(roundedPolygonPath(triangle, 5)).toBe(
+      "M 62.8 24.2 Q 60.0 20.0 57.2 24.2 L 22.8 75.8 Q 20.0 80.0 25.0 80.0 L 95.0 80.0 Q 100.0 80.0 97.2 75.8 Z",
+    );
+  });
+
+  it("snapshot: diamond with r=5", () => {
+    expect(roundedPolygonPath(diamond, 5)).toBe(
+      "M 56.5 23.5 Q 60.0 20.0 63.5 23.5 L 96.5 56.5 Q 100.0 60.0 96.5 63.5 L 63.5 96.5 Q 60.0 100.0 56.5 96.5 L 23.5 63.5 Q 20.0 60.0 23.5 56.5 Z",
+    );
+  });
+
+  it("clamps corner radius when r exceeds half the shortest edge", () => {
+    const path = roundedPolygonPath(triangle, 9999);
+    expect(path).not.toContain("NaN");
+    expect(path.startsWith("M")).toBe(true);
+    expect(path.endsWith("Z")).toBe(true);
+  });
+
+  it("handles r=0 (produces degenerate Q commands at the vertex point)", () => {
+    const square = [
+      [0, 0],
+      [10, 0],
+      [10, 10],
+      [0, 10],
+    ];
+    const path = roundedPolygonPath(square, 0);
+    expect(path.startsWith("M")).toBe(true);
+    expect(path.endsWith("Z")).toBe(true);
+    expect(path).not.toContain("NaN");
+  });
+
+  it("is deterministic — same input always produces same output", () => {
+    expect(roundedPolygonPath(triangle, 5)).toBe(
+      roundedPolygonPath(triangle, 5),
+    );
   });
 });

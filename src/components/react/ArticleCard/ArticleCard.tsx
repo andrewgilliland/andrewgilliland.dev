@@ -54,7 +54,7 @@ interface ShapeProps {
   rotate: number;
 }
 
-function roundedPolygonPath(points: number[][], r: number): string {
+export function roundedPolygonPath(points: number[][], r: number): string {
   const n = points.length;
   const parts: string[] = [];
   for (let i = 0; i < n; i++) {
