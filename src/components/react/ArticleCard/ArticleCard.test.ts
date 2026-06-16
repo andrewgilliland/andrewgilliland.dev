@@ -158,7 +158,7 @@ describe("roundedPolygonPath", () => {
     expect(path).not.toContain("NaN");
   });
 
-  it("is deterministic — same input always produces same output", () => {
+  it("is deterministic - same input always produces same output", () => {
     expect(roundedPolygonPath(triangle, 5)).toBe(
       roundedPolygonPath(triangle, 5),
     );
