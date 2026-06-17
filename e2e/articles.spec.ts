@@ -65,3 +65,27 @@ test("tag filter and search query work together", async ({ page }) => {
   const count = await articles.count();
   expect(count).toBeGreaterThanOrEqual(0);
 });
+
+test("?q= param pre-populates search input on load", async ({ page }) => {
+  await page.goto("/articles?q=lambda", { waitUntil: "networkidle" });
+  await expect(page.getByPlaceholder("Search articles…")).toHaveValue("lambda");
+  await expect(page.locator("article").first()).toBeVisible();
+});
+
+test("?tag= param pre-selects tag on load", async ({ page }) => {
+  await page.goto("/articles?tag=cdk", { waitUntil: "networkidle" });
+  const count = await page.locator("article").count();
+  expect(count).toBeGreaterThan(0);
+  // The cdk tag button should be visually active (has pink text class)
+  await expect(page.getByRole("button", { name: "cdk" })).toHaveClass(/pink/);
+  // Input stays empty — tag param doesn't fill the text search
+  await expect(page.getByPlaceholder("Search articles…")).toHaveValue("");
+});
+
+test("?q= and ?tag= params together pre-populate both filters on load", async ({
+  page,
+}) => {
+  await page.goto("/articles?q=lambda&tag=cdk", { waitUntil: "networkidle" });
+  await expect(page.getByPlaceholder("Search articles…")).toHaveValue("lambda");
+  await expect(page.getByRole("button", { name: "cdk" })).toHaveClass(/pink/);
+});
