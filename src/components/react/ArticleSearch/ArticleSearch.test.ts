@@ -84,6 +84,46 @@ describe("filterArticles", () => {
     it("returns all articles when selectedTag is undefined", () => {
       expect(filterArticles(articles, "", undefined)).toHaveLength(3);
     });
+
+    it("returns all articles when selectedTag is empty string (deselected)", () => {
+      expect(filterArticles(articles, "", "")).toHaveLength(3);
+    });
+  });
+
+  describe("tag deselection", () => {
+    it("deselecting a tag (passing empty string) restores all articles", () => {
+      // Simulate: tag selected → filtered
+      const selected = filterArticles(articles, "", "aws");
+      expect(selected).toHaveLength(2);
+
+      // Simulate: same tag clicked again → selectedTag becomes "" → all restored
+      const deselected = filterArticles(articles, "", "");
+      expect(deselected).toHaveLength(3);
+    });
+
+    it("deselecting a tag preserves the active query", () => {
+      // Query narrows to 2, tag narrows further to 1
+      const withBoth = filterArticles(articles, "aws", "serverless");
+      expect(withBoth).toHaveLength(1);
+
+      // Tag deselected — query still active, should return all aws-matching articles
+      const tagCleared = filterArticles(articles, "aws", "");
+      expect(tagCleared).toHaveLength(2);
+    });
+
+    it("switching from one tag to another returns correct subset", () => {
+      const awsArticles = filterArticles(articles, "", "aws");
+      expect(awsArticles).toHaveLength(2);
+
+      const reactArticles = filterArticles(articles, "", "react");
+      expect(reactArticles).toHaveLength(1);
+      expect(reactArticles[0].id).toBe("intro-to-react");
+    });
+
+    it("deselecting a tag with no query returns the full list", () => {
+      const full = filterArticles(articles, "", "");
+      expect(full).toEqual(articles);
+    });
   });
 });
 
