@@ -12,6 +12,14 @@ const article: Article = {
   tags: ["aws", "serverless"],
 };
 
+const circleSeedArticle: Article = {
+  id: "intro-to-sqs",
+  title: "Intro to Amazon SQS",
+  excerpt: "Queue-first event processing on AWS.",
+  date: "2026-06-15",
+  tags: ["aws", "serverless"],
+};
+
 describe("ArticleCard component", () => {
   afterEach(() => {
     cleanup();
@@ -71,5 +79,13 @@ describe("ArticleCard component", () => {
     const secondSvg = second.container.querySelector("svg")?.innerHTML;
 
     expect(firstSvg).toBe(secondSvg);
+  });
+
+  it("renders at least one circle for a known seeded article id", () => {
+    const { container } = render(
+      <ArticleCard article={circleSeedArticle} featured={false} />,
+    );
+
+    expect(container.querySelectorAll("svg circle").length).toBeGreaterThan(0);
   });
 });

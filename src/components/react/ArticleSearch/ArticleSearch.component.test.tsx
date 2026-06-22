@@ -72,6 +72,21 @@ describe("ArticleSearch component", () => {
     expect(screen.getByRole("button", { name: "Clear search" })).toBeTruthy();
   });
 
+  it("hydrates only tag from URL when query is absent", async () => {
+    window.history.replaceState(null, "", "/articles?tag=aws");
+
+    render(<ArticleSearch articles={articles} />);
+
+    const input = screen.getByRole("searchbox", { name: "Search articles" });
+    await waitFor(() => {
+      expect((input as HTMLInputElement).value).toBe("");
+    });
+
+    const awsTag = screen.getByRole("button", { name: "aws" });
+    expect(awsTag.className).toContain("border-pink-400");
+    expect(window.location.search).toContain("tag=aws");
+  });
+
   it("updates URL when typing query and clears all filters", () => {
     render(<ArticleSearch articles={articles} />);
 
@@ -93,9 +108,12 @@ describe("ArticleSearch component", () => {
 
     fireEvent.click(awsTag);
     expect(window.location.search).toContain("tag=aws");
+    expect(awsTag.className).toContain("border-pink-400");
 
     fireEvent.click(awsTag);
     expect(window.location.search).not.toContain("tag=aws");
+    expect(awsTag.className).toContain("border-white/35");
+    expect(screen.queryByRole("button", { name: "Clear search" })).toBeNull();
   });
 
   it("marks only the first card as featured when no filters are active", () => {
