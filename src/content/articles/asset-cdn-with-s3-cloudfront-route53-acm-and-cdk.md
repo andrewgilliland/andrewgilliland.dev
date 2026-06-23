@@ -152,6 +152,37 @@ For files you overwrite in place, use shorter TTLs and invalidate when needed.
 
 The ideal production pattern is still hashed filenames, not frequent invalidations.
 
+## Versioned Filenames Strategy
+
+"Assets use versioned filenames" means the URL changes whenever file content changes.
+
+Example:
+
+- `/images/hero.webp`
+- `/images/hero.8f3a1c2d.webp`
+
+If the image bytes change, the hash changes, so the URL changes too. That is what makes one-year caching safe.
+
+Practical deployment flow:
+
+1. Build assets and generate content-hashed filenames.
+2. Upload new files to S3 without immediately deleting old hashed files.
+3. Deploy updated HTML that references the new hashed URLs.
+4. Optionally clean up old unreferenced assets later with a lifecycle job.
+
+If your app builds a manifest, map logical names to hashed names:
+
+```json
+{
+  "hero.webp": "hero.8f3a1c2d.webp",
+  "logo.svg": "logo.a91d4f0b.svg"
+}
+```
+
+Then resolve URLs from that manifest during render rather than hardcoding static file names.
+
+This is preferred over query-string versioning (`hero.webp?v=2`) because filename hashing is generally more predictable across CDN and browser cache layers.
+
 ## Astro Integration
 
 Use an environment-driven asset base URL so local and production environments are easy to switch.
