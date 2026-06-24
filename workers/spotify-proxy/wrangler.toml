@@ -1,0 +1,11 @@
+name = "spotify-proxy"
+main = "src/index.ts"
+compatibility_date = "2026-06-23"
+
+[vars]
+ALLOWED_ORIGIN = "https://andrewgilliland.dev"
+
+# Add these via `wrangler secret put ...`
+# SPOTIFY_CLIENT_ID
+# SPOTIFY_CLIENT_SECRET
+# SPOTIFY_REFRESH_TOKEN

@@ -44,6 +44,62 @@ npm start
 npm run lint
 ```
 
+## Spotify Integration (Cloudflare Worker)
+
+This project includes a Spotify module on the homepage with:
+
+- `Now Playing`
+- `Recently Played`
+
+To keep Spotify credentials server-side, the frontend calls a Cloudflare Worker proxy.
+
+### 1) Worker setup
+
+```bash
+cd workers/spotify-proxy
+npm install
+```
+
+Set worker secrets:
+
+```bash
+npx wrangler secret put SPOTIFY_CLIENT_ID
+npx wrangler secret put SPOTIFY_CLIENT_SECRET
+npx wrangler secret put SPOTIFY_REFRESH_TOKEN
+```
+
+Optional non-secret var in `workers/spotify-proxy/wrangler.toml`:
+
+- `ALLOWED_ORIGIN=https://andrewgilliland.dev`
+
+Run locally:
+
+```bash
+npx wrangler dev
+```
+
+Deploy:
+
+```bash
+npx wrangler deploy
+```
+
+### 2) Frontend env var
+
+Point the Astro app at the worker origin:
+
+```bash
+PUBLIC_SPOTIFY_API_BASE=https://spotify-proxy.<your-subdomain>.workers.dev
+```
+
+If the worker is served from the same origin as the site, this can be left blank.
+
+### 3) Available proxy routes
+
+- `GET /api/spotify/health`
+- `GET /api/spotify/now-playing`
+- `GET /api/spotify/recently-played?limit=5`
+
 ## Project Structure
 
 ```
