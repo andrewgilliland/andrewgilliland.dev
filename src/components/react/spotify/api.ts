@@ -22,6 +22,30 @@ export interface RecentlyPlayedPayload {
   updatedAt: string;
 }
 
+export interface ArtistGraphNode {
+  id: string;
+  name: string;
+  image: string | null;
+  genres: string[];
+  popularity: number;
+  externalUrl: string | null;
+}
+
+export interface ArtistGraphEdge {
+  source: string;
+  target: string;
+}
+
+export interface ArtistGraphPayload {
+  rootArtistId: string;
+  rootArtistName: string | null;
+  depth: number;
+  nodes: ArtistGraphNode[];
+  edges: ArtistGraphEdge[];
+  warnings: string[];
+  updatedAt: string;
+}
+
 const DEFAULT_BASE = "";
 
 function getBaseUrl(): string {
@@ -59,5 +83,21 @@ export function fetchNowPlaying(): Promise<NowPlayingPayload> {
 export function fetchRecentlyPlayed(limit = 5): Promise<RecentlyPlayedPayload> {
   return fetchJson<RecentlyPlayedPayload>(
     `/api/spotify/recently-played?limit=${encodeURIComponent(String(limit))}`,
+  );
+}
+
+export function fetchArtistGraph(
+  artistId: string,
+  depth = 2,
+  limitPerNode = 6,
+): Promise<ArtistGraphPayload> {
+  const params = new URLSearchParams({
+    artistId,
+    depth: String(depth),
+    limitPerNode: String(limitPerNode),
+  });
+
+  return fetchJson<ArtistGraphPayload>(
+    `/api/spotify/artist-graph?${params.toString()}`,
   );
 }

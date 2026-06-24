@@ -13,6 +13,8 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "spotify:auth-url": "node scripts/spotify/get-spotify-auth-url.mjs",
+    "spotify:exchange-code": "node scripts/spotify/exchange-spotify-code.mjs",
     "prepare": "husky"
   },
   "dependencies": {

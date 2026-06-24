@@ -34,7 +34,36 @@ interface RecentlyPlayedPayload {
   updatedAt: string;
 }
 
+interface ArtistGraphNode {
+  id: string;
+  name: string;
+  image: string | null;
+  genres: string[];
+  popularity: number;
+  externalUrl: string | null;
+}
+
+interface ArtistGraphEdge {
+  source: string;
+  target: string;
+}
+
+interface ArtistGraphPayload {
+  rootArtistId: string;
+  rootArtistName: string | null;
+  depth: number;
+  nodes: ArtistGraphNode[];
+  edges: ArtistGraphEdge[];
+  warnings: string[];
+  updatedAt: string;
+}
+
 let cachedToken: { value: string; expiresAt: number } | null = null;
+
+const DEFAULT_GRAPH_DEPTH = 2;
+const MAX_GRAPH_DEPTH = 2;
+const DEFAULT_LIMIT_PER_NODE = 6;
+const MAX_LIMIT_PER_NODE = 10;
 
 function corsHeaders(origin: string): Headers {
   const headers = new Headers();
@@ -169,6 +198,130 @@ function mapRecentlyPlayed(data: any): RecentlyPlayedPayload {
   };
 }
 
+function mapArtistNode(artist: any): ArtistGraphNode {
+  return {
+    id: String(artist?.id ?? ""),
+    name: String(artist?.name ?? "Unknown Artist"),
+    image:
+      artist?.images?.[2]?.url ??
+      artist?.images?.[1]?.url ??
+      artist?.images?.[0]?.url ??
+      null,
+    genres: Array.isArray(artist?.genres)
+      ? artist.genres.filter((g: unknown) => typeof g === "string")
+      : [],
+    popularity: typeof artist?.popularity === "number" ? artist.popularity : 0,
+    externalUrl:
+      typeof artist?.external_urls?.spotify === "string"
+        ? artist.external_urls.spotify
+        : null,
+  };
+}
+
+function parsePositiveInt(value: string | null, fallback: number): number {
+  const parsed = Number(value ?? String(fallback));
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+  return Math.max(1, Math.floor(parsed));
+}
+
+function normalizeArtistId(raw: string | null): string | null {
+  if (!raw) {
+    return null;
+  }
+  const trimmed = raw.trim();
+  if (!/^[A-Za-z0-9]{10,32}$/.test(trimmed)) {
+    return null;
+  }
+  return trimmed;
+}
+
+async function buildArtistGraph(
+  env: Env,
+  rootArtistId: string,
+  depth: number,
+  limitPerNode: number,
+): Promise<ArtistGraphPayload> {
+  const warnings: string[] = [];
+  const nodeMap = new Map<string, ArtistGraphNode>();
+  const edgeMap = new Map<string, ArtistGraphEdge>();
+
+  const rootArtist = await spotifyGet<any>(env, `/artists/${rootArtistId}`);
+  if (!rootArtist.data) {
+    throw new Error("Could not load root artist.");
+  }
+
+  const mappedRoot = mapArtistNode(rootArtist.data);
+  nodeMap.set(mappedRoot.id, mappedRoot);
+
+  const queue: Array<{ id: string; level: number }> = [
+    { id: mappedRoot.id, level: 0 },
+  ];
+  const expanded = new Set<string>();
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) {
+      break;
+    }
+
+    if (current.level >= depth || expanded.has(current.id)) {
+      continue;
+    }
+
+    expanded.add(current.id);
+
+    try {
+      const relatedResponse = await spotifyGet<any>(
+        env,
+        `/artists/${current.id}/related-artists`,
+      );
+
+      const relatedArtists = Array.isArray(relatedResponse.data?.artists)
+        ? relatedResponse.data.artists.slice(0, limitPerNode)
+        : [];
+
+      for (const artist of relatedArtists) {
+        const mapped = mapArtistNode(artist);
+        if (!mapped.id) {
+          continue;
+        }
+
+        if (!nodeMap.has(mapped.id)) {
+          nodeMap.set(mapped.id, mapped);
+        }
+
+        const edgeKey = `${current.id}->${mapped.id}`;
+        if (!edgeMap.has(edgeKey)) {
+          edgeMap.set(edgeKey, {
+            source: current.id,
+            target: mapped.id,
+          });
+        }
+
+        if (current.level + 1 <= depth && !expanded.has(mapped.id)) {
+          queue.push({ id: mapped.id, level: current.level + 1 });
+        }
+      }
+    } catch (error) {
+      warnings.push(
+        `Failed to expand related artists for ${current.id}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  return {
+    rootArtistId: mappedRoot.id,
+    rootArtistName: mappedRoot.name,
+    depth,
+    nodes: Array.from(nodeMap.values()),
+    edges: Array.from(edgeMap.values()),
+    warnings,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
 async function handleNowPlaying(request: Request, env: Env): Promise<Response> {
   const origin = env.ALLOWED_ORIGIN ?? "*";
   const cache = caches.default;
@@ -220,6 +373,55 @@ async function handleRecentlyPlayed(
   return response;
 }
 
+async function handleArtistGraph(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  const origin = env.ALLOWED_ORIGIN ?? "*";
+  const url = new URL(request.url);
+  const artistId = normalizeArtistId(url.searchParams.get("artistId"));
+
+  if (!artistId) {
+    return responseJson(
+      {
+        error: "artistId is required and must be alphanumeric.",
+      },
+      400,
+      "no-store",
+      origin,
+    );
+  }
+
+  const requestedDepth = parsePositiveInt(
+    url.searchParams.get("depth"),
+    DEFAULT_GRAPH_DEPTH,
+  );
+  const depth = Math.min(requestedDepth, MAX_GRAPH_DEPTH);
+
+  const requestedLimit = parsePositiveInt(
+    url.searchParams.get("limitPerNode"),
+    DEFAULT_LIMIT_PER_NODE,
+  );
+  const limitPerNode = Math.min(requestedLimit, MAX_LIMIT_PER_NODE);
+
+  const cache = caches.default;
+  const cacheKey = new Request(
+    `${url.origin}${url.pathname}?artistId=${artistId}&depth=${depth}&limitPerNode=${limitPerNode}`,
+  );
+  const cached = await cache.match(cacheKey);
+
+  if (cached) {
+    const headers = corsHeaders(origin);
+    cached.headers.forEach((value, key) => headers.set(key, value));
+    return new Response(cached.body, { status: cached.status, headers });
+  }
+
+  const payload = await buildArtistGraph(env, artistId, depth, limitPerNode);
+  const response = responseJson(payload, 200, "public, max-age=600", origin);
+  await cache.put(cacheKey, response.clone());
+  return response;
+}
+
 function missingSecret(env: Env): string | null {
   if (!env.SPOTIFY_CLIENT_ID) return "SPOTIFY_CLIENT_ID";
   if (!env.SPOTIFY_CLIENT_SECRET) return "SPOTIFY_CLIENT_SECRET";
@@ -264,6 +466,10 @@ export default {
 
       if (url.pathname === "/api/spotify/recently-played") {
         return await handleRecentlyPlayed(request, env);
+      }
+
+      if (url.pathname === "/api/spotify/artist-graph") {
+        return await handleArtistGraph(request, env);
       }
 
       if (url.pathname === "/api/spotify/health") {

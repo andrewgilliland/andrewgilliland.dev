@@ -53,6 +53,35 @@ This project includes a Spotify module on the homepage with:
 
 To keep Spotify credentials server-side, the frontend calls a Cloudflare Worker proxy.
 
+You need a Spotify app because refresh tokens are issued only through Spotify's OAuth flow tied to your app identity (`client_id` + `client_secret`).
+
+### 0) One-time refresh token setup
+
+Create an app in Spotify Developer Dashboard, then add a Redirect URI (example: `http://127.0.0.1:8787/callback`).
+
+Set local env vars:
+
+```bash
+export SPOTIFY_CLIENT_ID="<your-client-id>"
+export SPOTIFY_CLIENT_SECRET="<your-client-secret>"
+export SPOTIFY_REDIRECT_URI="http://127.0.0.1:8787/callback"
+```
+
+Generate auth URL:
+
+```bash
+npm run spotify:auth-url
+```
+
+Open the printed URL, approve access, then copy `code` from the callback URL and exchange it:
+
+```bash
+export SPOTIFY_AUTH_CODE="<code-from-callback>"
+npm run spotify:exchange-code
+```
+
+The script prints your refresh token. Store it as the worker secret `SPOTIFY_REFRESH_TOKEN`.
+
 ### 1) Worker setup
 
 ```bash

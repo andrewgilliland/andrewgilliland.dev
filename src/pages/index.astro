@@ -8,6 +8,7 @@ import TwinSections from "@/components/sections/TwinSections.astro";
 import PrimaryButton from "@/components/PrimaryButton.astro";
 import MarqueeRow from "@/components/MarqueeRow.astro";
 import SpotifyModule from "@/components/react/spotify/SpotifyModule";
+import ArtistRabbitHolePreview from "@/components/react/spotify/ArtistRabbitHolePreview";
 import { getCollection } from "astro:content";
 import { toSlug } from "@/lib/slug";
 
@@ -74,6 +75,7 @@ const [featured, ...sideArticles] = sortedArticles;
           recently on repeat.
         </p>
         <SpotifyModule client:load />
+        <ArtistRabbitHolePreview client:load />
       </div>
     </CenteredSection>
 

@@ -1,0 +1,34 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import CenteredSection from "@/components/sections/CenteredSection.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import ArtistRabbitHoleGraph from "@/components/react/spotify/ArtistRabbitHoleGraph";
+
+const defaultArtistId =
+  import.meta.env.PUBLIC_SPOTIFY_GRAPH_SEED_ARTIST_ID ??
+  "4aEnNH9N7w9wA9vJqv4rFH";
+---
+
+<BaseLayout
+  title="Artist Rabbit Holes"
+  description="Explore related Spotify artists through an interactive graph and discover new rabbit holes."
+>
+  <CenteredSection>
+    <div class="mx-auto w-full max-w-6xl px-8">
+      <SectionHeader title="Artist Rabbit Holes" tag="h1" />
+      <p class="mb-6 max-w-3xl text-base text-zinc-300 md:text-lg">
+        Start from one artist and hop through connected artists to discover new
+        sounds. Click any node to re-root the map and keep exploring.
+      </p>
+
+      <ArtistRabbitHoleGraph
+        client:load
+        initialArtistId={defaultArtistId}
+        title="Explore Connections"
+        depth={2}
+        limitPerNode={6}
+        showExplorerLink={false}
+      />
+    </div>
+  </CenteredSection>
+</BaseLayout>

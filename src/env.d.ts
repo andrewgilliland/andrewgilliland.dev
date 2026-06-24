@@ -3,6 +3,7 @@
 
 interface ImportMetaEnv {
   readonly PUBLIC_SPOTIFY_API_BASE?: string;
+  readonly PUBLIC_SPOTIFY_GRAPH_SEED_ARTIST_ID?: string;
 }
 
 interface ImportMeta {

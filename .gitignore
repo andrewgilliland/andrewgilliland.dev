@@ -45,3 +45,5 @@ yarn-error.log*
 
 # build caches
 .swc
+
+workers/**/node_modules/
