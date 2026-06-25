@@ -1,0 +1,30 @@
+---
+import ArticleListItemLink from "@/components/articles/ArticleListItemLink.astro";
+import { toSlug } from "@/lib/slug";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  articles: CollectionEntry<"articles">[];
+}
+
+const { articles } = Astro.props as Props;
+---
+
+{
+  articles.length > 0 && (
+    <section class="mt-12 border-t border-white/20 pt-10">
+      <h2 class="mb-6 text-2xl text-white">Related Articles</h2>
+      <ul class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {articles.map((article) => (
+          <ArticleListItemLink
+            href={`/articles/${toSlug(article.id)}`}
+            title={article.data.title}
+            date={article.data.date}
+            headingTag="h3"
+            listItemClass="rounded-md border border-gray-700 p-4"
+          />
+        ))}
+      </ul>
+    </section>
+  )
+}

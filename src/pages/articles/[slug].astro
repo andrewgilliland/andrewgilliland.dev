@@ -1,12 +1,14 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
+import RelatedArticlesSection from "@/components/articles/RelatedArticlesSection.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import MobileTOC from "@/components/MobileTOC.astro";
 import ProgressBar from "@/components/ProgressBar.astro";
 import Tag from "@/components/Tag.astro";
 import CopyCodeButton from "@/components/CopyCodeButton.astro";
 import { getCollection, render } from "astro:content";
+import { getRelatedArticles } from "@/lib/relatedArticles";
 import { toSlug } from "@/lib/slug";
 
 export async function getStaticPaths() {
@@ -20,6 +22,9 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const { Content, headings } = await render(article);
 const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
+
+const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const relatedArticles = getRelatedArticles(article, allArticles, 3);
 ---
 
 <BaseLayout
@@ -68,6 +73,7 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
             <article class="prose prose-invert mt-8 border-t border-white py-12">
               <Content />
             </article>
+            <RelatedArticlesSection articles={relatedArticles} />
           </div>
           <aside class="hidden lg:block">
             <div class="sticky top-10 pt-24">
@@ -96,6 +102,7 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
           <article class="prose prose-invert mt-8 border-t border-white py-12">
             <Content />
           </article>
+          <RelatedArticlesSection articles={relatedArticles} />
         </div>
       )
     }
