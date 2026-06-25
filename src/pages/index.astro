@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import SectionHeader from "@/components/SectionHeader.astro";
 import CardLink from "@/components/CardLink.astro";
+import ArticleListItemLink from "@/components/articles/ArticleListItemLink.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import CenteredSection from "@/components/sections/CenteredSection.astro";
 import TwinSections from "@/components/sections/TwinSections.astro";
@@ -88,34 +89,13 @@ const [featured, ...sideArticles] = sortedArticles;
             <ul class="grow divide-y divide-gray-700">
               {
                 sideArticles.map((article) => (
-                  <li class="py-4 first:pt-0">
-                    <a
-                      class="group flex items-end justify-between text-white no-underline hover:text-pink-400"
-                      href={`/articles/${toSlug(article.id)}`}
-                    >
-                      <div class="grid grid-cols-1 gap-1">
-                        <h4 class="mb-0.5 text-2xl font-normal">
-                          {article.data.title}
-                        </h4>
-                        <FormattedDate
-                          date={article.data.date}
-                          class="pb-0.5 text-base text-gray-400"
-                        />
-                      </div>
-                      <div class="ml-3 mr-1 flex h-10 w-10 shrink-0 items-center justify-center self-end rounded-md border border-gray-500 p-2 transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#fff]">
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </a>
-                  </li>
+                  <ArticleListItemLink
+                    href={`/articles/${toSlug(article.id)}`}
+                    title={article.data.title}
+                    date={article.data.date}
+                    headingTag="h4"
+                    listItemClass="py-4 first:pt-0"
+                  />
                 ))
               }
             </ul>

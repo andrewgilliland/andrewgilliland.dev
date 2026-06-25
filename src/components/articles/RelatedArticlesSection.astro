@@ -1,5 +1,5 @@
 ---
-import FormattedDate from "@/components/FormattedDate.astro";
+import ArticleListItemLink from "@/components/articles/ArticleListItemLink.astro";
 import { toSlug } from "@/lib/slug";
 import type { CollectionEntry } from "astro:content";
 
@@ -14,36 +14,15 @@ const { articles } = Astro.props as Props;
   articles.length > 0 && (
     <section class="mt-12 border-t border-white/20 pt-10">
       <h2 class="mb-6 text-2xl text-white">Related Articles</h2>
-      <ul class="divide-y divide-gray-700">
+      <ul class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {articles.map((article) => (
-          <li class="py-5 first:pt-0">
-            <a
-              class="group flex items-end justify-between text-white no-underline hover:text-pink-400"
-              href={`/articles/${toSlug(article.id)}`}
-            >
-              <div class="grid grid-cols-1 gap-1">
-                <h3 class="mb-0.5 text-2xl font-normal leading-tight">
-                  {article.data.title}
-                </h3>
-                <FormattedDate
-                  date={article.data.date}
-                  class="pb-0.5 text-base text-gray-400"
-                />
-              </div>
-              <div class="ml-3 mr-1 flex h-10 w-10 shrink-0 items-center justify-center self-end rounded-md border border-gray-500 p-2 transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#fff]">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div>
-            </a>
-          </li>
+          <ArticleListItemLink
+            href={`/articles/${toSlug(article.id)}`}
+            title={article.data.title}
+            date={article.data.date}
+            headingTag="h3"
+            listItemClass="rounded-md border border-gray-700 p-4"
+          />
         ))}
       </ul>
     </section>

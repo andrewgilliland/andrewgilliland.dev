@@ -1,0 +1,51 @@
+---
+import FormattedDate from "@/components/FormattedDate.astro";
+
+interface Props {
+  href: string;
+  title: string;
+  date: Date;
+  headingTag?: "h3" | "h4";
+  listItemClass?: string;
+}
+
+const {
+  href,
+  title,
+  date,
+  headingTag = "h3",
+  listItemClass = "py-5 first:pt-0",
+} = Astro.props as Props;
+---
+
+<li class={listItemClass}>
+  <a
+    class="group flex h-full flex-col justify-between text-white no-underline hover:text-pink-400"
+    href={href}
+  >
+    {
+      headingTag === "h4" ? (
+        <h4 class="mb-0.5 text-2xl font-normal leading-tight">{title}</h4>
+      ) : (
+        <h3 class="mb-0.5 text-2xl font-normal leading-tight">{title}</h3>
+      )
+    }
+    <div class="flex items-end justify-between">
+      <FormattedDate date={date} class="text-base text-gray-400" />
+      <div
+        class="ml-3 mr-1 flex h-10 w-10 shrink-0 items-center justify-center self-end rounded-md border border-gray-500 p-2 transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#fff]"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M5 12h14M12 5l7 7-7 7"></path>
+        </svg>
+      </div>
+    </div>
+  </a>
+</li>
