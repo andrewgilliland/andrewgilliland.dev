@@ -20,6 +20,26 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const { Content, headings } = await render(article);
 const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
+
+const allArticles = await getCollection("articles", ({ data }) => !data.draft);
+const relatedArticles = allArticles
+  .filter((candidate) => candidate.id !== article.id)
+  .map((candidate) => {
+    const sharedTagCount = candidate.data.tags.filter((tag) =>
+      article.data.tags.includes(tag),
+    ).length;
+    const recencyScore = candidate.data.date.getTime() / 1_000_000_000_000;
+    const score = sharedTagCount * 10 + recencyScore;
+
+    return {
+      candidate,
+      sharedTagCount,
+      score,
+    };
+  })
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 3)
+  .map(({ candidate }) => candidate);
 ---
 
 <BaseLayout
@@ -68,6 +88,43 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
             <article class="prose prose-invert mt-8 border-t border-white py-12">
               <Content />
             </article>
+            {relatedArticles.length > 0 && (
+              <section class="mt-12 border-t border-white/20 pt-10">
+                <h2 class="mb-6 text-2xl text-white">Related Articles</h2>
+                <ul class="divide-y divide-gray-700">
+                  {relatedArticles.map((related) => (
+                    <li class="py-5 first:pt-0">
+                      <a
+                        class="group flex items-end justify-between text-white no-underline hover:text-pink-400"
+                        href={`/articles/${toSlug(related.id)}`}
+                      >
+                        <div class="grid grid-cols-1 gap-1">
+                          <h3 class="mb-0.5 text-2xl font-normal leading-tight">
+                            {related.data.title}
+                          </h3>
+                          <FormattedDate
+                            date={related.data.date}
+                            class="pb-0.5 text-base text-gray-400"
+                          />
+                        </div>
+                        <div class="ml-3 mr-1 flex h-10 w-10 shrink-0 items-center justify-center self-end rounded-md border border-gray-500 p-2 transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#fff]">
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </div>
           <aside class="hidden lg:block">
             <div class="sticky top-10 pt-24">
@@ -96,6 +153,43 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
           <article class="prose prose-invert mt-8 border-t border-white py-12">
             <Content />
           </article>
+          {relatedArticles.length > 0 && (
+            <section class="mt-12 border-t border-white/20 pt-10">
+              <h2 class="mb-6 text-2xl text-white">Related Articles</h2>
+              <ul class="divide-y divide-gray-700">
+                {relatedArticles.map((related) => (
+                  <li class="py-5 first:pt-0">
+                    <a
+                      class="group flex items-end justify-between text-white no-underline hover:text-pink-400"
+                      href={`/articles/${toSlug(related.id)}`}
+                    >
+                      <div class="grid grid-cols-1 gap-1">
+                        <h3 class="mb-0.5 text-2xl font-normal leading-tight">
+                          {related.data.title}
+                        </h3>
+                        <FormattedDate
+                          date={related.data.date}
+                          class="pb-0.5 text-base text-gray-400"
+                        />
+                      </div>
+                      <div class="ml-3 mr-1 flex h-10 w-10 shrink-0 items-center justify-center self-end rounded-md border border-gray-500 p-2 transition-all duration-200 ease-in-out group-hover:-translate-x-px group-hover:-translate-y-px group-hover:shadow-[2px_2px_0_0_#fff]">
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
       )
     }
