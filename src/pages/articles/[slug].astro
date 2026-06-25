@@ -8,6 +8,7 @@ import ProgressBar from "@/components/ProgressBar.astro";
 import Tag from "@/components/Tag.astro";
 import CopyCodeButton from "@/components/CopyCodeButton.astro";
 import { getCollection, render } from "astro:content";
+import { getRelatedArticles } from "@/lib/relatedArticles";
 import { toSlug } from "@/lib/slug";
 
 export async function getStaticPaths() {
@@ -23,24 +24,7 @@ const { Content, headings } = await render(article);
 const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
-const relatedArticles = allArticles
-  .filter((candidate) => candidate.id !== article.id)
-  .map((candidate) => {
-    const sharedTagCount = candidate.data.tags.filter((tag) =>
-      article.data.tags.includes(tag),
-    ).length;
-    const recencyScore = candidate.data.date.getTime() / 1_000_000_000_000;
-    const score = sharedTagCount * 10 + recencyScore;
-
-    return {
-      candidate,
-      sharedTagCount,
-      score,
-    };
-  })
-  .sort((a, b) => b.score - a.score)
-  .slice(0, 3)
-  .map(({ candidate }) => candidate);
+const relatedArticles = getRelatedArticles(article, allArticles, 3);
 ---
 
 <BaseLayout
