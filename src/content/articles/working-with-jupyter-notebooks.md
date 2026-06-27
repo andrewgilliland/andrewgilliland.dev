@@ -3,6 +3,7 @@ title: Working with Jupyter Notebooks
 date: 2026-07-11
 excerpt: Jupyter notebooks are the standard tool for data exploration and ML prototyping. Here's how to set one up and use it effectively.
 draft: true
+tags: ["jupyter", "python", "notebooks", "data-science", "data-exploration"]
 ---
 
 ## What Is a Jupyter Notebook?

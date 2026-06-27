@@ -3,6 +3,14 @@ title: Training Your First ML Model
 date: 2026-06-14
 excerpt: Go beyond the basics and train a real model. Learn about feature engineering, model selection, and evaluation metrics.
 draft: true
+tags:
+  [
+    "machine-learning",
+    "model-training",
+    "feature-engineering",
+    "python",
+    "scikit-learn",
+  ]
 ---
 
 ## Picking a Problem

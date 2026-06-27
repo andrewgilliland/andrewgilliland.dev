@@ -3,6 +3,7 @@ title: Deploying an ML Model on AWS
 date: 2026-06-21
 excerpt: You trained a model. Now what? Here's how to deploy it as an API using Lambda, or scale it with SageMaker.
 draft: true
+tags: ["machine-learning", "aws", "deployment", "sagemaker", "lambda"]
 ---
 
 ## The Deployment Problem
