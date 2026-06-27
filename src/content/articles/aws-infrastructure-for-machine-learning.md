@@ -3,6 +3,7 @@ title: "AWS Infrastructure for Machine Learning: The Big Picture"
 date: 2026-06-28
 excerpt: S3, Lambda, SageMaker, Step Functions - here's how the pieces fit together when building ML pipelines on AWS.
 draft: true
+tags: ["aws", "machine-learning", "ml-ops", "sagemaker", "infrastructure"]
 ---
 
 ## The ML Pipeline
