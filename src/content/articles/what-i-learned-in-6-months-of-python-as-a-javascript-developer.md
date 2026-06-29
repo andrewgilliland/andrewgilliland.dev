@@ -3,6 +3,7 @@ title: What I Learned in 6 Months of Python as a JavaScript Developer
 date: 2026-09-26
 excerpt: A retrospective on going from npm to uv, React to pandas, and Vercel to Lambda. What clicked, what didn't, and what I'd do differently.
 draft: true
+tags: ["python", "javascript", "career", "programming", "retrospective"]
 ---
 
 ## Where I Started

@@ -3,6 +3,7 @@ title: Working with S3 in Python Using boto3
 date: 2026-08-01
 excerpt: S3 is the backbone of AWS storage. Here's how to upload, download, and process files from Python using boto3.
 draft: true
+tags: ["aws", "s3", "python", "boto3", "cloud-storage"]
 ---
 
 ## What Is S3?
