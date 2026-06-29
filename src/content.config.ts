@@ -1,33 +1,20 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
-import { z } from "astro/zod";
+import { articleSchema, notesSchema, resumeSchema } from "./content/schemas";
 
 const notesCollection = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/notes" }),
-  schema: z.object({
-    title: z.string(),
-    date: z.date(),
-    excerpt: z.string().optional(),
-    draft: z.boolean().default(false),
-  }),
+  schema: notesSchema,
 });
 
 const resumeCollection = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/resume" }),
-  schema: z.object({
-    title: z.string().optional(),
-  }),
+  schema: resumeSchema,
 });
 
 const articlesCollection = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/articles" }),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date(),
-    excerpt: z.string(),
-    draft: z.boolean().default(false),
-    tags: z.array(z.string()).default([]),
-  }),
+  schema: articleSchema,
 });
 
 export const collections = {
