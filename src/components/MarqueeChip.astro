@@ -1,14 +1,118 @@
 ---
+import {
+  polygonPath,
+  seededRng,
+  starPath,
+  strToSeed,
+} from "../lib/deterministicShapes";
+import { DARK_SHAPE_STROKE, SHAPE_FILL_COLORS } from "../lib/shapeColors";
+
 interface Props {
   tag: string;
 }
 
 const { tag } = Astro.props;
+
+type ShapeType =
+  | "circle"
+  | "rect"
+  | "triangle"
+  | "diamond"
+  | "pentagon"
+  | "hexagon"
+  | "star";
+
+const SHAPES: ShapeType[] = [
+  "circle",
+  "rect",
+  "triangle",
+  "diamond",
+  "pentagon",
+  "hexagon",
+  "star",
+];
+const SHAPE_STROKE = DARK_SHAPE_STROKE;
+
+const rng = seededRng(strToSeed(tag));
+const shape = SHAPES[Math.floor(rng() * SHAPES.length)];
+const fill = SHAPE_FILL_COLORS[Math.floor(rng() * SHAPE_FILL_COLORS.length)];
+const rotate = Math.floor(rng() * 45);
+const iconSize = 14 + Math.floor(rng() * 7);
 ---
 
 <a
   href={`/articles?q=${tag}`}
-  class="whitespace-nowrap rounded-full border border-black bg-white px-4 py-2 text-lg font-medium text-black no-underline transition-all hover:shadow-[4px_4px_0_0_#000000] motion-safe:hover:-translate-x-1 motion-safe:hover:-translate-y-1 md:text-xl"
+  class="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-black bg-white px-4 py-2 text-lg font-medium text-black no-underline transition-all hover:shadow-[4px_4px_0_0_#000000] motion-safe:hover:-translate-x-1 motion-safe:hover:-translate-y-1 md:text-xl"
 >
+  <svg
+    class="shrink-0"
+    width={iconSize}
+    height={iconSize}
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    role="presentation"
+  >
+    {
+      shape === "circle" ? (
+        <circle
+          cx="12"
+          cy="12"
+          r="8"
+          fill={fill}
+          stroke={SHAPE_STROKE}
+          stroke-width="1.5"
+        />
+      ) : shape === "rect" ? (
+        <rect
+          x="4"
+          y="4"
+          width="16"
+          height="16"
+          rx="3"
+          fill={fill}
+          stroke={SHAPE_STROKE}
+          stroke-width="1.5"
+          transform={`rotate(${rotate} 12 12)`}
+        />
+      ) : shape === "triangle" ? (
+        <path
+          d="M12 4 L20 18 L4 18 Z"
+          fill={fill}
+          stroke={SHAPE_STROKE}
+          stroke-width="1.5"
+          transform={`rotate(${rotate} 12 12)`}
+        />
+      ) : shape === "pentagon" ? (
+        <path
+          d={polygonPath(12, 12, 8, 5, rotate)}
+          fill={fill}
+          stroke={SHAPE_STROKE}
+          stroke-width="1.5"
+        />
+      ) : shape === "hexagon" ? (
+        <path
+          d={polygonPath(12, 12, 8, 6, rotate)}
+          fill={fill}
+          stroke={SHAPE_STROKE}
+          stroke-width="1.5"
+        />
+      ) : shape === "star" ? (
+        <path
+          d={starPath(12, 12, 8, 4.2, 5, rotate)}
+          fill={fill}
+          stroke={SHAPE_STROKE}
+          stroke-width="1.5"
+        />
+      ) : (
+        <path
+          d="M12 3 L21 12 L12 21 L3 12 Z"
+          fill={fill}
+          stroke={SHAPE_STROKE}
+          stroke-width="1.5"
+          transform={`rotate(${rotate} 12 12)`}
+        />
+      )
+    }
+  </svg>
   {tag}
 </a>

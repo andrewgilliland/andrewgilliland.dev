@@ -1,4 +1,13 @@
 import { useState } from "react";
+import {
+  roundedPolygonPath,
+  seededRng,
+  strToSeed,
+} from "../../../lib/deterministicShapes";
+import {
+  LIGHT_SHAPE_STROKE,
+  SHAPE_FILL_COLORS,
+} from "../../../lib/shapeColors";
 
 export type Article = {
   id: string;
@@ -8,42 +17,9 @@ export type Article = {
   tags: string[];
 };
 
-/**
- * Converts a string into a deterministic 32-bit unsigned integer seed.
- * Uses the djb2 hash algorithm: starts with the magic constant 5381 and
- * for each character combines the accumulated hash with a left-shifted
- * version of itself XORed with the character code. The `>>> 0` keeps the
- * result within 32-bit unsigned integer range. Falls back to 1 if the
- * result is 0 (which would break the RNG).
- */
-export function strToSeed(str: string): number {
-  let h = 5381;
-  for (let i = 0; i < str.length; i++) {
-    h = (((h << 5) + h) ^ str.charCodeAt(i)) >>> 0;
-  }
-  return h || 1;
-}
-
-/**
- * Returns a deterministic pseudo-random number generator (PRNG) seeded with
- * the given value. Uses the xorshift32 algorithm: each call mutates the
- * internal state with three XOR-shift operations, keeping it in 32-bit
- * unsigned integer range. Dividing by 2^32 maps the output to [0, 1).
- * Calling with the same seed always produces the same sequence, which
- * ensures article card artwork is stable across renders.
- */
-export function seededRng(seed: number) {
-  let s = seed >>> 0 || 1;
-  return () => {
-    s = (s ^ (s << 13)) >>> 0;
-    s = (s ^ (s >>> 17)) >>> 0;
-    s = (s ^ (s << 5)) >>> 0;
-    return s / 4294967296;
-  };
-}
-
 type ShapeType = "circle" | "rect" | "triangle" | "diamond";
 const SHAPES: ShapeType[] = ["circle", "rect", "triangle", "diamond"];
+const SHAPE_STROKE = LIGHT_SHAPE_STROKE;
 
 interface ShapeProps {
   type: ShapeType;
@@ -54,37 +30,12 @@ interface ShapeProps {
   rotate: number;
 }
 
-export function roundedPolygonPath(points: number[][], r: number): string {
-  const n = points.length;
-  const parts: string[] = [];
-  for (let i = 0; i < n; i++) {
-    const prev = points[(i - 1 + n) % n];
-    const curr = points[i];
-    const next = points[(i + 1) % n];
-    const d0x = prev[0] - curr[0];
-    const d0y = prev[1] - curr[1];
-    const len0 = Math.sqrt(d0x * d0x + d0y * d0y);
-    const a0x = curr[0] + (d0x / len0) * Math.min(r, len0 / 2);
-    const a0y = curr[1] + (d0y / len0) * Math.min(r, len0 / 2);
-    const d1x = next[0] - curr[0];
-    const d1y = next[1] - curr[1];
-    const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
-    const a1x = curr[0] + (d1x / len1) * Math.min(r, len1 / 2);
-    const a1y = curr[1] + (d1y / len1) * Math.min(r, len1 / 2);
-    parts.push(
-      `${i === 0 ? "M" : "L"} ${a0x.toFixed(1)} ${a0y.toFixed(1)} Q ${curr[0].toFixed(1)} ${curr[1].toFixed(1)} ${a1x.toFixed(1)} ${a1y.toFixed(1)}`,
-    );
-  }
-  parts.push("Z");
-  return parts.join(" ");
-}
-
 function renderShape(
   { type, cx, cy, size, fill, rotate }: ShapeProps,
   key: number,
   style?: React.CSSProperties,
 ) {
-  const shared = { fill, stroke: "white", strokeWidth: 2 };
+  const shared = { fill, stroke: SHAPE_STROKE, strokeWidth: 2 };
   const t = `rotate(${rotate} ${cx} ${cy})`;
   const r = size * 0.2;
 
@@ -132,10 +83,13 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
   const rand = (min: number, max: number) => min + rng() * (max - min);
   const pick = <T,>(arr: T[]): T => arr[Math.floor(rng() * arr.length)];
 
-  const colors = ["#f9a8d4", "#67e8f9", "#6ee7b7", "#fde047"];
-  for (let i = colors.length - 1; i > 0; i--) {
+  const decorationColors = [...SHAPE_FILL_COLORS];
+  for (let i = decorationColors.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
-    [colors[i], colors[j]] = [colors[j], colors[i]];
+    [decorationColors[i], decorationColors[j]] = [
+      decorationColors[j],
+      decorationColors[i],
+    ];
   }
 
   const shapes: ShapeProps[] = [
@@ -144,7 +98,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       cx: rand(70, 108),
       cy: rand(70, 108),
       size: rand(55, 64),
-      fill: colors[0],
+      fill: decorationColors[0],
       rotate: rand(0, 45),
     },
     {
@@ -152,7 +106,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       cx: rand(36, 72),
       cy: rand(62, 98),
       size: rand(35, 54),
-      fill: colors[1],
+      fill: decorationColors[1],
       rotate: rand(0, 45),
     },
     {
@@ -160,7 +114,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       cx: rand(60, 102),
       cy: rand(32, 70),
       size: rand(24, 42),
-      fill: colors[2],
+      fill: decorationColors[2],
       rotate: rand(0, 45),
     },
     {
@@ -168,7 +122,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       cx: rand(30, 65),
       cy: rand(36, 68),
       size: rand(14, 27),
-      fill: colors[3],
+      fill: decorationColors[3],
       rotate: rand(0, 45),
     },
   ];
