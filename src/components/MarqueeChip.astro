@@ -1,4 +1,11 @@
 ---
+import {
+  polygonPath,
+  seededRng,
+  starPath,
+  strToSeed,
+} from "../lib/deterministicShapes";
+
 interface Props {
   tag: string;
 }
@@ -24,61 +31,6 @@ const SHAPES: ShapeType[] = [
   "star",
 ];
 const COLORS = ["#f9a8d4", "#67e8f9", "#6ee7b7", "#fde047"];
-
-function strToSeed(str: string): number {
-  let h = 5381;
-  for (let i = 0; i < str.length; i++) {
-    h = (((h << 5) + h) ^ str.charCodeAt(i)) >>> 0;
-  }
-  return h || 1;
-}
-
-function seededRng(seed: number) {
-  let s = seed >>> 0 || 1;
-  return () => {
-    s = (s ^ (s << 13)) >>> 0;
-    s = (s ^ (s >>> 17)) >>> 0;
-    s = (s ^ (s << 5)) >>> 0;
-    return s / 4294967296;
-  };
-}
-
-function polygonPath(
-  cx: number,
-  cy: number,
-  radius: number,
-  sides: number,
-  rotationDeg = 0,
-) {
-  const rotation = (rotationDeg * Math.PI) / 180;
-  const pts = Array.from({ length: sides }, (_, i) => {
-    const a = rotation + (i * 2 * Math.PI) / sides - Math.PI / 2;
-    const x = cx + radius * Math.cos(a);
-    const y = cy + radius * Math.sin(a);
-    return `${x.toFixed(2)} ${y.toFixed(2)}`;
-  });
-  return `M ${pts.join(" L ")} Z`;
-}
-
-function starPath(
-  cx: number,
-  cy: number,
-  outerRadius: number,
-  innerRadius: number,
-  points: number,
-  rotationDeg = 0,
-) {
-  const rotation = (rotationDeg * Math.PI) / 180;
-  const pts = Array.from({ length: points * 2 }, (_, i) => {
-    const isOuter = i % 2 === 0;
-    const r = isOuter ? outerRadius : innerRadius;
-    const a = rotation + (i * Math.PI) / points - Math.PI / 2;
-    const x = cx + r * Math.cos(a);
-    const y = cy + r * Math.sin(a);
-    return `${x.toFixed(2)} ${y.toFixed(2)}`;
-  });
-  return `M ${pts.join(" L ")} Z`;
-}
 
 const rng = seededRng(strToSeed(tag));
 const shape = SHAPES[Math.floor(rng() * SHAPES.length)];
