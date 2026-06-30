@@ -4,6 +4,10 @@ import {
   seededRng,
   strToSeed,
 } from "../../../lib/deterministicShapes";
+import {
+  LIGHT_SHAPE_STROKE,
+  SHAPE_FILL_COLORS,
+} from "../../../lib/shapeColors";
 
 export { strToSeed, seededRng, roundedPolygonPath };
 
@@ -17,6 +21,7 @@ export type Article = {
 
 type ShapeType = "circle" | "rect" | "triangle" | "diamond";
 const SHAPES: ShapeType[] = ["circle", "rect", "triangle", "diamond"];
+const SHAPE_STROKE = LIGHT_SHAPE_STROKE;
 
 interface ShapeProps {
   type: ShapeType;
@@ -32,7 +37,7 @@ function renderShape(
   key: number,
   style?: React.CSSProperties,
 ) {
-  const shared = { fill, stroke: "white", strokeWidth: 2 };
+  const shared = { fill, stroke: SHAPE_STROKE, strokeWidth: 2 };
   const t = `rotate(${rotate} ${cx} ${cy})`;
   const r = size * 0.2;
 
@@ -80,10 +85,13 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
   const rand = (min: number, max: number) => min + rng() * (max - min);
   const pick = <T,>(arr: T[]): T => arr[Math.floor(rng() * arr.length)];
 
-  const colors = ["#f9a8d4", "#67e8f9", "#6ee7b7", "#fde047"];
-  for (let i = colors.length - 1; i > 0; i--) {
+  const decorationColors = [...SHAPE_FILL_COLORS];
+  for (let i = decorationColors.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
-    [colors[i], colors[j]] = [colors[j], colors[i]];
+    [decorationColors[i], decorationColors[j]] = [
+      decorationColors[j],
+      decorationColors[i],
+    ];
   }
 
   const shapes: ShapeProps[] = [
@@ -92,7 +100,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       cx: rand(70, 108),
       cy: rand(70, 108),
       size: rand(55, 64),
-      fill: colors[0],
+      fill: decorationColors[0],
       rotate: rand(0, 45),
     },
     {
@@ -100,7 +108,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       cx: rand(36, 72),
       cy: rand(62, 98),
       size: rand(35, 54),
-      fill: colors[1],
+      fill: decorationColors[1],
       rotate: rand(0, 45),
     },
     {
@@ -108,7 +116,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       cx: rand(60, 102),
       cy: rand(32, 70),
       size: rand(24, 42),
-      fill: colors[2],
+      fill: decorationColors[2],
       rotate: rand(0, 45),
     },
     {
@@ -116,7 +124,7 @@ function CardDecoration({ id, hovered }: { id: string; hovered: boolean }) {
       cx: rand(30, 65),
       cy: rand(36, 68),
       size: rand(14, 27),
-      fill: colors[3],
+      fill: decorationColors[3],
       rotate: rand(0, 45),
     },
   ];

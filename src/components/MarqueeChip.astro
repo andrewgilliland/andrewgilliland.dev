@@ -5,6 +5,7 @@ import {
   starPath,
   strToSeed,
 } from "../lib/deterministicShapes";
+import { DARK_SHAPE_STROKE, SHAPE_FILL_COLORS } from "../lib/shapeColors";
 
 interface Props {
   tag: string;
@@ -30,11 +31,11 @@ const SHAPES: ShapeType[] = [
   "hexagon",
   "star",
 ];
-const COLORS = ["#f9a8d4", "#67e8f9", "#6ee7b7", "#fde047"];
+const SHAPE_STROKE = DARK_SHAPE_STROKE;
 
 const rng = seededRng(strToSeed(tag));
 const shape = SHAPES[Math.floor(rng() * SHAPES.length)];
-const fill = COLORS[Math.floor(rng() * COLORS.length)];
+const fill = SHAPE_FILL_COLORS[Math.floor(rng() * SHAPE_FILL_COLORS.length)];
 const rotate = Math.floor(rng() * 45);
 const iconSize = 14 + Math.floor(rng() * 7);
 ---
@@ -58,7 +59,7 @@ const iconSize = 14 + Math.floor(rng() * 7);
           cy="12"
           r="8"
           fill={fill}
-          stroke="#000"
+          stroke={SHAPE_STROKE}
           stroke-width="1.5"
         />
       ) : shape === "rect" ? (
@@ -69,7 +70,7 @@ const iconSize = 14 + Math.floor(rng() * 7);
           height="16"
           rx="3"
           fill={fill}
-          stroke="#000"
+          stroke={SHAPE_STROKE}
           stroke-width="1.5"
           transform={`rotate(${rotate} 12 12)`}
         />
@@ -77,7 +78,7 @@ const iconSize = 14 + Math.floor(rng() * 7);
         <path
           d="M12 4 L20 18 L4 18 Z"
           fill={fill}
-          stroke="#000"
+          stroke={SHAPE_STROKE}
           stroke-width="1.5"
           transform={`rotate(${rotate} 12 12)`}
         />
@@ -85,28 +86,28 @@ const iconSize = 14 + Math.floor(rng() * 7);
         <path
           d={polygonPath(12, 12, 8, 5, rotate)}
           fill={fill}
-          stroke="#000"
+          stroke={SHAPE_STROKE}
           stroke-width="1.5"
         />
       ) : shape === "hexagon" ? (
         <path
           d={polygonPath(12, 12, 8, 6, rotate)}
           fill={fill}
-          stroke="#000"
+          stroke={SHAPE_STROKE}
           stroke-width="1.5"
         />
       ) : shape === "star" ? (
         <path
           d={starPath(12, 12, 8, 4.2, 5, rotate)}
           fill={fill}
-          stroke="#000"
+          stroke={SHAPE_STROKE}
           stroke-width="1.5"
         />
       ) : (
         <path
           d="M12 3 L21 12 L12 21 L3 12 Z"
           fill={fill}
-          stroke="#000"
+          stroke={SHAPE_STROKE}
           stroke-width="1.5"
           transform={`rotate(${rotate} 12 12)`}
         />
