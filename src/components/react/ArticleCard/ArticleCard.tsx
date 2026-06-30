@@ -9,8 +9,6 @@ import {
   SHAPE_FILL_COLORS,
 } from "../../../lib/shapeColors";
 
-export { strToSeed, seededRng, roundedPolygonPath };
-
 export type Article = {
   id: string;
   title: string;
