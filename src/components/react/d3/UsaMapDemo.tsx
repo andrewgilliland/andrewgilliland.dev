@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { feature } from "topojson-client";
 
@@ -20,6 +20,61 @@ type UsAtlasTopology = {
     states: unknown;
   };
 };
+
+// Source: U.S. Census Bureau ACS 2023 1-year estimate (B01003_001E)
+const CENSUS_2023_POPULATION_BY_STATE = new Map<string, number>([
+  ["01", 5108468],
+  ["02", 733406],
+  ["04", 7431344],
+  ["05", 3067732],
+  ["06", 38965193],
+  ["08", 5877610],
+  ["09", 3617176],
+  ["10", 1031890],
+  ["11", 678972],
+  ["12", 22610726],
+  ["13", 11029227],
+  ["15", 1435138],
+  ["16", 1964726],
+  ["17", 12549689],
+  ["18", 6862199],
+  ["19", 3207004],
+  ["20", 2940546],
+  ["21", 4526154],
+  ["22", 4573749],
+  ["23", 1395722],
+  ["24", 6180253],
+  ["25", 7001399],
+  ["26", 10037261],
+  ["27", 5737915],
+  ["28", 2940057],
+  ["29", 6196156],
+  ["30", 1132812],
+  ["31", 1972292],
+  ["32", 3194176],
+  ["33", 1402054],
+  ["34", 9290841],
+  ["35", 2113344],
+  ["36", 19571216],
+  ["37", 10835491],
+  ["38", 783926],
+  ["39", 11785935],
+  ["40", 4053824],
+  ["41", 4233358],
+  ["42", 12961683],
+  ["44", 1095962],
+  ["45", 5373555],
+  ["46", 919318],
+  ["47", 7126489],
+  ["48", 30503301],
+  ["49", 3417734],
+  ["50", 647464],
+  ["51", 8715698],
+  ["53", 7812880],
+  ["54", 1770071],
+  ["55", 5910955],
+  ["56", 584057],
+]);
 
 const STATE_NAMES: Record<string, string> = {
   "01": "Alabama",
@@ -75,28 +130,32 @@ const STATE_NAMES: Record<string, string> = {
   "56": "Wyoming",
 };
 
-function valueFromName(name: string): number {
-  let hash = 0;
-  for (let i = 0; i < name.length; i += 1) {
-    hash = (hash * 31 + name.charCodeAt(i)) % 100000;
-  }
-
-  return 30 + (hash % 700) / 10;
-}
-
 export default function UsaMapDemo() {
   const svgRef = useRef<SVGSVGElement>(null);
   const [features, setFeatures] = useState<StateFeature[]>([]);
+  const [populationByStateId, setPopulationByStateId] = useState<
+    Map<string, number>
+  >(new Map());
   const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let ignore = false;
 
     async function loadStates() {
-      const response = await fetch(
+      setLoading(true);
+      setLoadError(null);
+
+      const topologyResponse = await fetch(
         "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json",
       );
-      const topology = (await response.json()) as UsAtlasTopology;
+
+      if (!topologyResponse.ok) {
+        throw new Error("Failed to load map data");
+      }
+
+      const topology = (await topologyResponse.json()) as UsAtlasTopology;
       const geo = feature(
         topology as never,
         topology.objects.states as never,
@@ -125,12 +184,17 @@ export default function UsaMapDemo() {
 
       if (!ignore) {
         setFeatures(namedFeatures);
+        setPopulationByStateId(new Map(CENSUS_2023_POPULATION_BY_STATE));
+        setLoading(false);
       }
     }
 
     loadStates().catch(() => {
       if (!ignore) {
         setFeatures([]);
+        setPopulationByStateId(new Map());
+        setLoadError("Unable to load map geometry right now.");
+        setLoading(false);
       }
     });
 
@@ -139,19 +203,13 @@ export default function UsaMapDemo() {
     };
   }, []);
 
-  const metricByName = useMemo(() => {
-    const map = new Map<string, number>();
-
-    for (const feature of features) {
-      const name = feature.properties?.name ?? "Unknown";
-      map.set(name, valueFromName(name));
-    }
-
-    return map;
-  }, [features]);
-
   useEffect(() => {
-    if (!svgRef.current || features.length === 0) return;
+    if (
+      !svgRef.current ||
+      features.length === 0 ||
+      populationByStateId.size === 0
+    )
+      return;
 
     const width = 920;
     const height = 560;
@@ -160,13 +218,14 @@ export default function UsaMapDemo() {
     svg.selectAll("*").remove();
     svg.attr("viewBox", `0 0 ${width} ${height}`);
 
-    const values = Array.from(metricByName.values());
+    const values = Array.from(populationByStateId.values());
     const minValue = d3.min(values) ?? 0;
     const maxValue = d3.max(values) ?? 100;
 
     const color = d3
-      .scaleSequential(d3.interpolateYlGnBu)
-      .domain([minValue, maxValue]);
+      .scaleQuantize<string>()
+      .domain([minValue, maxValue])
+      .range(d3.schemeBlues[9]);
 
     const projection = d3.geoAlbersUsa().fitSize([width - 40, height - 64], {
       type: "FeatureCollection",
@@ -184,7 +243,7 @@ export default function UsaMapDemo() {
       .attr("width", width - 40)
       .attr("height", height - 48)
       .attr("rx", 14)
-      .attr("fill", "#081225");
+      .attr("fill", "transparent");
 
     const states = root
       .append("g")
@@ -194,8 +253,9 @@ export default function UsaMapDemo() {
       .join("path")
       .attr("d", (d) => path(d) ?? "")
       .attr("fill", (d) => {
-        const name = d.properties?.name ?? "Unknown";
-        return color(metricByName.get(name) ?? minValue);
+        const id = String(d.id ?? "").padStart(2, "0");
+        const value = populationByStateId.get(id);
+        return value !== undefined ? color(value) : "#94a3b8";
       })
       .attr("stroke", "#0f172a")
       .attr("stroke-width", 0.8)
@@ -211,8 +271,11 @@ export default function UsaMapDemo() {
 
     states.append("title").text((d) => {
       const name = d.properties?.name ?? "Unknown";
-      const value = metricByName.get(name) ?? minValue;
-      return `${name}: ${value.toFixed(1)}`;
+      const id = String(d.id ?? "").padStart(2, "0");
+      const population = populationByStateId.get(id);
+      return population !== undefined
+        ? `${name}: ${population.toLocaleString()} residents`
+        : `${name}: no Census value`;
     });
 
     const legendWidth = 220;
@@ -220,32 +283,39 @@ export default function UsaMapDemo() {
     const legendX = 18;
     const legendY = height - 32;
 
+    const legend = svg
+      .append("g")
+      .attr("transform", `translate(${legendX},${legendY})`);
+
+    const bins = color.range();
+    const thresholds = color.thresholds();
+    const binWidth = legendWidth / bins.length;
+
+    legend
+      .selectAll("rect")
+      .data(bins)
+      .join("rect")
+      .attr("x", (_d, i) => i * binWidth)
+      .attr("y", 0)
+      .attr("width", binWidth + 1)
+      .attr("height", legendHeight)
+      .attr("fill", (d) => d);
+
+    const tickValues = [minValue, ...thresholds, maxValue];
     const legendScale = d3
       .scaleLinear()
       .domain([minValue, maxValue])
       .range([0, legendWidth]);
 
-    const legend = svg
-      .append("g")
-      .attr("transform", `translate(${legendX},${legendY})`);
-
-    const stops = d3.range(0, 1.01, 0.1);
-    const interp = d3.interpolateNumber(minValue, maxValue);
-
-    legend
-      .selectAll("rect")
-      .data(stops)
-      .join("rect")
-      .attr("x", (d) => d * legendWidth)
-      .attr("y", 0)
-      .attr("width", legendWidth / stops.length + 1)
-      .attr("height", legendHeight)
-      .attr("fill", (d) => color(interp(d)));
-
     legend
       .append("g")
       .attr("transform", `translate(0,${legendHeight})`)
-      .call(d3.axisBottom(legendScale).ticks(5))
+      .call(
+        d3
+          .axisBottom(legendScale)
+          .tickValues(tickValues)
+          .tickFormat((d) => d3.format("~s")(d as number)),
+      )
       .selectAll("text")
       .attr("fill", "#cbd5e1")
       .attr("font-size", 11);
@@ -256,7 +326,7 @@ export default function UsaMapDemo() {
       .attr("y", -6)
       .attr("fill", "#cbd5e1")
       .attr("font-size", 11)
-      .text("Sample metric");
+      .text("Population (U.S. Census ACS 2023)");
 
     svg
       .append("text")
@@ -265,14 +335,14 @@ export default function UsaMapDemo() {
       .attr("fill", "#e2e8f0")
       .attr("font-size", 16)
       .attr("font-weight", 700)
-      .text("USA Choropleth Demo");
-  }, [features, metricByName, selectedState]);
+      .text("USA Population Choropleth");
+  }, [features, populationByStateId, selectedState]);
 
   return (
-    <div className="not-prose my-8 rounded-2xl border border-white/20 bg-black/80 p-5">
+    <div className="not-prose my-8">
       <div className="mb-3 flex items-start justify-between gap-4">
         <p className="text-sm text-slate-300">
-          Click a state to focus it. Click again to clear the selection.
+          Real Census population data by state. Click a state to focus it.
         </p>
         <button
           type="button"
@@ -282,7 +352,14 @@ export default function UsaMapDemo() {
           Clear selection
         </button>
       </div>
-      <svg ref={svgRef} className="w-full rounded-xl border border-slate-800" />
+
+      {loading && (
+        <p className="mb-3 text-xs text-slate-400">Loading USA map...</p>
+      )}
+
+      {loadError && <p className="mb-3 text-xs text-amber-300">{loadError}</p>}
+
+      <svg ref={svgRef} className="w-full" />
     </div>
   );
 }
