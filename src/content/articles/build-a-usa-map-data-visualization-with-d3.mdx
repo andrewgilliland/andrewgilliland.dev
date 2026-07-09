@@ -1,0 +1,274 @@
+---
+title: Build an Interactive USA Map Data Visualization with D3
+date: 2026-07-08
+excerpt: Learn how to build a polished interactive USA map in D3 using TopoJSON, choropleth coloring, hover tooltips, zoom/pan, and state-level filtering.
+draft: false
+tags: ["d3", "data-visualization", "javascript", "geojson", "topojson"]
+---
+
+import UsaMapDemo from "@/components/react/d3/UsaMapDemo";
+
+If you want a data viz project that is practical, portfolio-ready, and genuinely useful, a USA map is a great pick.
+
+<UsaMapDemo client:visible />
+
+In this walkthrough, we will build an interactive D3 map of the United States with:
+
+- state boundaries from TopoJSON
+- choropleth color encoding for a metric (for example population growth)
+- hover tooltips with state metadata
+- click-to-select state interactions
+- zoom and pan controls
+
+## What We Are Building
+
+Think of a map you could embed in a dashboard or article:
+
+- each state colored by a metric
+- hover shows exact values
+- click locks a selection
+- map can zoom for detail and reset to full view
+
+This pattern works for many use cases:
+
+- population trends
+- energy usage by state
+- election results
+- housing or affordability metrics
+- weather risk scoring
+
+## Install Dependencies
+
+```bash
+npm install d3 topojson-client
+```
+
+## Data You Need
+
+You typically combine:
+
+- TopoJSON for geometry
+- CSV or JSON for metrics keyed by state id/FIPS/abbreviation
+
+Example metric data:
+
+```ts
+type StateMetric = {
+  id: string; // should match a geometry identifier
+  state: string;
+  value: number;
+};
+
+const metrics: StateMetric[] = [
+  { id: "06", state: "California", value: 74.2 },
+  { id: "48", state: "Texas", value: 61.8 },
+  { id: "36", state: "New York", value: 53.1 },
+];
+```
+
+## Render the Base Map
+
+```ts
+import * as d3 from "d3";
+import { feature } from "topojson-client";
+
+const width = 980;
+const height = 620;
+
+const svg = d3
+  .select("#usa-map")
+  .append("svg")
+  .attr("viewBox", `0 0 ${width} ${height}`)
+  .attr("width", "100%")
+  .attr("height", "auto");
+
+const g = svg.append("g").attr("class", "map-root");
+
+// `us` is your loaded TopoJSON object.
+const statesGeo = feature(us, us.objects.states);
+const projection = d3.geoAlbersUsa().fitSize([width, height], statesGeo);
+const path = d3.geoPath(projection);
+```
+
+## Join Metrics to Geometry
+
+Create a lookup map so styling and tooltips are O(1) per state.
+
+```ts
+const metricById = new Map(metrics.map((d) => [d.id, d]));
+
+const values = metrics.map((d) => d.value);
+const color = d3
+  .scaleSequential(d3.interpolateYlGnBu)
+  .domain([d3.min(values) ?? 0, d3.max(values) ?? 100]);
+```
+
+## Draw States as a Choropleth
+
+```ts
+g.append("g")
+  .attr("class", "states")
+  .selectAll("path")
+  .data(statesGeo.features)
+  .join("path")
+  .attr("d", (d) => path(d) ?? "")
+  .attr("fill", (d) => {
+    const row = metricById.get(String(d.id).padStart(2, "0"));
+    return row ? color(row.value) : "#e5e7eb";
+  })
+  .attr("stroke", "#0f172a")
+  .attr("stroke-width", 0.75);
+```
+
+## Add Tooltips
+
+```ts
+const tooltip = d3
+  .select("body")
+  .append("div")
+  .style("position", "fixed")
+  .style("pointer-events", "none")
+  .style("background", "#0b1020")
+  .style("color", "#e2e8f0")
+  .style("padding", "8px 10px")
+  .style("border", "1px solid #334155")
+  .style("border-radius", "8px")
+  .style("opacity", "0");
+
+function showTooltip(event: MouseEvent, html: string) {
+  tooltip
+    .html(html)
+    .style("left", `${event.clientX + 12}px`)
+    .style("top", `${event.clientY + 12}px`)
+    .transition()
+    .duration(100)
+    .style("opacity", "1");
+}
+
+function hideTooltip() {
+  tooltip.transition().duration(100).style("opacity", "0");
+}
+```
+
+Attach hover listeners:
+
+```ts
+g.select(".states")
+  .selectAll<SVGPathElement, GeoJSON.Feature>("path")
+  .on("mousemove", (event, d) => {
+    const row = metricById.get(String(d.id).padStart(2, "0"));
+    const label = row
+      ? `<strong>${row.state}</strong><br/>Value: ${row.value.toFixed(1)}`
+      : `<strong>Unknown state</strong><br/>No data`;
+
+    showTooltip(event as MouseEvent, label);
+  })
+  .on("mouseleave", hideTooltip);
+```
+
+## Click Selection State
+
+```ts
+let selectedId: string | null = null;
+
+const states = g
+  .select(".states")
+  .selectAll<SVGPathElement, GeoJSON.Feature>("path");
+
+states.on("click", (_event, d) => {
+  const id = String(d.id).padStart(2, "0");
+  selectedId = selectedId === id ? null : id;
+
+  states
+    .attr("opacity", (s) => {
+      if (!selectedId) return 1;
+      return String(s.id).padStart(2, "0") === selectedId ? 1 : 0.35;
+    })
+    .attr("stroke-width", (s) =>
+      String(s.id).padStart(2, "0") === selectedId ? 2 : 0.75,
+    );
+});
+```
+
+## Add Zoom and Pan
+
+```ts
+const zoom = d3
+  .zoom<SVGSVGElement, unknown>()
+  .scaleExtent([1, 8])
+  .on("zoom", (event) => {
+    g.attr("transform", event.transform.toString());
+  });
+
+svg.call(zoom);
+```
+
+If you add a reset button:
+
+```ts
+svg.transition().duration(350).call(zoom.transform, d3.zoomIdentity);
+```
+
+## Add a Legend
+
+A choropleth needs a visual key.
+
+```ts
+const legendWidth = 220;
+const legendHeight = 10;
+
+const legendScale = d3
+  .scaleLinear()
+  .domain(color.domain() as [number, number])
+  .range([0, legendWidth]);
+
+const legendAxis = d3.axisBottom(legendScale).ticks(5);
+
+const legend = svg
+  .append("g")
+  .attr("transform", `translate(24,${height - 42})`);
+
+const stops = d3.range(0, 1.01, 0.1);
+const [minValue, maxValue] = color.domain() as [number, number];
+const valueAt = d3.interpolateNumber(minValue, maxValue);
+
+legend
+  .selectAll("rect")
+  .data(stops)
+  .join("rect")
+  .attr("x", (d) => d * legendWidth)
+  .attr("y", 0)
+  .attr("width", legendWidth / stops.length + 1)
+  .attr("height", legendHeight)
+  .attr("fill", (d) => color(valueAt(d)));
+
+legend
+  .append("g")
+  .attr("transform", `translate(0,${legendHeight})`)
+  .call(legendAxis);
+```
+
+## Common Pitfalls
+
+- Identifier mismatch: make sure geometry ids match your metric keys.
+- Projection issues: use `geoAlbersUsa` for U.S. maps unless you need a special projection.
+- Tooltip jitter: position tooltips with `position: fixed` and small offsets.
+- Performance noise: avoid full redraws on every interaction; update attributes only.
+
+## Ideas to Extend This
+
+- add a time slider to animate values by year
+- switch metrics from a dropdown
+- add county-level drill-down on state click
+- support accessibility with keyboard focus + ARIA labels
+- sync map selection with a side panel chart
+
+## Wrap Up
+
+A USA map in D3 gives you a reusable foundation for many storytelling and analytics projects:
+
+- robust geospatial rendering
+- clear metric communication with choropleths
+- rich interactions without heavy frameworks
+
+Once you have this structure in place, swapping datasets is easy and opens up a ton of article ideas.
