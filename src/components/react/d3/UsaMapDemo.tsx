@@ -9,6 +9,13 @@ type StateFeature = GeoJSON.Feature<
   }
 >;
 
+type CountyFeature = GeoJSON.Feature<
+  GeoJSON.Polygon | GeoJSON.MultiPolygon,
+  {
+    stateId: string;
+  }
+>;
+
 type UsaStatesGeoJson = GeoJSON.FeatureCollection<
   GeoJSON.Polygon | GeoJSON.MultiPolygon,
   { name?: string }
@@ -18,63 +25,22 @@ type UsAtlasTopology = {
   type: "Topology";
   objects: {
     states: unknown;
+    counties: unknown;
   };
 };
 
-// Source: U.S. Census Bureau ACS 2023 1-year estimate (B01003_001E)
-const CENSUS_2023_POPULATION_BY_STATE = new Map<string, number>([
-  ["01", 5108468],
-  ["02", 733406],
-  ["04", 7431344],
-  ["05", 3067732],
-  ["06", 38965193],
-  ["08", 5877610],
-  ["09", 3617176],
-  ["10", 1031890],
-  ["11", 678972],
-  ["12", 22610726],
-  ["13", 11029227],
-  ["15", 1435138],
-  ["16", 1964726],
-  ["17", 12549689],
-  ["18", 6862199],
-  ["19", 3207004],
-  ["20", 2940546],
-  ["21", 4526154],
-  ["22", 4573749],
-  ["23", 1395722],
-  ["24", 6180253],
-  ["25", 7001399],
-  ["26", 10037261],
-  ["27", 5737915],
-  ["28", 2940057],
-  ["29", 6196156],
-  ["30", 1132812],
-  ["31", 1972292],
-  ["32", 3194176],
-  ["33", 1402054],
-  ["34", 9290841],
-  ["35", 2113344],
-  ["36", 19571216],
-  ["37", 10835491],
-  ["38", 783926],
-  ["39", 11785935],
-  ["40", 4053824],
-  ["41", 4233358],
-  ["42", 12961683],
-  ["44", 1095962],
-  ["45", 5373555],
-  ["46", 919318],
-  ["47", 7126489],
-  ["48", 30503301],
-  ["49", 3417734],
-  ["50", 647464],
-  ["51", 8715698],
-  ["53", 7812880],
-  ["54", 1770071],
-  ["55", 5910955],
-  ["56", 584057],
-]);
+const COUNTY_POPULATION_ENDPOINT = "/api/county-population.json";
+
+type CountyPopulationApiResponse = {
+  counties: Record<
+    string,
+    {
+      name: string;
+      population: number;
+      stateId: string;
+    }
+  >;
+};
 
 const STATE_NAMES: Record<string, string> = {
   "01": "Alabama",
@@ -130,12 +96,28 @@ const STATE_NAMES: Record<string, string> = {
   "56": "Wyoming",
 };
 
+const TAILWIND_PINK_9 = [
+  "#fce7f3",
+  "#fbcfe8",
+  "#f9a8d4",
+  "#f472b6",
+  "#ec4899",
+  "#db2777",
+  "#be185d",
+  "#9d174d",
+  "#831843",
+];
+
 export default function UsaMapDemo() {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [features, setFeatures] = useState<StateFeature[]>([]);
-  const [populationByStateId, setPopulationByStateId] = useState<
+  const [stateFeatures, setStateFeatures] = useState<StateFeature[]>([]);
+  const [countyFeatures, setCountyFeatures] = useState<CountyFeature[]>([]);
+  const [populationByCountyId, setPopulationByCountyId] = useState<
     Map<string, number>
   >(new Map());
+  const [countyNameById, setCountyNameById] = useState<Map<string, string>>(
+    new Map(),
+  );
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -143,35 +125,90 @@ export default function UsaMapDemo() {
   useEffect(() => {
     let ignore = false;
 
-    async function loadStates() {
+    async function loadCountyPopulation() {
+      const response = await fetch(COUNTY_POPULATION_ENDPOINT);
+
+      if (!response.ok) {
+        throw new Error("Failed to load county population data");
+      }
+
+      const payload = (await response.json()) as CountyPopulationApiResponse;
+      const countyRecords = payload?.counties;
+
+      if (!countyRecords || typeof countyRecords !== "object") {
+        throw new Error("Unexpected county population response");
+      }
+
+      const populationMap = new Map<string, number>();
+      const countyNameMap = new Map<string, string>();
+
+      Object.entries(countyRecords).forEach(([countyId, county]) => {
+        if (
+          !county ||
+          !county.name ||
+          !Number.isFinite(county.population) ||
+          county.population <= 0
+        ) {
+          return;
+        }
+
+        populationMap.set(countyId, county.population);
+        countyNameMap.set(countyId, county.name);
+      });
+
+      if (populationMap.size === 0) {
+        throw new Error("No county population values were loaded");
+      }
+
+      return { populationMap, countyNameMap };
+    }
+
+    async function loadStatesAndCounties() {
       setLoading(true);
       setLoadError(null);
 
-      const topologyResponse = await fetch(
-        "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json",
-      );
+      const [topologyResponse, countyPopulation] = await Promise.all([
+        fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json"),
+        loadCountyPopulation(),
+      ]);
 
       if (!topologyResponse.ok) {
         throw new Error("Failed to load map data");
       }
 
       const topology = (await topologyResponse.json()) as UsAtlasTopology;
-      const geo = feature(
+      const statesGeo = feature(
         topology as never,
         topology.objects.states as never,
       ) as unknown;
+      const countiesGeo = feature(
+        topology as never,
+        topology.objects.counties as never,
+      ) as unknown;
 
       if (
-        !geo ||
-        typeof geo !== "object" ||
-        (geo as { type?: string }).type !== "FeatureCollection"
+        !statesGeo ||
+        typeof statesGeo !== "object" ||
+        (statesGeo as { type?: string }).type !== "FeatureCollection"
       ) {
-        throw new Error("Unexpected TopoJSON conversion result");
+        throw new Error("Unexpected states TopoJSON conversion result");
       }
 
-      const collection = geo as UsaStatesGeoJson;
+      if (
+        !countiesGeo ||
+        typeof countiesGeo !== "object" ||
+        (countiesGeo as { type?: string }).type !== "FeatureCollection"
+      ) {
+        throw new Error("Unexpected counties TopoJSON conversion result");
+      }
 
-      const namedFeatures = collection.features.map((state) => {
+      const stateCollection = statesGeo as UsaStatesGeoJson;
+      const countyCollection = countiesGeo as GeoJSON.FeatureCollection<
+        GeoJSON.Polygon | GeoJSON.MultiPolygon,
+        Record<string, unknown>
+      >;
+
+      const namedStateFeatures = stateCollection.features.map((state) => {
         const id = String(state.id ?? "").padStart(2, "0");
         return {
           ...state,
@@ -182,18 +219,37 @@ export default function UsaMapDemo() {
         };
       }) as StateFeature[];
 
+      const normalizedCountyFeatures = countyCollection.features.map(
+        (county) => {
+          const countyId = String(county.id ?? "").padStart(5, "0");
+          const stateId = countyId.slice(0, 2);
+          return {
+            ...county,
+            properties: {
+              stateId,
+            },
+          };
+        },
+      ) as CountyFeature[];
+
       if (!ignore) {
-        setFeatures(namedFeatures);
-        setPopulationByStateId(new Map(CENSUS_2023_POPULATION_BY_STATE));
+        setStateFeatures(namedStateFeatures);
+        setCountyFeatures(normalizedCountyFeatures);
+        setPopulationByCountyId(countyPopulation.populationMap);
+        setCountyNameById(countyPopulation.countyNameMap);
         setLoading(false);
       }
     }
 
-    loadStates().catch(() => {
+    loadStatesAndCounties().catch(() => {
       if (!ignore) {
-        setFeatures([]);
-        setPopulationByStateId(new Map());
-        setLoadError("Unable to load map geometry right now.");
+        setStateFeatures([]);
+        setCountyFeatures([]);
+        setPopulationByCountyId(new Map());
+        setCountyNameById(new Map());
+        setLoadError(
+          "Unable to load county population or map geometry right now.",
+        );
         setLoading(false);
       }
     });
@@ -206,8 +262,9 @@ export default function UsaMapDemo() {
   useEffect(() => {
     if (
       !svgRef.current ||
-      features.length === 0 ||
-      populationByStateId.size === 0
+      stateFeatures.length === 0 ||
+      countyFeatures.length === 0 ||
+      populationByCountyId.size === 0
     )
       return;
 
@@ -218,18 +275,18 @@ export default function UsaMapDemo() {
     svg.selectAll("*").remove();
     svg.attr("viewBox", `0 0 ${width} ${height}`);
 
-    const values = Array.from(populationByStateId.values());
+    const values = Array.from(populationByCountyId.values());
     const minValue = d3.min(values) ?? 0;
     const maxValue = d3.max(values) ?? 100;
 
     const color = d3
-      .scaleQuantize<string>()
-      .domain([minValue, maxValue])
-      .range(d3.schemeBlues[9]);
+      .scaleQuantile<string>()
+      .domain(values)
+      .range(TAILWIND_PINK_9);
 
     const projection = d3.geoAlbersUsa().fitSize([width - 40, height - 64], {
       type: "FeatureCollection",
-      features,
+      features: stateFeatures,
     } as GeoJSON.FeatureCollection);
 
     const path = d3.geoPath(projection);
@@ -245,38 +302,54 @@ export default function UsaMapDemo() {
       .attr("rx", 14)
       .attr("fill", "transparent");
 
-    const states = root
+    const counties = root
       .append("g")
-      .attr("class", "states")
-      .selectAll<SVGPathElement, StateFeature>("path")
-      .data(features)
+      .attr("class", "counties")
+      .selectAll<SVGPathElement, CountyFeature>("path")
+      .data(countyFeatures)
       .join("path")
       .attr("d", (d) => path(d) ?? "")
       .attr("fill", (d) => {
-        const id = String(d.id ?? "").padStart(2, "0");
-        const value = populationByStateId.get(id);
+        const countyId = String(d.id ?? "").padStart(5, "0");
+        const value = populationByCountyId.get(countyId);
         return value !== undefined ? color(value) : "#94a3b8";
       })
-      .attr("stroke", "#0f172a")
-      .attr("stroke-width", 0.8)
+      .attr("stroke", "none")
       .attr("opacity", (d) => {
         if (!selectedState) return 1;
-        return d.properties?.name === selectedState ? 1 : 0.35;
+        const name = STATE_NAMES[d.properties.stateId];
+        return name === selectedState ? 1 : 0.2;
       })
       .style("cursor", "pointer")
       .on("click", (_event, d) => {
-        const name = d.properties?.name ?? null;
+        const name = STATE_NAMES[d.properties.stateId] ?? null;
         setSelectedState((prev) => (prev === name ? null : name));
       });
 
-    states.append("title").text((d) => {
-      const name = d.properties?.name ?? "Unknown";
-      const id = String(d.id ?? "").padStart(2, "0");
-      const population = populationByStateId.get(id);
+    counties.append("title").text((d) => {
+      const countyId = String(d.id ?? "").padStart(5, "0");
+      const countyName = countyNameById.get(countyId) ?? `County ${countyId}`;
+      const population = populationByCountyId.get(countyId);
       return population !== undefined
-        ? `${name}: ${population.toLocaleString()} residents`
-        : `${name}: no Census value`;
+        ? `${countyName}: ${population.toLocaleString()} residents`
+        : `${countyName}: no Census value`;
     });
+
+    root
+      .append("g")
+      .attr("class", "state-borders")
+      .selectAll<SVGPathElement, StateFeature>("path")
+      .data(stateFeatures)
+      .join("path")
+      .attr("d", (d) => path(d) ?? "")
+      .attr("fill", "none")
+      .attr("stroke", "#0f172a")
+      .attr("stroke-width", 0.8)
+      .attr("pointer-events", "none")
+      .attr("opacity", (d) => {
+        if (!selectedState) return 0.9;
+        return d.properties?.name === selectedState ? 1 : 0.4;
+      });
 
     const legendWidth = 220;
     const legendHeight = 10;
@@ -287,8 +360,14 @@ export default function UsaMapDemo() {
       .append("g")
       .attr("transform", `translate(${legendX},${legendY})`);
 
-    const bins = color.range();
-    const thresholds = color.thresholds();
+    const bins = color.range().map((shade) => {
+      const [start, end] = color.invertExtent(shade);
+      return {
+        shade,
+        start: start ?? minValue,
+        end: end ?? maxValue,
+      };
+    });
     const binWidth = legendWidth / bins.length;
 
     legend
@@ -299,26 +378,42 @@ export default function UsaMapDemo() {
       .attr("y", 0)
       .attr("width", binWidth + 1)
       .attr("height", legendHeight)
-      .attr("fill", (d) => d);
+      .attr("fill", (d) => d.shade);
 
-    const tickValues = [minValue, ...thresholds, maxValue];
-    const legendScale = d3
+    const boundaries = [
+      bins[0]?.start ?? minValue,
+      ...bins.map((bin) => bin.end),
+    ];
+    const boundaryPositions = Array.from(
+      new Set([
+        0,
+        Math.floor((boundaries.length - 1) / 3),
+        Math.floor(((boundaries.length - 1) * 2) / 3),
+        boundaries.length - 1,
+      ]),
+    );
+
+    const labelScale = d3
       .scaleLinear()
-      .domain([minValue, maxValue])
+      .domain([0, boundaries.length - 1])
       .range([0, legendWidth]);
 
     legend
       .append("g")
       .attr("transform", `translate(0,${legendHeight})`)
-      .call(
-        d3
-          .axisBottom(legendScale)
-          .tickValues(tickValues)
-          .tickFormat((d) => d3.format("~s")(d as number)),
-      )
       .selectAll("text")
+      .data(boundaryPositions)
+      .join("text")
+      .attr("x", (d) => labelScale(d))
+      .attr("y", 14)
+      .attr("text-anchor", (d) => {
+        if (d === 0) return "start";
+        if (d === boundaries.length - 1) return "end";
+        return "middle";
+      })
       .attr("fill", "#cbd5e1")
-      .attr("font-size", 11);
+      .attr("font-size", 11)
+      .text((d) => d3.format("~s")(boundaries[d] ?? 0));
 
     legend
       .append("text")
@@ -326,7 +421,17 @@ export default function UsaMapDemo() {
       .attr("y", -6)
       .attr("fill", "#cbd5e1")
       .attr("font-size", 11)
-      .text("Population (U.S. Census ACS 2023)");
+      .text("County population (U.S. Census ACS 2023)");
+
+    legend
+      .append("text")
+      .attr("x", 0)
+      .attr("y", 28)
+      .attr("fill", "#94a3b8")
+      .attr("font-size", 10)
+      .text(
+        "Quantile bins: each color represents a similar number of counties",
+      );
 
     svg
       .append("text")
@@ -336,13 +441,20 @@ export default function UsaMapDemo() {
       .attr("font-size", 16)
       .attr("font-weight", 700)
       .text("USA Population Choropleth");
-  }, [features, populationByStateId, selectedState]);
+  }, [
+    countyFeatures,
+    countyNameById,
+    stateFeatures,
+    populationByCountyId,
+    selectedState,
+  ]);
 
   return (
     <div className="not-prose my-8">
       <div className="mb-3 flex items-start justify-between gap-4">
         <p className="text-sm text-slate-300">
-          Real Census population data by state. Click a state to focus it.
+          Real Census county-level population across the USA. Click a county to
+          focus its state.
         </p>
         <button
           type="button"
