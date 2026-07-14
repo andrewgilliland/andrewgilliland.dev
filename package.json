@@ -48,7 +48,7 @@
     "@vitest/coverage-v8": "^4.1.9",
     "autoprefixer": "^10.4.14",
     "eslint": "^9.39.2",
-    "eslint-plugin-astro": "^1.0.0",
+    "eslint-plugin-astro": "^3.0.0",
     "gray-matter": "^4.0.3",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
