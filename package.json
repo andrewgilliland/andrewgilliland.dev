@@ -59,6 +59,6 @@
     "prettier-plugin-tailwindcss": "^0.6.9",
     "shiki": "^1.18.0",
     "typescript": "^5.4.5",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.10"
   }
 }
