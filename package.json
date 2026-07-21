@@ -54,13 +54,8 @@
     "gray-matter": "^4.0.3",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
-<<<<<<< HEAD
-    "lint-staged": "^17.3.0",
-    "postcss": "^8.5.14",
-=======
     "lint-staged": "^17.0.8",
     "postcss": "^8.5.25",
->>>>>>> 9fa9cbd (chore(deps-dev): bump postcss from 8.5.16 to 8.5.25)
     "prettier": "^3.4.2",
     "prettier-plugin-astro": "^0.14.0",
     "prettier-plugin-tailwindcss": "^0.6.9",
