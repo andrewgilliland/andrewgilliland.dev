@@ -1,5 +1,14 @@
 export type Topic = { name: string; path: string; color?: string };
 
+export type ArticleMeta = {
+  id: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  tags: string[];
+  readingTime: string;
+};
+
 export type HeadingElement = {
   id: string;
   text: string;

@@ -10,6 +10,7 @@ import CopyCodeButton from "@/components/CopyCodeButton.astro";
 import { getCollection, render } from "astro:content";
 import { getRelatedArticles } from "@/lib/relatedArticles";
 import { toSlug } from "@/lib/slug";
+import { getReadingTime } from "@/lib/readingTime";
 
 export async function getStaticPaths() {
   const articles = await getCollection("articles", ({ data }) => !data.draft);
@@ -25,6 +26,7 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
 
 const allArticles = await getCollection("articles", ({ data }) => !data.draft);
 const relatedArticles = getRelatedArticles(article, allArticles, 3);
+const readingTime = getReadingTime(article.body ?? "");
 ---
 
 <BaseLayout
@@ -58,10 +60,11 @@ const relatedArticles = getRelatedArticles(article, allArticles, 3);
               <h1 class="mb-4 text-[2.5rem] font-normal leading-[1.2] text-white">
                 {article.data.title}
               </h1>
-              <FormattedDate
-                date={article.data.date}
-                class="text-lg text-gray-400"
-              />
+              <div class="flex flex-wrap items-center gap-3 text-lg text-gray-400">
+                <FormattedDate date={article.data.date} />
+                <span>•</span>
+                <span>{readingTime}</span>
+              </div>
               {article.data.tags.length > 0 && (
                 <div class="mt-3 flex flex-wrap gap-2">
                   {article.data.tags.map((tag) => (
@@ -87,10 +90,11 @@ const relatedArticles = getRelatedArticles(article, allArticles, 3);
             <h1 class="mb-4 text-[2.5rem] font-normal leading-[1.2] text-white">
               {article.data.title}
             </h1>
-            <FormattedDate
-              date={article.data.date}
-              class="text-lg text-gray-400"
-            />
+            <div class="flex flex-wrap items-center gap-3 text-lg text-gray-400">
+              <FormattedDate date={article.data.date} />
+              <span>•</span>
+              <span>{readingTime}</span>
+            </div>
             {article.data.tags.length > 0 && (
               <div class="mt-3 flex flex-wrap gap-2">
                 {article.data.tags.map((tag) => (
