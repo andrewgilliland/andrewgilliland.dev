@@ -15,6 +15,7 @@ export type Article = {
   excerpt: string;
   date: string;
   tags: string[];
+  readingTime?: string;
 };
 
 type ShapeType = "circle" | "rect" | "triangle" | "diamond";
@@ -176,16 +177,18 @@ export default function ArticleCard({
         <div className="flex h-full grow flex-col space-y-2 p-6">
           <h2 className="flex-none text-2xl leading-tight">{article.title}</h2>
           <div className="flex-1" />
-          <time
-            dateTime={article.date}
-            className="flex-none text-sm text-gray-400"
-          >
-            {new Date(article.date).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </time>
+          <div className="flex-none text-sm text-gray-400">
+            <time dateTime={article.date}>
+              {new Date(article.date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </time>
+            {article.readingTime && (
+              <span className="ml-3">• {article.readingTime}</span>
+            )}
+          </div>
         </div>
       </a>
     </article>
