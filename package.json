@@ -58,7 +58,7 @@
     "postcss": "^8.5.25",
     "prettier": "^3.4.2",
     "prettier-plugin-astro": "^0.14.0",
-    "prettier-plugin-tailwindcss": "^0.6.9",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "shiki": "^1.18.0",
     "typescript": "^5.4.5",
     "vitest": "^4.1.8"
