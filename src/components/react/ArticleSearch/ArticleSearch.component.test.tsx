@@ -87,6 +87,13 @@ describe("ArticleSearch component", () => {
     expect(window.location.search).toContain("tag=aws");
   });
 
+  it("adds the Foley typing cue to the search input", () => {
+    render(<ArticleSearch articles={articles} />);
+
+    const input = screen.getByRole("searchbox", { name: "Search articles" });
+    expect(input.getAttribute("data-foley-type")).toBe("thock");
+  });
+
   it("updates URL when typing query and clears all filters", () => {
     render(<ArticleSearch articles={articles} />);
 
