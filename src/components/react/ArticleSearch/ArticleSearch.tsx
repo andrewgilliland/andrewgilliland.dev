@@ -80,6 +80,7 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
             value={query}
             onChange={(e) => setQueryAndUrl(e.target.value)}
             placeholder="Search articles…"
+            data-foley-type="thock"
             className="w-full rounded-lg border border-white/20 bg-black px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-pink-500 [&::-webkit-search-cancel-button]:appearance-none"
           />
           {(query || selectedTag) && (
