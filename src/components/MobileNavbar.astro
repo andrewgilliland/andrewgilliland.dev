@@ -72,7 +72,7 @@ const gradientStyle = `linear-gradient(to bottom right, ${pink}, ${pink} 30%, ${
   <div class="my-10 flex h-full flex-col items-center gap-10">
     {
       pages.map(({ href, title }) => (
-        <a class="group" href={href}>
+        <a class="group" href={href} data-foley-click="tap">
           <div
             class={`rounded-md px-2 py-1 text-3xl ${
               currentPath === href

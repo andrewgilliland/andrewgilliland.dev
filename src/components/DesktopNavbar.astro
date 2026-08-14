@@ -60,6 +60,7 @@ const currentPath = Astro.url.pathname;
               class="group mr-4"
               href={href}
               aria-current={currentPath === href ? "page" : undefined}
+              data-foley-click="tap"
             >
               <div class="text-white">{title}</div>
               <div
