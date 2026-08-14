@@ -67,6 +67,20 @@ const canonicalURL = Astro.url.href;
     <title>{title}</title>
   </head>
   <body class="font-brand">
+    <script>
+      import { bind, play, set } from "@foleyjs/core";
+
+      bind(document);
+      set({
+        theme: "mechanical",
+        volume: 0.25,
+        localize: 0.25,
+      });
+
+      document.addEventListener("astro:page-load", () => {
+        play("hover", { volume: 0.5, pitch: -2 });
+      });
+    </script>
     <Navbar />
     <main class="flex min-h-screen flex-col bg-black pb-10">
       <slot />
