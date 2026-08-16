@@ -48,7 +48,7 @@
     "@types/topojson-client": "^3.1.5",
     "@typescript-eslint/parser": "^8.63.0",
     "@vitejs/plugin-react": "^6.0.3",
-    "@vitest/coverage-v8": "^4.1.9",
+    "@vitest/coverage-v8": "^4.1.10",
     "autoprefixer": "^10.4.14",
     "eslint": "^10.8.0",
     "eslint-plugin-astro": "^3.1.0",
