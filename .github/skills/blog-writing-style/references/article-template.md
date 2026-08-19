@@ -8,13 +8,13 @@ tags: ["aws", "typescript"]
 
 Open with the real problem or tension, not a filler intro.
 
-## Why This Matters
+## The Problem
 
-Explain why this issue matters and why this approach is worth considering.
+State the problem directly. Explain what the obvious approach does not solve.
 
-## Background
+## What We're Building
 
-State the relevant concepts before showing the implementation.
+Explain the relevant concepts and the shape of the solution before showing code.
 
 ## Implementation
 
@@ -28,8 +28,8 @@ export function example() {
 
 ## When Not to Use This
 
-List the cases where the simpler or more direct alternative is the better choice.
+List the cases where the simpler or more direct alternative is the better choice. Remove this section when it does not apply.
 
-## The Short Version
+## The Takeaway
 
 Summarize the result in a few sentences and call out the key trade-offs or responsibilities.

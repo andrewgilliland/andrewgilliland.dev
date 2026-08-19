@@ -21,9 +21,11 @@ describe("Article authoring guardrails", () => {
     expect(template).toContain("draft:");
     expect(template).toContain("tags:");
 
-    expect(template).toContain("## Why This Matters");
+    expect(template).toContain("## The Problem");
+    expect(template).toContain("## What We're Building");
     expect(template).toContain("## When Not to Use This");
-    expect(template).toContain("## The Short Version");
+    expect(template).toContain("## The Takeaway");
+    expect(template).not.toContain("## The Short Version");
     expect(template).not.toContain("## Conclusion");
   });
 });

@@ -17,22 +17,24 @@ Use this structure when it fits the topic:
 
 1. Title
 2. Opening problem framing
-3. Why this matters / why this approach
+3. Context or why the topic matters
 4. Conceptual background
 5. Implementation with code
 6. Infra or deployment notes if relevant
-7. Trade-offs / why it scales
-8. When Not to Use This
-9. The Short Version
+7. Trade-offs / when the approach fits
+8. When Not to Use This, when relevant
+9. The Takeaway
 
-The problem-first opening, the reasoning section, and the short-version closer are the most consistent parts of the site style.
+The problem-first opening, topic-specific sections, and a plain takeaway close are the most consistent parts of the site style. This is a guide, not a rigid outline.
 
 ## Headings
 
 - Use `##` for major sections.
 - Use `###` sparingly for subdivisions.
 - Headings should read like scannable chapter titles, not clickbait.
-- Avoid a `## Conclusion` heading; use `## The Short Version` instead.
+- Prefer headings that describe the actual content, such as `## The Problem`, `## What We're Building`, `## What Is Amazon S3?`, or `## Setting Up with uv`.
+- Use `## The Takeaway` for the standard closing section.
+- Avoid a generic `## Conclusion` heading.
 
 ## Code
 
@@ -72,7 +74,7 @@ This is the required structure for articles. The site auto-checks the frontmatte
 
 ## Avoid
 
-- Generic conclusion headings.
+- Generic conclusion headings; use `The Takeaway` for the standard close.
 - AI-sounding transitions and filler.
 - Over-explaining syntax a competent engineer already knows.
 - Omitting trade-offs or the "When Not to Use This" section where it matters.
