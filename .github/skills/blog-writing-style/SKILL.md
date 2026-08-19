@@ -5,30 +5,32 @@ description: Write and format articles for andrewgilliland.dev in Andrew's estab
 
 # andrewgilliland.dev Writing Style
 
-Write technical articles in a practical, direct, problem-first style. The site tagline is "Practical guides, real examples, no fluff" — every post should earn that.
+Write technical articles in a practical, direct, problem-first style. The site tagline is "Practical guides, real examples, no fluff" — every article should earn that.
 
 ## When to use this skill
 
-Use it when drafting or editing a blog post, article, or technical write-up for the site. It helps with tone, structure, and site-specific conventions.
-
-## Core requirements
-
-- Open with the actual problem or tension, not a filler intro.
-- Prefer short, declarative sentences.
-- Keep paragraphs short and readable.
-- Use a clear article flow: problem, why it matters, background, implementation, trade-offs, and a short version.
-- Include a "When not to use this" section for pattern or architecture pieces.
-- Use practical, real-world code with enough context to be useful.
-- Keep headings scannable and plain, not clickbait.
+Use it when drafting, editing, or reviewing a blog post or technical article for this site.
 
 ## Must-haves
 
-- Title should be direct and specific.
-- Use `##` for main sections; `###` only when necessary.
-- Prefer TypeScript for AWS/CDK/API examples; Python for data/ML examples.
-- Include frontmatter matching the site’s article conventions.
-- End with "The Short Version" rather than a generic conclusion.
+- Open with the real problem or tension, not a filler intro.
+- Keep paragraphs and sentences short and direct.
+- Use a clear structure: problem, why it matters, background, implementation, trade-offs, and a short version.
+- Include a "When Not to Use This" section for architecture or pattern-heavy pieces.
+- End with "The Short Version" instead of a generic conclusion.
+- Make sure the article frontmatter matches the site’s actual content schema.
 
-## Full guidance
+## Required article shape
 
-See the detailed style guide in [references/style-guide.md](./references/style-guide.md).
+- Title
+- `date`
+- `excerpt`
+- `draft`
+- `tags`
+- real headings with a clear flow
+- no `## Conclusion` heading
+
+## Templates and references
+
+- Start from [references/article-template.md](./references/article-template.md)
+- See the full rules in [references/style-guide.md](./references/style-guide.md)

@@ -1,6 +1,6 @@
 # andrewgilliland.dev Writing Style Guide
 
-Write technical articles the way Andrew writes them: practical, direct, and problem-first. The site tagline is "Practical guides, real examples, no fluff" — every article should earn that.
+This site’s content style is practical, direct, and problem-first. The site tagline is "Practical guides, real examples, no fluff" — every article should earn that.
 
 ## Voice
 
@@ -13,7 +13,7 @@ Write technical articles the way Andrew writes them: practical, direct, and prob
 
 ## Structure
 
-Use this shape when it fits the topic:
+Use this structure when it fits the topic:
 
 1. Title
 2. Opening problem framing
@@ -22,7 +22,7 @@ Use this shape when it fits the topic:
 5. Implementation with code
 6. Infra or deployment notes if relevant
 7. Trade-offs / why it scales
-8. When not to use it
+8. When Not to Use This
 9. The Short Version
 
 The problem-first opening, the reasoning section, and the short-version closer are the most consistent parts of the site style.
@@ -32,13 +32,13 @@ The problem-first opening, the reasoning section, and the short-version closer a
 - Use `##` for major sections.
 - Use `###` sparingly for subdivisions.
 - Headings should read like scannable chapter titles, not clickbait.
-- Prefer phrases like "Why Put the Logic in an Authorizer Lambda" over question-heavy or generic headings.
+- Avoid a `## Conclusion` heading; use `## The Short Version` instead.
 
 ## Code
 
 - Use fenced code blocks with the correct language tag.
-- Prefer TypeScript for AWS/CDK/API examples and Python for data/ML content.
-- Show runnable-looking code, not pseudocode fragments.
+- Prefer TypeScript for AWS/CDK/API examples and Python for data/ML examples.
+- Show runnable-looking code, not fragments or pseudocode.
 - Include enough imports, types, and function signatures to be useful.
 - After code, explain the behavior it creates in plain English.
 
@@ -50,24 +50,29 @@ The problem-first opening, the reasoning section, and the short-version closer a
 
 ## Frontmatter
 
-Match the site’s article frontmatter style:
+The site’s actual article schema is:
 
 ```yaml
 ---
-title: "Article Title in Title Case"
-description: "One to two sentences that capture the problem or tension the article resolves."
-publishedTime: 2026-06-29T00:00:00.000Z
-tags: ["aws", "serverless", "cognito"]
+title: "Article Title"
+date: 2026-08-18
+excerpt: "One or two sentences describing the problem or tension this article solves."
+draft: false
+tags: ["aws", "typescript"]
 ---
 ```
 
-- Keep the description concise and concrete.
-- Reuse existing tags where possible.
-- Do not hardcode reading time.
+This is the required structure for articles. The site auto-checks the frontmatter schema, and the content is expected to match it.
+
+- `title` should be direct and specific.
+- `date` should be a real UTC date in `YYYY-MM-DD` format.
+- `excerpt` should read like the article’s opening tension, not a generic summary.
+- `tags` should reuse existing site tags when possible.
+- Do not invent fields or omit required ones.
 
 ## Avoid
 
-- Generic conclusion headings; use "The Short Version".
+- Generic conclusion headings.
 - AI-sounding transitions and filler.
-- Over-explaining syntax that a competent engineer already knows.
-- Leaving out trade-offs or the "when not to use this" section.
+- Over-explaining syntax a competent engineer already knows.
+- Omitting trade-offs or the "When Not to Use This" section where it matters.
