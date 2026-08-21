@@ -1,64 +1,53 @@
 # AGENTS.md
 
-## Project overview
+This file is intentionally short and opinionated. It exists to prevent repeat mistakes in this repo, not to document generic engineering advice.
 
-This repo is a static portfolio and writing site built with Astro. It mixes Astro pages/layouts with a small amount of React for interactive UI, especially under `src/components/react` and component-level behavior such as article search.
+## Project shape
 
-## Tech stack
+This repo is a static Astro portfolio and writing site. It uses Astro for layout and page generation, and React only for true interactive UI.
 
-- Astro
-- TypeScript
-- React
-- Tailwind CSS
-- Vitest + Testing Library
-- Playwright for end-to-end tests
+Key locations:
 
-## Working conventions
-
-- Keep changes small and scoped to the relevant file or feature.
-- Favor the existing patterns already used in the codebase.
-- Preserve the current dark, editorial design language.
-- Maintain accessibility for links, buttons, inputs, and menu interactions.
-- Do not add dependencies unless the need is clearly justified.
-
-## File structure notes
-
-- App shell and global layout: `src/layouts/BaseLayout.astro`
+- App shell: `src/layouts/BaseLayout.astro`
 - Pages: `src/pages`
 - Content: `src/content`
-- Shared Astro UI: `src/components`
-- React UI: `src/components/react`
-- Utilities and site logic: `src/lib`
-- Type defs: `src/types`
+- Shared UI: `src/components`
+- Interactive React UI: `src/components/react`
+- Utilities: `src/lib`
+- Types: `src/types`
 
-## Astro + React guidance
+## Non-negotiable rules
+
+- Keep changes small and scoped to the relevant feature.
+- Favor patterns already used in this codebase.
+- Preserve the dark editorial design language and accessibility.
+- Do not add dependencies without a clear need.
+- Do not break static generation or route generation.
+- Do not break article/content loading or schema assumptions.
+
+## Astro + React guardrails
 
 - Use Astro for page structure and layout.
 - Use React only for actual interactive UI components.
 - Do not call React hooks from plain Astro scripts or non-component JavaScript.
-- Do not mount a React component as a workaround for browser-only logic when a plain browser script is enough.
-- If a feature is purely browser-side and does not require React rendering, prefer a plain `<script>` in Astro or a lightweight DOM event hook.
+- Do not mount a React component as a workaround for browser-only logic when a plain browser script is sufficient.
+- If the logic is browser-only, prefer a small script or DOM event hook instead of forcing React into the fix.
 
-## Foley / sound guidance
+## Foley / browser audio guardrails
 
 - Foley is installed as `@foleyjs/core`.
-- Sounds should be subtle and low-volume, not noisy or distracting.
-- The audio engine must be initialized in the browser, not during server-side rendering.
-- Browsers require a user gesture before audio can start. Use binding and sound triggers only in the browser context.
-- Keep the default audio theme in a soft, understated configuration.
+- Keep sounds subtle, low-volume, and understated.
+- Initialize audio only in the browser, never during SSR.
+- Respect browser autoplay restrictions; sound should be triggered by a user gesture or explicit browser context.
 - Prefer declarative Foley attributes such as `data-foley-type`, `data-foley-hover`, and `data-foley-click` for simple UI interactions.
-- Avoid React hook-based Foley bootstrapping in Astro files; it can trigger invalid hook warnings.
+- Do not bootstrap Foley via React hooks in Astro files. That pattern caused invalid hook warnings in this repo.
 
 ## Testing expectations
 
-- Add or update tests for behavior changes, especially in search/filter components.
-- Use Vitest and Testing Library for component-level issues.
-- Prefer targeted tests over broad suite churn.
-- Keep tests focused on real behavior rather than implementation details.
-
-## Validation commands
-
-Before concluding work, run the smallest relevant validation command.
+- Add or update tests for behavior changes, especially around search, filtering, and interaction logic.
+- Prefer targeted Vitest + Testing Library checks over broad suite churn.
+- Keep tests focused on real behavior, not implementation details.
+- Validate with the smallest relevant command before concluding work.
 
 Common commands:
 
@@ -66,10 +55,13 @@ Common commands:
 - `npm test -- --run <path-to-test-file>`
 - `npm run test:e2e -- <path-to-spec>`
 
-## Important repo-specific guardrails
+## Known failure modes to avoid
 
-- Do not break static generation.
-- Do not break route generation or article content loading.
-- Do not change content schema without checking downstream consumers.
-- Do not introduce browser audio logic that depends on a server-rendered environment.
-- Do not reintroduce invalid React hook usage in Astro layout or script code.
+- React hooks inside Astro/browser scripts.
+- Browser audio logic that depends on server-rendered execution.
+- “Quick fixes” that add new dependencies or wrapper components without a real need.
+- Broad refactors when the issue is local and well-scoped.
+
+## Rule of thumb
+
+If a rule does not prevent a real project regression, it probably should not be in this file.
