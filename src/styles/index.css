@@ -101,6 +101,15 @@ html {
   border: 2px solid white;
 }
 
+.prose table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
 .prose h2 {
   color: theme("colors.pink.500");
 }
