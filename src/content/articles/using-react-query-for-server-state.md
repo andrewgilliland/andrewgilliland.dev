@@ -8,9 +8,22 @@ tags: ["react", "typescript", "tanstack"]
 
 Fetching data in React is easy. Keeping that data correct is where the work starts.
 
-A component needs a loading state, an error state, retries, and a way to avoid duplicate requests. The data can become stale while the user moves between screens. A successful update may leave an old list on the page. Add pagination or background refreshes and a small `useEffect` quickly becomes a state-management system.
+A basic request only needs `fetch` and `useEffect`. A real application needs much more:
 
-TanStack Query, formerly called React Query, handles that server-state lifecycle. It does not replace every kind of state in a React application. It gives asynchronous data from an API a cache, a freshness policy, and a consistent way to coordinate reads and writes.
+- Avoid sending duplicate requests when multiple components need the same data
+- Reuse previously fetched data when users revisit a screen
+- Decide when cached data is fresh and when it should be fetched again
+- Keep old data visible during background refreshes
+- Retry temporary failures without retrying permanent ones
+- Update related screens after creating, editing, or deleting a record
+- Prevent older responses from replacing newer data
+- Handle pagination, dependent requests, and request cancellation
+
+You can implement each concern with component state and effects. The problem is that every screen starts rebuilding the same server-state machinery, often with slightly different behavior.
+
+TanStack Query, formerly called React Query, centralizes that machinery. It stores API responses in an in-memory cache, shares them across components, tracks their freshness, and coordinates background requests. Its mutation APIs also provide an explicit way to reconnect successful writes with the cached reads they changed.
+
+It does not replace all React state. Form fields, open menus, and selected tabs still belong in component state. TanStack Query focuses on server state: asynchronous data owned elsewhere that the browser can only temporarily observe.
 
 ## Server State Is Not UI State
 
