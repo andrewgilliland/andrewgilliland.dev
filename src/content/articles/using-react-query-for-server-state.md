@@ -80,20 +80,21 @@ Create the client once. Creating it during a component render creates a new cach
 Start with a typed request function. `fetch` only rejects for network failures, so the function must throw for unsuccessful HTTP responses:
 
 ```tsx
-export type User = {
+export type Event = {
   id: string;
   name: string;
-  email: string;
+  seasonId: string;
+  startsAt: string;
 };
 
-export async function getUsers(): Promise<User[]> {
-  const response = await fetch("/api/users");
+export async function getEvents(seasonId: string): Promise<Event[]> {
+  const response = await fetch(`/api/seasons/${seasonId}/events`);
 
   if (!response.ok) {
-    throw new Error(`Failed to load users: ${response.status}`);
+    throw new Error(`Failed to load events: ${response.status}`);
   }
 
-  return response.json() as Promise<User[]>;
+  return response.json() as Promise<Event[]>;
 }
 ```
 
@@ -101,44 +102,54 @@ Pass that function to `useQuery` with a query key:
 
 ```tsx
 import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "./api/users";
+import { getEvents } from "./api/events";
 
-export function UserList() {
-  const usersQuery = useQuery({
-    queryKey: ["users"],
-    queryFn: getUsers,
+type EventSelectProps = {
+  seasonId: string;
+  value: string;
+  onChange: (eventId: string) => void;
+};
+
+export function EventSelect({ seasonId, value, onChange }: EventSelectProps) {
+  const eventsQuery = useQuery({
+    queryKey: ["events", { seasonId }],
+    queryFn: () => getEvents(seasonId),
+    enabled: Boolean(seasonId),
   });
 
-  if (usersQuery.isPending) {
-    return <p>Loading users...</p>;
+  if (eventsQuery.isPending) {
+    return <p>Loading events...</p>;
   }
 
-  if (usersQuery.isError) {
-    return <p>{usersQuery.error.message}</p>;
+  if (eventsQuery.isError) {
+    return <p>{eventsQuery.error.message}</p>;
   }
 
   return (
-    <ul>
-      {usersQuery.data.map((user) => (
-        <li key={user.id}>{user.name}</li>
+    <select value={value} onChange={(event) => onChange(event.target.value)}>
+      <option value="">Select an event</option>
+      {eventsQuery.data.map((event) => (
+        <option key={event.id} value={event.id}>
+          {event.name}
+        </option>
       ))}
-    </ul>
+    </select>
   );
 }
 ```
 
-The query key is the address of the cached data. Every component using the same key reads from the same cache entry. If two components request `["users"]` at the same time, TanStack Query can share the in-flight request instead of sending two identical requests.
+The query key is the address of the cached data. Every event select using the same season ID reads from the same cache entry. If two components request `["events", { seasonId }]` at the same time, TanStack Query can share the in-flight request instead of sending two identical requests.
 
 Parameters that change the response belong in the key:
 
 ```tsx
-const usersQuery = useQuery({
-  queryKey: ["users", { page, status }],
-  queryFn: () => getUsers({ page, status }),
+const eventsQuery = useQuery({
+  queryKey: ["events", { seasonId, status }],
+  queryFn: () => getEventsByStatus({ seasonId, status }),
 });
 ```
 
-Leaving `page` or `status` out would make different requests compete for the same cache entry.
+Leaving `seasonId` or `status` out would make different requests compete for the same cache entry. Changing the season ID does not reset the cache. It creates a separate entry for that season, so returning to a previous season can reuse its events.
 
 ## Fresh and Cached Are Different
 
@@ -148,15 +159,15 @@ Two options control different parts of a query's lifetime:
 - `gcTime` controls how long an unused query stays in memory before garbage collection.
 
 ```tsx
-const userQuery = useQuery({
-  queryKey: ["users", userId],
-  queryFn: () => getUser(userId),
+const eventsQuery = useQuery({
+  queryKey: ["events", { seasonId }],
+  queryFn: () => getEvents(seasonId),
   staleTime: 60_000,
   gcTime: 10 * 60_000,
 });
 ```
 
-For one minute, this user is fresh. After that, the cached value can still render immediately, but TanStack Query may refresh it when the component mounts, the window regains focus, or the browser reconnects. Once no component uses the query, it can remain cached for ten minutes before collection.
+For one minute, this season's events are fresh. After that, the cached value can still render immediately, but TanStack Query may refresh it when the component mounts, the window regains focus, or the browser reconnects. Once no component uses the query, it can remain cached for ten minutes before collection.
 
 The default `staleTime` is `0`. That is a safe default because server data is immediately eligible for a background refresh, but it can surprise developers who expect caching to mean "never request this again." Set freshness based on the data, not an arbitrary global value. A list of countries can stay fresh much longer than a live order status.
 
@@ -169,13 +180,14 @@ Queries describe data that can be read repeatedly. Mutations represent an intent
 First, define the request:
 
 ```tsx
-export type CreateUserInput = {
+export type CreateEventInput = {
   name: string;
-  email: string;
+  seasonId: string;
+  startsAt: string;
 };
 
-export async function createUser(input: CreateUserInput): Promise<User> {
-  const response = await fetch("/api/users", {
+export async function createEvent(input: CreateEventInput): Promise<Event> {
+  const response = await fetch("/api/events", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -184,10 +196,10 @@ export async function createUser(input: CreateUserInput): Promise<User> {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to create user: ${response.status}`);
+    throw new Error(`Failed to create event: ${response.status}`);
   }
 
-  return response.json() as Promise<User>;
+  return response.json() as Promise<Event>;
 }
 ```
 
@@ -195,60 +207,65 @@ Then connect it to the UI with `useMutation`:
 
 ```tsx
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createUser } from "./api/users";
+import { createEvent } from "./api/events";
 
-export function AddUserButton() {
+export function AddEventButton({ seasonId }: { seasonId: string }) {
   const queryClient = useQueryClient();
 
-  const createUserMutation = useMutation({
-    mutationFn: createUser,
+  const createEventMutation = useMutation({
+    mutationFn: createEvent,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({
+        queryKey: ["events", { seasonId }],
+      });
     },
   });
 
   return (
     <button
-      disabled={createUserMutation.isPending}
+      disabled={createEventMutation.isPending}
       onClick={() =>
-        createUserMutation.mutate({
-          name: "Ada Lovelace",
-          email: "ada@example.com",
+        createEventMutation.mutate({
+          name: "Opening Night",
+          seasonId,
+          startsAt: "2026-09-18T19:00:00.000Z",
         })
       }
     >
-      {createUserMutation.isPending ? "Adding..." : "Add user"}
+      {createEventMutation.isPending ? "Adding..." : "Add event"}
     </button>
   );
 }
 ```
 
-Calling `mutate` passes the input to `createUser`. The mutation tracks whether the request is pending, successful, or failed. It also exposes the returned data or thrown error.
+Calling `mutate` passes the input to `createEvent`. The mutation tracks whether the request is pending, successful, or failed. It also exposes the returned data or thrown error.
 
-The mutation does not know that creating a user changes the user list. The `onSuccess` callback makes that relationship explicit.
+The mutation does not know that creating an event changes the event list for that season. The `onSuccess` callback makes that relationship explicit.
 
 ## Invalidation Connects Writes to Reads
 
 This line is the bridge between the mutation and the cached query:
 
 ```tsx
-queryClient.invalidateQueries({ queryKey: ["users"] });
+queryClient.invalidateQueries({
+  queryKey: ["events", { seasonId }],
+});
 ```
 
 Invalidation marks matching queries as stale. Queries currently rendered by the application are refetched in the background, so the server remains the source of truth.
 
-Query matching is prefix-based by default. Invalidating `["users"]` also matches keys such as:
+Query matching is prefix-based by default. Invalidating `["events"]` matches every season-specific event query, such as:
 
 ```tsx
-["users", { page: 1 }];
-["users", { status: "active" }];
+["events", { seasonId: "spring-2026" }];
+["events", { seasonId: "fall-2026" }];
 ```
 
-That is useful after creating a user because several user lists may now be outdated. Use `exact: true` when only one cache entry should be invalidated:
+That is useful when a change may affect events across several seasons. After creating one event, invalidating its season-specific key is more precise. Use `exact: true` when only that exact cache entry should be invalidated:
 
 ```tsx
 queryClient.invalidateQueries({
-  queryKey: ["users"],
+  queryKey: ["events", { seasonId }],
   exact: true,
 });
 ```
@@ -257,23 +274,23 @@ Invalidation is usually the safest update strategy. It asks the server for the c
 
 ## Update the Cache When You Already Have the Answer
 
-Refetching is not always necessary. If the API returns the complete created user, `setQueryData` can update a known cache entry immediately:
+Refetching is not always necessary. If the API returns the complete created event, `setQueryData` can update the season's cache entry immediately:
 
 ```tsx
-const createUserMutation = useMutation({
-  mutationFn: createUser,
-  onSuccess: (createdUser) => {
-    queryClient.setQueryData<User[]>(["users"], (currentUsers = []) => [
-      ...currentUsers,
-      createdUser,
-    ]);
+const createEventMutation = useMutation({
+  mutationFn: createEvent,
+  onSuccess: (createdEvent) => {
+    queryClient.setQueryData<Event[]>(
+      ["events", { seasonId: createdEvent.seasonId }],
+      (currentEvents = []) => [...currentEvents, createdEvent],
+    );
   },
 });
 ```
 
-This avoids another network request and makes the new user appear immediately. It is only correct when the client can reproduce the server's list behavior. If the server applies sorting, pagination, permissions, or transformations, invalidation is less fragile.
+This avoids another network request and makes the new event appear immediately. It is only correct when the client can reproduce the server's list behavior. If the server applies sorting, pagination, permissions, or transformations, invalidation is less fragile.
 
-Always return a new value from the updater. Mutating `currentUsers` in place can prevent subscribers from seeing a reliable state change.
+Always return a new value from the updater. Mutating `currentEvents` in place can prevent subscribers from seeing a reliable state change.
 
 ## Keep Query Definitions Together
 
@@ -282,12 +299,12 @@ Repeated string keys are easy to mistype. Query option factories keep the key an
 ```tsx
 import { queryOptions } from "@tanstack/react-query";
 
-export const userQueries = {
-  all: () => ["users"] as const,
-  detail: (userId: string) =>
+export const eventQueries = {
+  all: () => ["events"] as const,
+  bySeason: (seasonId: string) =>
     queryOptions({
-      queryKey: ["users", userId] as const,
-      queryFn: () => getUser(userId),
+      queryKey: ["events", { seasonId }] as const,
+      queryFn: () => getEvents(seasonId),
       staleTime: 60_000,
     }),
 };
@@ -296,9 +313,9 @@ export const userQueries = {
 The same definition can power a component and prefetch data before navigation:
 
 ```tsx
-useQuery(userQueries.detail(userId));
+useQuery(eventQueries.bySeason(seasonId));
 
-queryClient.prefetchQuery(userQueries.detail(userId));
+queryClient.prefetchQuery(eventQueries.bySeason(seasonId));
 ```
 
 This pattern becomes more valuable as keys gain filters and pagination parameters.
@@ -311,9 +328,9 @@ This pattern becomes more valuable as keys gain filters and pagination parameter
 
 ```tsx
 useQuery({
-  queryKey: ["users", userId],
-  queryFn: () => getUser(userId!),
-  enabled: Boolean(userId),
+  queryKey: ["events", { seasonId }],
+  queryFn: () => getEvents(seasonId!),
+  enabled: Boolean(seasonId),
 });
 ```
 
@@ -323,8 +340,8 @@ useQuery({
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 useQuery({
-  queryKey: ["users", { page }],
-  queryFn: () => getUsers({ page }),
+  queryKey: ["events", { seasonId, page }],
+  queryFn: () => getEventsPage({ seasonId, page }),
   placeholderData: keepPreviousData,
 });
 ```
