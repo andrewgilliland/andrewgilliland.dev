@@ -1,63 +1,51 @@
 # andrewgilliland.dev
 
-The personal website of Andrew Gilliland - a community-taught software engineer, Yacht Rock enthusiast, and person who owns more pets than houseplants (currently).
+Andrew Gilliland's portfolio, articles, and developer notes. The site is statically generated with [Astro](https://astro.build).
 
-Built with [Astro](https://astro.build), [Tailwind CSS](https://tailwindcss.com), and an unreasonable number of notes about JavaScript.
+## Stack
 
-## What's in here?
+- Astro with MDX and content collections
+- React for interactive components
+- TypeScript and Tailwind CSS
+- Vitest and Testing Library for unit and component tests
+- Playwright for end-to-end tests
 
-- **Notes** - A growing collection of developer notes spanning JavaScript, React Native, AWS, CSS, Swift, databases, testing, PHP, and more. Basically Andrew's second brain, except this one has syntax highlighting.
-- **Articles** - Long-form posts like _Getting Started with Astro_, _TypeScript Tips_, and _Why I Use Tailwind_ (spoiler: have you seen how fast you can center a div?).
-- **Projects** - Real things Andrew has shipped, including SmartScout (machine vision + AR for agriculture - yes, really) and [blono.dev](https://www.blono.dev/) (a community site for Central Illinois developers who deserve nice things).
-- **About** - The page where you learn that Andrew also grills, does woodworking, and has a dog named Hank and cats named Gus and Bernie. The cats do not contribute to the codebase.
+## Development
 
-## Tech Stack
-
-| Category   | Technologies                                     |
-| ---------- | ------------------------------------------------ |
-| Frontend   | Astro, React, Tailwind CSS, TypeScript           |
-| Mobile     | React Native, Expo                               |
-| Deployment | Vercel, Cloudflare, AWS, Fly.io, Netlify         |
-| Databases  | PostgreSQL, MySQL, SQLite, DynamoDB, MongoDB     |
-| Apple      | Swift, SwiftUI, UIKit, CoreML, ARKit, RealityKit |
-| Vibes      | Yacht Rock                                       |
-
-## Getting Started
-
-```bash
-# Install dependencies
+```sh
 npm install
-
-# Start the dev server (the fun part)
 npm run dev
-
-# Type-check (the responsible part)
-npm run type-check
-
-# Build for production (the scary part)
-npm run build
-
-# Preview the build locally
-npm start
-
-# Lint (find out what you did wrong)
-npm run lint
 ```
 
-## Project Structure
+The development server runs at `http://localhost:4321` by default.
+
+## Commands
+
+```sh
+npm run dev          # Start the development server
+npm run build
+npm start            # Preview the production build
+npm run type-check   # Run Astro diagnostics
+npm run lint
+npm test             # Run unit and component tests
+npm run test:e2e     # Run Playwright tests
+```
+
+## Content
+
+Articles, notes, and resume content live under `src/content`. Their frontmatter is validated by schemas in `src/content/schemas.ts`.
+
+## Structure
 
 ```
 src/
-├── components/     # Astro & React components
-├── content/        # Markdown content (notes, articles, resume)
-├── layouts/        # Base page layout
-├── lib/            # Utility modules
-├── pages/          # File-based routing
-├── styles/         # Global CSS (self-hosted fonts, animations)
-└── types/          # TypeScript type definitions
-public/             # Static assets
+├── components/  # Shared Astro and React UI
+├── content/     # Articles, notes, and resume content
+├── layouts/     # Page layouts
+├── lib/         # Utilities
+├── pages/       # File-based routes
+├── styles/      # Global styles
+└── types/       # Shared TypeScript types
+e2e/             # Playwright tests
+public/          # Static assets
 ```
-
-## License
-
-This is a personal website. Feel free to look around, get inspired, or judge my CSS choices. Built in Bloomington-Normal, IL, probably while listening to Michael McDonald.
