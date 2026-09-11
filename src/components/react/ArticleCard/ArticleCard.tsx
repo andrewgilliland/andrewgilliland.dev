@@ -15,7 +15,6 @@ export type Article = {
   excerpt: string;
   date: string;
   tags: string[];
-  readingTime?: string;
 };
 
 type ShapeType = "circle" | "rect" | "triangle" | "diamond";
@@ -185,9 +184,6 @@ export default function ArticleCard({
                 day: "numeric",
               })}
             </time>
-            {article.readingTime && (
-              <span className="ml-3">• {article.readingTime}</span>
-            )}
           </div>
         </div>
       </a>

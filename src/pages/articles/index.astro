@@ -4,7 +4,6 @@ import SectionHeader from "@/components/SectionHeader.astro";
 import ArticleSearch from "@/components/react/ArticleSearch";
 import { getCollection } from "astro:content";
 import { toSlug } from "@/lib/slug";
-import { getReadingTime } from "@/lib/readingTime";
 
 const articles = await getCollection("articles", ({ data }) => !data.draft);
 const sorted = articles.sort(
@@ -17,7 +16,6 @@ const articleData = sorted.map((a) => ({
   excerpt: a.data.excerpt,
   date: a.data.date.toISOString(),
   tags: a.data.tags,
-  readingTime: getReadingTime(a.body ?? ""),
 }));
 ---
 

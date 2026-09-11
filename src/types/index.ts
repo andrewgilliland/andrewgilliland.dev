@@ -6,7 +6,6 @@ export type ArticleMeta = {
   excerpt: string;
   date: string;
   tags: string[];
-  readingTime: string;
 };
 
 export type HeadingElement = {
