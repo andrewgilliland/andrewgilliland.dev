@@ -24,6 +24,9 @@ const tagCounts = allArticles
   );
 
 const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+const tagRows = Array.from({ length: 3 }, (_, rowIndex) =>
+  sortedTags.filter((_, tagIndex) => tagIndex % 3 === rowIndex),
+);
 
 const sortedArticles = allArticles
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
@@ -53,9 +56,9 @@ const [featured, ...sideArticles] = sortedArticles;
         <div class="group w-full overflow-hidden">
           <h2 class="mb-6 text-center text-2xl text-black">Browse by Topic</h2>
           <div class="flex flex-col gap-3">
-            <MarqueeRow tags={sortedTags} animation="marquee" />
-            <MarqueeRow tags={sortedTags} animation="marquee-reverse" />
-            <MarqueeRow tags={sortedTags} animation="marquee-slow" />
+            <MarqueeRow tags={tagRows[0]} animation="marquee" />
+            <MarqueeRow tags={tagRows[1]} animation="marquee-reverse" />
+            <MarqueeRow tags={tagRows[2]} animation="marquee-slow" />
           </div>
         </div>
       </div>
