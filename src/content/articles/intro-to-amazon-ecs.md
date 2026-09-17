@@ -2,7 +2,7 @@
 title: "Intro to Amazon ECS"
 date: 2026-09-16
 excerpt: ECS runs containerized applications without making you build a container orchestration platform yourself. Here is where it fits, why to use it, and how to deploy a service with Fargate and CDK.
-draft: false
+draft: true
 tags: ["aws", "ecs", "cdk"]
 ---
 
