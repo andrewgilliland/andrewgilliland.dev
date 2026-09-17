@@ -1,0 +1,95 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Andrew Gilliland API",
+    "version": "1.0.0",
+    "description": "Public machine-readable endpoints provided by andrewgilliland.dev."
+  },
+  "servers": [
+    {
+      "url": "https://andrewgilliland.dev"
+    }
+  ],
+  "paths": {
+    "/api/county-population.json": {
+      "get": {
+        "summary": "Get county population estimates",
+        "description": "Returns 2023 population estimates for United States counties, keyed by five-digit county FIPS code.",
+        "operationId": "getCountyPopulationEstimates",
+        "responses": {
+          "200": {
+            "description": "County population estimates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountyPopulationResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The upstream Census dataset could not be loaded or parsed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CountyPopulationResponse": {
+        "type": "object",
+        "required": ["source", "counties"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "examples": [
+              "U.S. Census Bureau Population Estimates Program (2023)"
+            ]
+          },
+          "counties": {
+            "type": "object",
+            "description": "County records keyed by five-digit county FIPS code.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CountyPopulation"
+            }
+          }
+        }
+      },
+      "CountyPopulation": {
+        "type": "object",
+        "required": ["stateId", "name", "population"],
+        "properties": {
+          "stateId": {
+            "type": "string",
+            "pattern": "^[0-9]{2}$",
+            "description": "Two-digit state FIPS code."
+          },
+          "name": {
+            "type": "string",
+            "description": "County and state name."
+          },
+          "population": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
