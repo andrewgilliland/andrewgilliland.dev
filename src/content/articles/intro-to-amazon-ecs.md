@@ -12,7 +12,8 @@ Running one container is simple. Keeping it healthy, replacing failed instances,
 
 Amazon Elastic Container Service (ECS) is AWS's managed container orchestration service for deploying, running, and scaling containerized applications.
 
-- Explain the difference between a container image, task definition, task, and service.
+A container image packages the application and its dependencies. A task definition describes how ECS should run that image, a task is one running instance of the definition, and a service keeps the desired number of tasks running.
+
 - Clarify that ECS schedules containers but does not build application images.
 - Introduce EC2 and Fargate as the two main compute options.
 - Use Fargate for the article's deployment so no container hosts need to be managed.
