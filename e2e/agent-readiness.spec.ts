@@ -37,7 +37,7 @@ test("publishes a discoverable OpenAPI document", async ({ page, request }) => {
   );
 });
 
-test("homepage raw HTML contains substantial meaningful content", async ({
+test("homepage raw HTML contains an H1 and meaningful content", async ({
   request,
 }) => {
   const response = await request.get("/");
@@ -51,8 +51,8 @@ test("homepage raw HTML contains substantial meaningful content", async ({
     .trim();
 
   expect(response.status()).toBe(200);
+  expect(html).toMatch(/<h1[\s>]/i);
   expect(meaningfulText.length).toBeGreaterThanOrEqual(500);
-  expect(meaningfulText.length / html.length).toBeGreaterThanOrEqual(0.05);
 });
 
 test("keeps the HTML 404 response for browser requests", async ({

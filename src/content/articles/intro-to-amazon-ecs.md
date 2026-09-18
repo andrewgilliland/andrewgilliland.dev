@@ -16,7 +16,8 @@ A container image packages the application and its dependencies. A task definiti
 
 ECS schedules and runs containers, but it does not build their images; those images are created separately and typically stored in Amazon Elastic Container Registry (ECR).
 
-- Introduce EC2 and Fargate as the two main compute options.
+ECS can run tasks on EC2 instances that you provision and maintain, or on AWS Fargate, where AWS manages the underlying compute capacity for you.
+
 - Use Fargate for the article's deployment so no container hosts need to be managed.
 
 ## Why Use ECS?
