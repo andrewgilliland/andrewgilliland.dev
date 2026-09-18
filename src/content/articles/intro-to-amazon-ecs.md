@@ -14,7 +14,8 @@ Amazon Elastic Container Service (ECS) is AWS's managed container orchestration 
 
 A container image packages the application and its dependencies. A task definition describes how ECS should run that image, a task is one running instance of the definition, and a service keeps the desired number of tasks running.
 
-- Clarify that ECS schedules containers but does not build application images.
+ECS schedules and runs containers, but it does not build their images; those images are created separately and typically stored in Amazon Elastic Container Registry (ECR).
+
 - Introduce EC2 and Fargate as the two main compute options.
 - Use Fargate for the article's deployment so no container hosts need to be managed.
 
