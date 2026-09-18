@@ -10,7 +10,8 @@ Running one container is simple. Keeping it healthy, replacing failed instances,
 
 ## What Is Amazon ECS?
 
-- Define ECS as AWS's managed container orchestration service.
+Amazon Elastic Container Service (ECS) is AWS's managed container orchestration service for deploying, running, and scaling containerized applications.
+
 - Explain the difference between a container image, task definition, task, and service.
 - Clarify that ECS schedules containers but does not build application images.
 - Introduce EC2 and Fargate as the two main compute options.
