@@ -21,7 +21,7 @@
     "@astrojs/react": "^6.0.5",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
-    "@foleyjs/core": "^2.8.1",
+    "@foleyjs/core": "^2.9.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/space-grotesk": "^5.2.10",
     "@types/d3": "^7.4.3",
