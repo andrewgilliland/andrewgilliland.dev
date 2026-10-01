@@ -6,51 +6,35 @@ draft: false
 tags: ["aws", "ecs", "cdk"]
 ---
 
-Running one container is simple. Keeping it healthy, replacing failed instances, scaling it, and routing production traffic takes more infrastructure. Amazon ECS manages that orchestration while still letting you package an application as a standard container.
+Running one container is simple. Keeping it healthy, replacing failed instances, scaling it, and routing traffic takes more infrastructure. Amazon ECS manages that orchestration while you keep packaging the application as a standard container.
 
 ## What Is Amazon ECS?
 
-Amazon Elastic Container Service (ECS) is AWS's managed container orchestration service for deploying, running, and scaling containerized applications.
+Amazon Elastic Container Service (ECS) is AWS's managed service for deploying, running, and scaling containerized applications.
 
-A container image packages the application and its dependencies. A task definition describes how ECS should run that image, a task is one running instance of the definition, and a service keeps the desired number of tasks running.
+A container image packages the application and its dependencies. A task definition describes how ECS should run it. A task is one running instance of that definition, and an ECS service keeps the desired number of tasks running.
 
-ECS schedules and runs containers, but it does not build their images; those images are created separately and typically stored in Amazon Elastic Container Registry (ECR).
+ECS schedules and runs containers, but it does not build their images. Images are created separately and typically stored in Amazon Elastic Container Registry (ECR).
 
-ECS can run tasks on EC2 instances that you provision and maintain, or on AWS Fargate, where AWS manages the underlying compute capacity for you.
+ECS can run tasks on EC2 instances that you provision and maintain, or on AWS Fargate, where AWS manages the underlying compute capacity. This article uses Fargate for a small HTTP API.
 
-- Use Fargate for the article's deployment so no container hosts need to be managed.
+The resource model is:
 
-## Why Use ECS?
-
-- Run long-lived APIs, workers, and scheduled jobs without Lambda's execution limit.
-- Package the application and its runtime dependencies into one portable image.
-- Let ECS replace unhealthy tasks and maintain the desired task count.
-- Scale tasks independently from the underlying application release.
-- Integrate with ECR, load balancers, CloudWatch, IAM, and VPC networking.
-- Keep more infrastructure control than serverless functions without adopting Kubernetes.
-
-## How an ECS Service Fits Together
-
-- Store the application image in Amazon ECR.
-- Create an ECS cluster as the logical home for the workload.
-- Use a task definition to configure the image, CPU, memory, ports, environment, and IAM roles.
-- Run the task definition through an ECS service that maintains the desired number of tasks.
-- Place Fargate tasks in private subnets and expose them through an Application Load Balancer.
-- Send application logs to CloudWatch and use health checks to replace failed tasks.
+```text
+container image -> task definition -> Fargate task -> ECS service -> load balancer
+```
 
 ## What We're Building
 
-The example is a small Python HTTP service with one endpoint and one health check.
-The CDK stack will create:
+The example is a small Python HTTP service with one endpoint and one health check. The CDK stack creates:
 
 - A VPC with public subnets for the load balancer and private subnets for tasks
 - An ECS cluster running on Fargate
 - A task definition with 256 CPU units and 512 MiB of memory
 - An Application Load Balancer that forwards traffic to port 8000
-- CloudWatch log delivery for the container
-- A health check at `/health`
+- CloudWatch log delivery and a health check at `/health`
 
-This is enough to show the deployment path without hiding the important ECS resources behind a large application.
+That is enough to show the deployment path without hiding ECS behind a large application.
 
 ## The Container
 
@@ -65,7 +49,7 @@ ecs-demo/
 └── lib/
 ```
 
-The service only uses Python's standard library, so the image has no dependency installation step.
+The service uses Python's standard library, so the image needs no dependency installation step.
 
 ```python
 # app/app.py
@@ -73,27 +57,27 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
 class Handler(BaseHTTPRequestHandler):
-		def do_GET(self):
-				if self.path == "/health":
-						body = b"ok\n"
-						self.send_response(200)
-				elif self.path == "/":
-						body = b"Hello from ECS\n"
-						self.send_response(200)
-				else:
-						body = b"Not found\n"
-						self.send_response(404)
+  def do_GET(self):
+    if self.path == "/health":
+      body = b"ok\n"
+      self.send_response(200)
+    elif self.path == "/":
+      body = b"Hello from ECS\n"
+      self.send_response(200)
+    else:
+      body = b"Not found\n"
+      self.send_response(404)
 
-				self.send_header("Content-Type", "text/plain")
-				self.send_header("Content-Length", str(len(body)))
-				self.end_headers()
-				self.wfile.write(body)
+    self.send_header("Content-Type", "text/plain")
+    self.send_header("Content-Length", str(len(body)))
+    self.end_headers()
+    self.wfile.write(body)
 
 
 HTTPServer(("0.0.0.0", 8000), Handler).serve_forever()
 ```
 
-The process must listen on `0.0.0.0`, not only on `localhost`. The load balancer reaches the container over the task network, so binding to the loopback interface would make the task appear unhealthy.
+The process listens on `0.0.0.0` so the load balancer can reach it over the task network. Binding only to `localhost` would make the task appear unhealthy.
 
 ```dockerfile
 # app/Dockerfile
@@ -108,7 +92,7 @@ CMD ["python", "app.py"]
 
 ## Defining the ECS Service with CDK
 
-The `ApplicationLoadBalancedFargateService` pattern creates the task definition, ECS service, security groups, target group, and load balancer together. The higher-level construct is useful here because the article is about the ECS deployment model rather than manually wiring every load balancer resource.
+The `ApplicationLoadBalancedFargateService` pattern creates the task definition, ECS service, security groups, target group, and load balancer together. That keeps the deployment concrete without manually wiring every load balancer resource.
 
 ```typescript
 // lib/ecs-demo-stack.ts
@@ -169,15 +153,15 @@ export class EcsDemoStack extends cdk.Stack {
 }
 ```
 
-The important settings are not the exact numbers. They are the boundaries between the resources:
+The important settings are the boundaries between the resources:
 
-- `fromAsset("app")` builds the Docker image locally and uploads it through the CDK bootstrap resources. CDK also creates an ECR repository for the asset.
-- `taskImageOptions` defines the container port and sends stdout and stderr to CloudWatch Logs.
-- `taskSubnets` keeps tasks in private subnets while the public load balancer remains reachable from the internet.
-- `configureHealthCheck` makes the load balancer ask the application whether it is ready to receive traffic.
-- `desiredCount` tells the ECS service how many task instances to keep running.
+- `fromAsset("app")` builds the image locally and publishes it through CDK's bootstrap resources.
+- `taskImageOptions` defines port `8000` and sends container output to CloudWatch Logs.
+- `taskSubnets` keeps tasks private while the public load balancer receives internet traffic.
+- `configureHealthCheck` gives the load balancer a readiness endpoint.
+- `desiredCount` tells the ECS service how many tasks to keep running.
 
-The service's task execution role needs permission to pull the image and write logs. The CDK pattern creates that role and its policy for this setup.
+The pattern also creates the task execution role needed to pull the image and write logs.
 
 ## Deploying and Testing
 
@@ -188,53 +172,55 @@ npm install aws-cdk-lib constructs
 npx cdk bootstrap aws://ACCOUNT_ID/REGION
 ```
 
-Then preview and deploy the stack:
+Preview and deploy the stack:
 
 ```bash
 npx cdk diff
 npx cdk deploy
 ```
 
-CDK builds the Docker image, publishes it to ECR, creates the VPC and ECS resources, and prints the load balancer URL from the `ServiceUrl` output. Test both the application and its health check:
+CDK builds the image, publishes it to ECR, creates the VPC and ECS resources, and prints the load balancer URL:
 
 ```bash
 curl http://LOAD_BALANCER_DNS_NAME/
 curl -i http://LOAD_BALANCER_DNS_NAME/health
 ```
 
-The first request should return `Hello from ECS`. The health check should return `200` and `ok`. If the target stays unhealthy, check that the container listens on port 8000, binds to `0.0.0.0`, and writes startup errors to the task log stream.
+The first request should return `Hello from ECS`; the health check should return `200` and `ok`. If the target stays unhealthy, check the port, bind address, and task logs.
 
-When finished experimenting, remove the stack so the load balancer, NAT gateway, and Fargate service do not continue to incur charges:
+When finished, remove the stack so its resources do not continue to incur charges:
 
 ```bash
 npx cdk destroy
 ```
 
-## What the Higher-Level Construct Hides
+## Production Trade-offs
 
-The pattern is convenient, but it is not magic. It creates several lower-level resources on your behalf:
+The pattern creates several resources on your behalf:
 
 - An ECS task definition and Fargate service
 - IAM roles for task execution
 - Security groups for the load balancer and tasks
 - An Application Load Balancer, listener, and target group
 - CloudWatch log configuration
-- Networking resources from the VPC construct
+- VPC networking resources
 
 Use the pattern for a straightforward service. Move to separate `ecs.FargateTaskDefinition`, `ecs.FargateService`, and Elastic Load Balancing constructs when you need multiple listeners, custom deployment behavior, service discovery, blue/green releases, or tighter ownership boundaries.
 
-For production, also decide on a removal policy, log retention period, autoscaling policy, HTTPS termination, domain name, secret management, and container image scanning. The example keeps those choices small so the ECS lifecycle is visible.
+For production, add HTTPS, autoscaling, secret management, image scanning, and alarms for errors, latency, CPU, memory, and unhealthy targets. Run at least two tasks across multiple Availability Zones when availability matters. Keep the application stateless: use S3 for files, a database for records, and a queue for background work.
+
+This example also creates one NAT Gateway because the tasks run in private subnets. That gateway has an hourly charge even when traffic is low, so the demo can cost more than the Fargate task itself. Delete the stack when you are finished experimenting.
 
 ## When Not to Use ECS
 
-- Use Lambda for short, event-driven work where paying only per invocation matters.
-- Use a simpler managed platform when infrastructure control is not a requirement.
+- Use Lambda for short, event-driven work where paying per invocation matters.
+- Use App Runner or another simpler managed platform when you do not need ECS's infrastructure control.
 - Use EKS when Kubernetes compatibility or its ecosystem is a firm organizational need.
 - Avoid ECS when the team is not prepared to own container builds, security updates, scaling rules, and service monitoring.
 
 ## The Takeaway
 
 - ECS provides the orchestration needed to run containers reliably on AWS.
-- Fargate removes host management while ECS handles scheduling and service health.
-- CDK can define the image build, networking, task, service, and load balancer as one repeatable deployment.
+- Fargate removes host management while ECS handles task scheduling and service health.
+- CDK defines the image, networking, task, service, and load balancer as one repeatable deployment.
 - The trade-off is more operational responsibility than Lambda in exchange for fewer runtime constraints and more control.
