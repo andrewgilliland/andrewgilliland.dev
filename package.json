@@ -64,7 +64,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "satori": "^0.62.0",
     "sharp": "^0.35.5",
-    "shiki": "^4.4.3",
+    "shiki": "^4.5.0",
     "typescript": "^5.4.5",
     "vitest": "^4.1.8"
   }
