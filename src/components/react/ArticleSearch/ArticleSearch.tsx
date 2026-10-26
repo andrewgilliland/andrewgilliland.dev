@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import ArticleCard, { type Accent } from "../ArticleCard";
 import type { ListingItem } from "../../../lib/articles/catalogue";
-import { readSearch, writeSearch } from "../../../lib/articles/urls";
+import {
+  getPopularTopics,
+  getUniqueTopics,
+  readSearch,
+  searchArticles,
+  writeSearch,
+} from "../../../lib/articles/search";
 
 // Offset-shadow colours cycle through the grid; the first card's cyan matches
 // the home page's latest-article tile.
@@ -10,50 +16,6 @@ const CARD_ACCENTS: Accent[] = ["cyan", "pink", "emerald", "yellow"];
 
 // On phones the topic list collapses to the most-used topics.
 const COLLAPSED_TOPIC_COUNT = 12;
-
-export function filterArticles(
-  articles: ListingItem[],
-  query: string,
-  selectedTag?: string,
-): ListingItem[] {
-  let result = articles;
-
-  if (selectedTag) {
-    result = result.filter((a) => a.topics.includes(selectedTag));
-  }
-
-  const q = query.trim().toLowerCase();
-  if (q !== "") {
-    result = result.filter(
-      (a) =>
-        a.title.toLowerCase().includes(q) ||
-        a.excerpt.toLowerCase().includes(q) ||
-        a.topics.some((t) => t.toLowerCase().includes(q)),
-    );
-  }
-
-  return result;
-}
-
-export function getUniqueTopics(articles: ListingItem[]): string[] {
-  return [...new Set(articles.flatMap((a) => a.topics))].sort();
-}
-
-/** The `limit` most-used topics, ties broken alphabetically. */
-export function getPopularTopics(
-  articles: ListingItem[],
-  limit: number,
-): Set<string> {
-  const counts = new Map<string, number>();
-  for (const tag of articles.flatMap((a) => a.topics)) {
-    counts.set(tag, (counts.get(tag) ?? 0) + 1);
-  }
-  const ranked = [...counts.entries()]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, limit)
-    .map(([tag]) => tag);
-  return new Set(ranked);
-}
 
 export default function ArticleSearch({
   articles,
@@ -98,7 +60,7 @@ export default function ArticleSearch({
   const allTags = getUniqueTopics(articles);
   const popularTags = getPopularTopics(articles, COLLAPSED_TOPIC_COUNT);
   const canCollapse = allTags.length > COLLAPSED_TOPIC_COUNT;
-  const filtered = filterArticles(articles, query, selectedTag);
+  const filtered = searchArticles(articles, { query, topic: selectedTag });
 
   return (
     <>
