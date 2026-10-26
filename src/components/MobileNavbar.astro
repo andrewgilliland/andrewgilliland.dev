@@ -13,7 +13,12 @@ const { links } = Astro.props;
 <div class="relative z-40 w-full border-b-2 border-neutral-50 bg-neon-bg py-6 md:hidden">
   <Container class="flex items-center justify-between">
     <HeaderHeading />
-    <button id="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+    <button
+      id="menu-toggle"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -49,11 +54,11 @@ const { links } = Astro.props;
   </Container>
 </div>
 
+<!-- A disclosure, not a modal: closed, it is inert, so its links leave the
+     tab order and the accessibility tree until the toggle opens it. -->
 <div
   id="mobile-menu"
-  role="dialog"
-  aria-modal="true"
-  aria-label="Navigation menu"
+  inert
   class="absolute left-0 right-0 top-full z-30 -translate-y-full border-x-2 border-b-2 border-neutral-50 bg-neon-bg transition-all duration-300 md:hidden"
 >
   <Container>
@@ -88,6 +93,7 @@ const { links } = Astro.props;
     document.querySelectorAll(".menu-line");
 
   function closeMenu() {
+    menu.inert = true;
     menu.classList.remove("translate-y-0");
     menu.classList.add("-translate-y-full");
     toggle.setAttribute("aria-expanded", "false");
@@ -99,6 +105,7 @@ const { links } = Astro.props;
   }
 
   function openMenu() {
+    menu.inert = false;
     menu.classList.add("translate-y-0");
     menu.classList.remove("-translate-y-full");
     toggle.setAttribute("aria-expanded", "true");
