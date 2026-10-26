@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 test.use({ viewport: { width: 375, height: 812 } });
 
@@ -17,7 +17,7 @@ for (const path of [
   }) => {
     await page.goto(path, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Toggle menu" }).click();
-    const menu = page.getByRole("dialog", { name: "Navigation menu" });
+    const menu = page.locator("#mobile-menu");
     await expect(menu).toHaveAttribute("class", /translate-y-0/);
     // Wait for the slide-down transition to settle.
     await expect
@@ -36,3 +36,43 @@ for (const path of [
     }
   });
 }
+
+test.describe("mobile menu", () => {
+  const toggle = (page: Page) =>
+    page.getByRole("button", { name: "Toggle menu" });
+  const focusIsInMenu = (page: Page) =>
+    page.evaluate(() => !!document.activeElement?.closest("#mobile-menu"));
+
+  test("its links can't be reached while it is closed", async ({ page }) => {
+    await page.goto("/articles/intro-to-amazon-ecs");
+    await toggle(page).focus();
+    await page.keyboard.press("Tab");
+    expect(await focusIsInMenu(page)).toBe(false);
+  });
+
+  test("opening it makes the links reachable; Escape closes it and returns focus", async ({
+    page,
+  }) => {
+    await page.goto("/articles/intro-to-amazon-ecs");
+    await expect(toggle(page)).toHaveAttribute("aria-controls", "mobile-menu");
+
+    await toggle(page).click();
+    await expect(toggle(page)).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Tab");
+    expect(await focusIsInMenu(page)).toBe(true);
+
+    await page.keyboard.press("Escape");
+    await expect(toggle(page)).toHaveAttribute("aria-expanded", "false");
+    await expect(toggle(page)).toBeFocused();
+  });
+
+  test("marks the section being read", async ({ page }) => {
+    await page.goto("/articles/intro-to-amazon-ecs");
+    await toggle(page).click();
+    const articles = page
+      .locator("#mobile-menu")
+      .getByRole("link", { name: "Articles" });
+    await expect(articles).toHaveAttribute("aria-current", "true");
+    await expect(articles).toHaveClass(/bg-neon-pink/);
+  });
+});

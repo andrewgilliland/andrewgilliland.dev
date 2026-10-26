@@ -13,6 +13,7 @@ import CopyCodeButton from "@/components/CopyCodeButton.astro";
 import { render } from "astro:content";
 import { loadArticleCatalogue } from "@/lib/articles/loadCatalogue";
 import { articleTitleTransitionName } from "@/lib/slug";
+import { tocEntries } from "@/lib/articles/toc";
 
 export async function getStaticPaths() {
   const catalogue = await loadArticleCatalogue();
@@ -24,7 +25,8 @@ export async function getStaticPaths() {
 
 const { article, related } = Astro.props;
 const { Content, headings } = await render(article.entry);
-const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
+const toc = tocEntries(headings);
+const hasToc = toc.length > 0;
 ---
 
 <BaseLayout
@@ -38,7 +40,7 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
   <Container class="min-h-screen py-14">
     <div
       class:list={[
-        hasHeadings && "lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-12",
+        hasToc && "lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-12",
       ]}
     >
       <div class="mx-auto min-w-0 max-w-prose">
@@ -67,16 +69,16 @@ const hasHeadings = headings.some((h) => h.depth >= 2 && h.depth <= 3);
         </article>
         <RelatedArticlesSection articles={related} />
       </div>
-      {hasHeadings && (
+      {hasToc && (
         <aside class="hidden lg:block">
           <div class="sticky top-10 pt-24">
-            <TableOfContents headings={headings} />
+            <TableOfContents entries={toc} />
           </div>
         </aside>
       )}
     </div>
   </Container>
-  {hasHeadings && <MobileTOC headings={headings} />}
+  {hasToc && <MobileTOC entries={toc} />}
   <ProgressBar />
   <CopyCodeButton />
 </BaseLayout>

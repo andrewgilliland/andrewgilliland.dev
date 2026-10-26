@@ -1,87 +1,73 @@
 ---
-import type { MarkdownHeading } from "astro";
+// The mobile table of contents: a floating button that opens a bottom sheet.
+// The page only renders it when tocEntries() found something to list.
+import TocList from "@/components/TocList.astro";
+import type { TocEntry } from "@/lib/articles/toc";
 
 interface Props {
-  headings: MarkdownHeading[];
+  entries: TocEntry[];
 }
 
-const { headings } = Astro.props;
-const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+const { entries } = Astro.props;
 ---
 
-{filtered.length > 0 && (
-  <>
-    <button
-      popovertarget="mobile-toc"
-      class="neo-shadow neo-press fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center border-2 border-neutral-950 bg-neon-pink text-neutral-950 [--neo-hover:2px] [--neo-offset:4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50 lg:hidden"
-      aria-label="Open table of contents"
+<>
+  <button
+    popovertarget="mobile-toc"
+    class="neo-shadow neo-press fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center border-2 border-neutral-950 bg-neon-pink text-neutral-950 [--neo-hover:2px] [--neo-offset:4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50 lg:hidden"
+    aria-label="Open table of contents"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <line x1="3" y1="6" x2="21" y2="6" />
-        <line x1="3" y1="12" x2="15" y2="12" />
-        <line x1="3" y1="18" x2="21" y2="18" />
-      </svg>
-    </button>
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="15" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  </button>
 
-    <div
-      id="mobile-toc"
-      popover
-      class="mobile-toc-sheet m-0 w-full border-t-2 border-neutral-50 bg-neon-bg p-6 lg:hidden"
-    >
-      <div class="mb-4 flex items-center justify-between">
-        <p class="font-mono text-xs uppercase tracking-[0.2em] text-neutral-400">
-          Table of Contents
-        </p>
-        <button
-          popovertarget="mobile-toc"
-          popovertargetaction="hide"
-          class="text-neutral-400 transition-colors hover:text-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-neutral-50"
-          aria-label="Close table of contents"
+  <div
+    id="mobile-toc"
+    popover
+    class="mobile-toc-sheet m-0 w-full border-t-2 border-neutral-50 bg-neon-bg p-6 lg:hidden"
+  >
+    <div class="mb-4 flex items-center justify-between">
+      <p class="font-mono text-xs uppercase tracking-[0.2em] text-neutral-400">
+        Table of Contents
+      </p>
+      <button
+        popovertarget="mobile-toc"
+        popovertargetaction="hide"
+        class="text-neutral-400 transition-colors hover:text-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-neutral-50"
+        aria-label="Close table of contents"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-      </div>
-      <ul class="flex flex-col border-l-2 border-neutral-700">
-        {filtered.map((heading) => (
-          <li>
-            <a
-              href={`#${heading.slug}`}
-              class:list={[
-                "mobile-toc-link block py-2 text-sm text-neutral-400 transition-colors hover:text-neutral-50",
-                heading.depth === 2 ? "pl-4" : "pl-7",
-              ]}
-            >
-              {heading.text}
-            </a>
-          </li>
-        ))}
-      </ul>
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
     </div>
-  </>
-)}
+    <TocList entries={entries} roomy />
+  </div>
+</>
 
 <style>
   .mobile-toc-sheet {
@@ -130,7 +116,7 @@ const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 <script is:inline>
   const popover = document.getElementById("mobile-toc");
   if (popover) {
-    document.querySelectorAll(".mobile-toc-link").forEach((link) => {
+    popover.querySelectorAll("[data-toc-link]").forEach((link) => {
       link.addEventListener("click", () => popover.hidePopover());
     });
   }

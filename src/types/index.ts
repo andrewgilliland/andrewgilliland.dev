@@ -6,8 +6,6 @@ export type HeadingElement = {
   tag: string;
 };
 
-export type Page = { href: string; title: string };
-
 export type FileNode = {
   name: string;
   title: string;
@@ -17,17 +15,6 @@ export type FileNode = {
 export type DirectoryNode = {
   name: string;
   children?: (DirectoryNode | FileNode)[];
-};
-
-export type Project = {
-  title: string;
-  description: string;
-  href: string;
-  logo?: string;
-  overview?: string;
-  features?: string[];
-  techStack?: string[];
-  images?: string[];
 };
 
 // Type guard to check if a node is of type FileNode
