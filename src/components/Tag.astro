@@ -1,4 +1,6 @@
 ---
+import { topicUrl } from "@/lib/articles/urls";
+
 interface Props {
   tag: string;
 }
@@ -7,7 +9,7 @@ const { tag } = Astro.props;
 ---
 
 <a
-  href={`/articles?q=${tag}`}
+  href={topicUrl(tag)}
   class="neo-shadow neo-press border-2 border-neutral-600 px-2.5 py-1 font-mono text-xs font-semibold text-neutral-300 [--neo-color:theme(colors.neon.pink)] [--neo-hover:3px] [--neo-offset:0px] hover:border-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-50"
 >
   {tag}

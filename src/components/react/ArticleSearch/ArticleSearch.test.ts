@@ -1,28 +1,32 @@
 import { describe, it, expect } from "vitest";
-import { filterArticles, getPopularTags, getUniqueTags } from "./ArticleSearch";
-import type { Article } from "../ArticleCard";
+import {
+  filterArticles,
+  getPopularTopics,
+  getUniqueTopics,
+} from "./ArticleSearch";
+import type { ListingItem } from "../../../lib/articles/catalogue";
 
-const articles: Article[] = [
+const articles: ListingItem[] = [
   {
-    id: "intro-to-aws-lambda",
+    slug: "intro-to-aws-lambda",
     title: "Intro to AWS Lambda",
     excerpt: "A beginner's guide to serverless functions on AWS.",
     date: "2024-01-01",
-    tags: ["aws", "serverless"],
+    topics: ["aws", "serverless"],
   },
   {
-    id: "intro-to-dynamodb",
+    slug: "intro-to-dynamodb",
     title: "Intro to DynamoDB",
     excerpt: "NoSQL database fundamentals with DynamoDB.",
     date: "2024-02-01",
-    tags: ["aws", "dynamodb"],
+    topics: ["aws", "dynamodb"],
   },
   {
-    id: "intro-to-react",
+    slug: "intro-to-react",
     title: "Getting Started with React",
     excerpt: "Build UIs with React and TypeScript.",
     date: "2024-03-01",
-    tags: ["react", "typescript"],
+    topics: ["react", "typescript"],
   },
 ];
 
@@ -38,13 +42,13 @@ describe("filterArticles", () => {
   it("filters by title (case-insensitive)", () => {
     const result = filterArticles(articles, "lambda");
     expect(result).toHaveLength(1);
-    expect(result[0].id).toBe("intro-to-aws-lambda");
+    expect(result[0].slug).toBe("intro-to-aws-lambda");
   });
 
   it("filters by excerpt", () => {
     const result = filterArticles(articles, "NoSQL");
     expect(result).toHaveLength(1);
-    expect(result[0].id).toBe("intro-to-dynamodb");
+    expect(result[0].slug).toBe("intro-to-dynamodb");
   });
 
   it("filters by tag substring in query", () => {
@@ -59,14 +63,14 @@ describe("filterArticles", () => {
   it("is case-insensitive for query", () => {
     const result = filterArticles(articles, "REACT");
     expect(result).toHaveLength(1);
-    expect(result[0].id).toBe("intro-to-react");
+    expect(result[0].slug).toBe("intro-to-react");
   });
 
   describe("selectedTag (exact match)", () => {
     it("returns only articles with an exact tag match", () => {
       const result = filterArticles(articles, "", "aws");
       expect(result).toHaveLength(2);
-      result.forEach((a) => expect(a.tags).toContain("aws"));
+      result.forEach((a) => expect(a.topics).toContain("aws"));
     });
 
     it("does not match partial tag names", () => {
@@ -78,7 +82,7 @@ describe("filterArticles", () => {
     it("combines tag filter and query filter", () => {
       const result = filterArticles(articles, "lambda", "aws");
       expect(result).toHaveLength(1);
-      expect(result[0].id).toBe("intro-to-aws-lambda");
+      expect(result[0].slug).toBe("intro-to-aws-lambda");
     });
 
     it("returns all articles when selectedTag is undefined", () => {
@@ -117,7 +121,7 @@ describe("filterArticles", () => {
 
       const reactArticles = filterArticles(articles, "", "react");
       expect(reactArticles).toHaveLength(1);
-      expect(reactArticles[0].id).toBe("intro-to-react");
+      expect(reactArticles[0].slug).toBe("intro-to-react");
     });
 
     it("deselecting a tag with no query returns the full list", () => {
@@ -127,9 +131,9 @@ describe("filterArticles", () => {
   });
 });
 
-describe("getUniqueTags", () => {
+describe("getUniqueTopics", () => {
   it("returns all unique tags sorted alphabetically", () => {
-    expect(getUniqueTags(articles)).toEqual([
+    expect(getUniqueTopics(articles)).toEqual([
       "aws",
       "dynamodb",
       "react",
@@ -139,19 +143,19 @@ describe("getUniqueTags", () => {
   });
 
   it("deduplicates tags that appear in multiple articles", () => {
-    const tags = getUniqueTags(articles);
+    const tags = getUniqueTopics(articles);
     expect(tags.filter((t) => t === "aws")).toHaveLength(1);
   });
 
   it("returns an empty array for an empty article list", () => {
-    expect(getUniqueTags([])).toEqual([]);
+    expect(getUniqueTopics([])).toEqual([]);
   });
 });
 
-describe("getPopularTags", () => {
+describe("getPopularTopics", () => {
   it("returns the most-used tags, breaking ties alphabetically", () => {
     // aws is used twice; the rest once, so ties fall back to a-z.
-    expect([...getPopularTags(articles, 3)]).toEqual([
+    expect([...getPopularTopics(articles, 3)]).toEqual([
       "aws",
       "dynamodb",
       "react",
@@ -159,6 +163,6 @@ describe("getPopularTags", () => {
   });
 
   it("returns every tag when the limit exceeds the tag count", () => {
-    expect(getPopularTags(articles, 50).size).toBe(5);
+    expect(getPopularTopics(articles, 50).size).toBe(5);
   });
 });

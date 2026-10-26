@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import ArticleCard, { type Accent, type Article } from "../ArticleCard";
+import ArticleCard, { type Accent } from "../ArticleCard";
+import type { ListingItem } from "../../../lib/articles/catalogue";
+import { readSearch, writeSearch } from "../../../lib/articles/urls";
 
 // Offset-shadow colours cycle through the grid; the first card's cyan matches
 // the home page's latest-article tile.
@@ -10,40 +12,40 @@ const CARD_ACCENTS: Accent[] = ["cyan", "pink", "emerald", "yellow"];
 const COLLAPSED_TOPIC_COUNT = 12;
 
 export function filterArticles(
-  articles: Article[],
+  articles: ListingItem[],
   query: string,
   selectedTag?: string,
-): Article[] {
+): ListingItem[] {
   let result = articles;
 
   if (selectedTag) {
-    result = result.filter((a) => a.tags.includes(selectedTag));
+    result = result.filter((a) => a.topics.includes(selectedTag));
   }
 
-  if (query.trim() !== "") {
-    const q = query.toLowerCase();
+  const q = query.trim().toLowerCase();
+  if (q !== "") {
     result = result.filter(
       (a) =>
         a.title.toLowerCase().includes(q) ||
         a.excerpt.toLowerCase().includes(q) ||
-        a.tags.some((t) => t.toLowerCase().includes(q)),
+        a.topics.some((t) => t.toLowerCase().includes(q)),
     );
   }
 
   return result;
 }
 
-export function getUniqueTags(articles: Article[]): string[] {
-  return [...new Set(articles.flatMap((a) => a.tags))].sort();
+export function getUniqueTopics(articles: ListingItem[]): string[] {
+  return [...new Set(articles.flatMap((a) => a.topics))].sort();
 }
 
-/** The `limit` most-used tags, ties broken alphabetically. */
-export function getPopularTags(
-  articles: Article[],
+/** The `limit` most-used topics, ties broken alphabetically. */
+export function getPopularTopics(
+  articles: ListingItem[],
   limit: number,
 ): Set<string> {
   const counts = new Map<string, number>();
-  for (const tag of articles.flatMap((a) => a.tags)) {
+  for (const tag of articles.flatMap((a) => a.topics)) {
     counts.set(tag, (counts.get(tag) ?? 0) + 1);
   }
   const ranked = [...counts.entries()]
@@ -53,25 +55,27 @@ export function getPopularTags(
   return new Set(ranked);
 }
 
-export default function ArticleSearch({ articles }: { articles: Article[] }) {
+export default function ArticleSearch({
+  articles,
+}: {
+  articles: ListingItem[];
+}) {
   const [query, setQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [showAllTopics, setShowAllTopics] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const tag = params.get("tag");
-    if (q) setQuery(q);
-    if (tag) setSelectedTag(tag);
-  }, []);
+    const { query, topic } = readSearch(
+      window.location.search,
+      getUniqueTopics(articles),
+    );
+    if (query) setQuery(query);
+    if (topic) setSelectedTag(topic);
+  }, [articles]);
 
   const updateUrl = (q: string, tag: string) => {
-    const params = new URLSearchParams();
-    if (q.trim()) params.set("q", q);
-    if (tag) params.set("tag", tag);
-    const qs = params.toString();
-    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+    const search = writeSearch({ query: q, topic: tag });
+    history.replaceState(null, "", search || window.location.pathname);
   };
 
   const setQueryAndUrl = (value: string) => {
@@ -88,11 +92,11 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
   const clearAll = () => {
     setQuery("");
     setSelectedTag("");
-    history.replaceState(null, "", window.location.pathname);
+    updateUrl("", "");
   };
 
-  const allTags = getUniqueTags(articles);
-  const popularTags = getPopularTags(articles, COLLAPSED_TOPIC_COUNT);
+  const allTags = getUniqueTopics(articles);
+  const popularTags = getPopularTopics(articles, COLLAPSED_TOPIC_COUNT);
   const canCollapse = allTags.length > COLLAPSED_TOPIC_COUNT;
   const filtered = filterArticles(articles, query, selectedTag);
 
@@ -160,7 +164,7 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
         <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((article, index) => (
             <ArticleCard
-              key={article.id}
+              key={article.slug}
               article={article}
               accent={CARD_ACCENTS[index % CARD_ACCENTS.length]}
               featured={index === 0 && query.trim() === "" && !selectedTag}

@@ -1,10 +1,9 @@
 ---
 import ArticleListItemLink from "@/components/articles/ArticleListItemLink.astro";
-import { toSlug } from "@/lib/slug";
-import type { CollectionEntry } from "astro:content";
+import type { PublishedArticle } from "@/lib/articles/catalogue";
 
 interface Props {
-  articles: CollectionEntry<"articles">[];
+  articles: PublishedArticle[];
 }
 
 const { articles } = Astro.props as Props;
@@ -17,9 +16,9 @@ const accents = ["cyan", "emerald", "yellow"] as const;
     <ul class="flex flex-col gap-5">
       {articles.map((article, index) => (
         <ArticleListItemLink
-          href={`/articles/${toSlug(article.id)}`}
-          title={article.data.title}
-          date={article.data.date}
+          href={article.url}
+          title={article.title}
+          date={article.date}
           accent={accents[index % accents.length]}
         />
       ))}
