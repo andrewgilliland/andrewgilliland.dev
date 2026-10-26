@@ -144,3 +144,23 @@ test("topic filters are all visible on wide screens", async ({ page }) => {
     page.getByRole("button", { name: /show all topics/i }),
   ).toBeHidden();
 });
+
+test("Back steps through picked topics without leaving the page", async ({
+  page,
+}) => {
+  await page.goto("/articles", { waitUntil: "networkidle" });
+  const topic = (name: string) =>
+    page.getByRole("button", { name, exact: true });
+
+  await topic("aws").click();
+  await topic("cdk").click();
+  await expect(page).toHaveURL(/\?tag=cdk$/);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\?tag=aws$/);
+  await expect(topic("aws")).toHaveAttribute("aria-pressed", "true");
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/articles$/);
+  await expect(topic("aws")).toHaveAttribute("aria-pressed", "false");
+});

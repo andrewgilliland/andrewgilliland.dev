@@ -26,35 +26,45 @@ export default function ArticleSearch({
   const [selectedTag, setSelectedTag] = useState("");
   const [showAllTopics, setShowAllTopics] = useState(false);
 
+  // The URL is the source of truth on load and on Back/Forward.
   useEffect(() => {
-    const { query, topic } = readSearch(
-      window.location.search,
-      getUniqueTopics(articles),
-    );
-    if (query) setQuery(query);
-    if (topic) setSelectedTag(topic);
+    const applyUrl = () => {
+      const { query, topic } = readSearch(
+        window.location.search,
+        getUniqueTopics(articles),
+      );
+      setQuery(query);
+      setSelectedTag(topic);
+    };
+    applyUrl();
+    window.addEventListener("popstate", applyUrl);
+    return () => window.removeEventListener("popstate", applyUrl);
   }, [articles]);
 
-  const updateUrl = (q: string, tag: string) => {
-    const search = writeSearch({ query: q, topic: tag });
-    history.replaceState(null, "", search || window.location.pathname);
+  // Picking a topic or clearing is navigation, so it gets a history entry;
+  // typing replaces the current entry so Back doesn't replay keystrokes.
+  const updateUrl = (q: string, tag: string, entry: "push" | "replace") => {
+    const url =
+      writeSearch({ query: q, topic: tag }) || window.location.pathname;
+    if (entry === "push") history.pushState(null, "", url);
+    else history.replaceState(null, "", url);
   };
 
   const setQueryAndUrl = (value: string) => {
     setQuery(value);
-    updateUrl(value, selectedTag);
+    updateUrl(value, selectedTag, "replace");
   };
 
   const toggleTag = (tag: string) => {
     const next = selectedTag === tag ? "" : tag;
     setSelectedTag(next);
-    updateUrl(query, next);
+    updateUrl(query, next, "push");
   };
 
   const clearAll = () => {
     setQuery("");
     setSelectedTag("");
-    updateUrl("", "");
+    updateUrl("", "", "push");
   };
 
   const allTags = getUniqueTopics(articles);

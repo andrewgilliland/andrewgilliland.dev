@@ -150,6 +150,62 @@ describe("ArticleSearch component", () => {
     }
   });
 
+  describe("browser history", () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("adds a history entry when a topic is picked or cleared", () => {
+      const push = vi.spyOn(window.history, "pushState");
+      render(<ArticleSearch articles={articles} />);
+
+      fireEvent.click(screen.getByRole("button", { name: "aws" }));
+      expect(push).toHaveBeenLastCalledWith(null, "", "?tag=aws");
+
+      fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+      expect(push).toHaveBeenLastCalledWith(null, "", "/articles");
+      expect(push).toHaveBeenCalledTimes(2);
+    });
+
+    it("replaces the entry while typing, so Back doesn't replay keystrokes", () => {
+      const push = vi.spyOn(window.history, "pushState");
+      render(<ArticleSearch articles={articles} />);
+
+      const input = screen.getByRole("searchbox", { name: "Search articles" });
+      fireEvent.change(input, { target: { value: "la" } });
+      fireEvent.change(input, { target: { value: "lambda" } });
+
+      expect(push).not.toHaveBeenCalled();
+      expect(window.location.search).toBe("?q=lambda");
+    });
+
+    it("restores the filters from the URL on Back and Forward", async () => {
+      render(<ArticleSearch articles={articles} />);
+
+      window.history.pushState(null, "", "/articles?tag=react");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      await waitFor(() => {
+        expect(
+          screen
+            .getByRole("button", { name: "react" })
+            .getAttribute("aria-pressed"),
+        ).toBe("true");
+      });
+      expect(screen.getAllByTestId("article-card")).toHaveLength(1);
+
+      window.history.replaceState(null, "", "/articles");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      await waitFor(() => {
+        expect(screen.getAllByTestId("article-card")).toHaveLength(3);
+      });
+      expect(
+        screen
+          .getByRole("button", { name: "react" })
+          .getAttribute("aria-pressed"),
+      ).toBe("false");
+    });
+  });
+
   it("ignores a topic in the URL that no article has", async () => {
     window.history.replaceState(null, "", "/articles?tag=not-a-topic");
 
