@@ -28,3 +28,25 @@ export function tocEntries(
       nested: h.depth === LAST_LISTED_DEPTH,
     }));
 }
+
+/** The top share of the viewport where a heading counts as being read. */
+const READING_ZONE = 0.3;
+
+/**
+ * Which listed heading is the section being read, given each heading's
+ * distance from the top of the viewport (in document order): the topmost
+ * heading inside the reading zone, or else the last one scrolled past, or -1
+ * before the first one arrives.
+ */
+export function currentSectionIndex(
+  headingTops: readonly number[],
+  viewportHeight: number,
+): number {
+  const zoneBottom = viewportHeight * READING_ZONE;
+  let lastPassed = -1;
+  for (const [index, top] of headingTops.entries()) {
+    if (top >= 0 && top <= zoneBottom) return index;
+    if (top < 0) lastPassed = index;
+  }
+  return lastPassed;
+}
