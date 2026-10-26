@@ -43,3 +43,18 @@ test("marks the current section in the main navigation", async ({ page }) => {
     }),
   ).toHaveAttribute("aria-current", "true");
 });
+
+test("the GitHub badge links to the profile without a made-up star count", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  const badge = page.getByRole("link", {
+    name: "Visit andrewgilliland on GitHub",
+  });
+  await expect(badge).toHaveAttribute(
+    "href",
+    "https://github.com/andrewgilliland",
+  );
+  await expect(badge).toHaveText("");
+});
