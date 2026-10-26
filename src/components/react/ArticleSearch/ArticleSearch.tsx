@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import ArticleCard, { type Accent, type Article } from "../ArticleCard";
+import { readSearch, writeSearch } from "../../../lib/articles/urls";
 
 // Offset-shadow colours cycle through the grid; the first card's cyan matches
 // the home page's latest-article tile.
@@ -20,8 +21,8 @@ export function filterArticles(
     result = result.filter((a) => a.tags.includes(selectedTag));
   }
 
-  if (query.trim() !== "") {
-    const q = query.toLowerCase();
+  const q = query.trim().toLowerCase();
+  if (q !== "") {
     result = result.filter(
       (a) =>
         a.title.toLowerCase().includes(q) ||
@@ -59,19 +60,17 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
   const [showAllTopics, setShowAllTopics] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("q");
-    const tag = params.get("tag");
-    if (q) setQuery(q);
-    if (tag) setSelectedTag(tag);
-  }, []);
+    const { query, topic } = readSearch(
+      window.location.search,
+      getUniqueTags(articles),
+    );
+    if (query) setQuery(query);
+    if (topic) setSelectedTag(topic);
+  }, [articles]);
 
   const updateUrl = (q: string, tag: string) => {
-    const params = new URLSearchParams();
-    if (q.trim()) params.set("q", q);
-    if (tag) params.set("tag", tag);
-    const qs = params.toString();
-    history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+    const search = writeSearch({ query: q, topic: tag });
+    history.replaceState(null, "", search || window.location.pathname);
   };
 
   const setQueryAndUrl = (value: string) => {
@@ -88,7 +87,7 @@ export default function ArticleSearch({ articles }: { articles: Article[] }) {
   const clearAll = () => {
     setQuery("");
     setSelectedTag("");
-    history.replaceState(null, "", window.location.pathname);
+    updateUrl("", "");
   };
 
   const allTags = getUniqueTags(articles);

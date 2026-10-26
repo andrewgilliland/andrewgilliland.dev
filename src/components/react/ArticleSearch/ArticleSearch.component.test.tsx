@@ -144,6 +144,29 @@ describe("ArticleSearch component", () => {
     }
   });
 
+  it("ignores a topic in the URL that no article has", async () => {
+    window.history.replaceState(null, "", "/articles?tag=not-a-topic");
+
+    render(<ArticleSearch articles={articles} />);
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId("article-card")).toHaveLength(3);
+    });
+    expect(screen.queryByRole("button", { name: "Clear search" })).toBeNull();
+  });
+
+  it("matches a query with surrounding spaces", () => {
+    render(<ArticleSearch articles={articles} />);
+
+    const input = screen.getByRole("searchbox", { name: "Search articles" });
+    fireEvent.change(input, { target: { value: "lambda " } });
+
+    const cards = screen.getAllByTestId("article-card");
+    expect(cards.map((c) => c.getAttribute("data-id"))).toEqual([
+      "intro-to-aws-lambda",
+    ]);
+  });
+
   it("shows empty state when no articles match", () => {
     render(<ArticleSearch articles={articles} />);
 
