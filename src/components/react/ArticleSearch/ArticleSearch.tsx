@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import ArticleCard, { type Accent } from "../ArticleCard";
+import ArticleCard, { type Accent } from "../ArticleCard/ArticleCard";
 import type { ListingItem } from "../../../lib/articles/catalogue";
 import {
   getPopularTopics,

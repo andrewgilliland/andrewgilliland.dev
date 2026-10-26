@@ -29,13 +29,6 @@ const articleDateSchema = z
     value instanceof Date ? value : new Date(`${value}T00:00:00.000Z`),
   );
 
-export const notesSchema = z.object({
-  title: z.string(),
-  date: z.date(),
-  excerpt: z.string().optional(),
-  draft: z.boolean().default(false),
-});
-
 export const resumeSchema = z.object({
   title: z.string().optional(),
 });
