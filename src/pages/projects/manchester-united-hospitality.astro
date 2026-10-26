@@ -2,10 +2,6 @@
 import CaseStudyLayout from "@/components/projects/CaseStudyLayout.astro";
 import CaseStudySection from "@/components/projects/CaseStudySection.astro";
 
-const title = "Manchester United Hospitality";
-const description =
-  "The official Manchester United hospitality storefront, built by Elevate as the club's first Official Hospitality Partner. As a software engineer on the launch, I worked on go-live release engineering and the payments and catalogue APIs behind checkout.";
-const link = "https://hospitality.manutd.com";
 const overview =
   "hospitality.manutd.com sells official matchday hospitality at Old Trafford across the Premier League, the UEFA Champions League, and the Carabao Cup. The site first ran as a prelaunch holding page on its production domain, then switched to the full server-rendered store on launch day. My work centred on making that switch safe and keeping checkout and the event catalogue reliable through launch.";
 const contributions = [
@@ -18,28 +14,9 @@ const contributions = [
 ];
 const platform =
   "The storefront runs on Elevate's Experiences Platform, which I helped build from the ground up: a multi-tenant system designed to serve several clients from one codebase. It spans sandbox, dev, staging, and production environments defined in AWS CDK, Python and FastAPI services on Lambda, a React and TypeScript operations app, and tenant isolation enforced in the identity layer, the API, and the UI. Delivery is spec-first, with ADRs and implementation specs, and every change passes automated quality gates and browser regression tests before it is promoted.";
-const techStack = [
-  "TypeScript",
-  "TanStack Start",
-  "React",
-  "Python",
-  "FastAPI",
-  "AWS Lambda",
-  "Amazon API Gateway",
-  "Amazon CloudFront and CloudFront Functions",
-  "AWS CDK",
-  "PostgreSQL",
-  "GitHub Actions",
-];
 ---
 
-<CaseStudyLayout
-  title={title}
-  description={description}
-  link={link}
-  linkLabel="Visit hospitality.manutd.com"
-  techStack={techStack}
->
+<CaseStudyLayout slug="manchester-united-hospitality">
   <CaseStudySection title="Overview">
     <p>{overview}</p>
   </CaseStudySection>
