@@ -1,7 +1,6 @@
 ---
 import FormattedDate from "@/components/FormattedDate.astro";
-
-type Accent = "pink" | "emerald" | "yellow" | "cyan";
+import { fillClass, neoColorClass, type Accent } from "@/lib/accents";
 
 interface Props {
   href: string;
@@ -19,25 +18,11 @@ const {
   headingTag: Heading = "h3",
   accent = "pink",
 } = Astro.props as Props;
-
-// Full class names so Tailwind can see them.
-const shadowColors: Record<Accent, string> = {
-  pink: "[--neo-color:theme(colors.neon.pink)]",
-  emerald: "[--neo-color:theme(colors.neon.emerald)]",
-  yellow: "[--neo-color:theme(colors.neon.yellow)]",
-  cyan: "[--neo-color:theme(colors.neon.cyan)]",
-};
-const fills: Record<Accent, string> = {
-  pink: "bg-neon-pink",
-  emerald: "bg-neon-emerald",
-  yellow: "bg-neon-yellow",
-  cyan: "bg-neon-cyan",
-};
 ---
 
 <li>
   <a
-    class={`flex h-full items-center justify-between gap-6 border-2 border-neutral-50 bg-neon-surface p-5 text-neutral-50 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50 neo-shadow neo-press [--neo-offset:6px] ${shadowColors[accent]}`}
+    class={`flex h-full items-center justify-between gap-6 border-2 border-neutral-50 bg-neon-surface p-5 text-neutral-50 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50 neo-shadow neo-press [--neo-offset:6px] ${neoColorClass[accent]}`}
     href={href}
   >
     <div>
@@ -48,7 +33,7 @@ const fills: Record<Accent, string> = {
       />
     </div>
     <div
-      class={`flex h-10 w-10 shrink-0 items-center justify-center border-2 border-neutral-950 text-neutral-950 ${fills[accent]}`}
+      class={`flex h-10 w-10 shrink-0 items-center justify-center border-2 border-neutral-950 text-neutral-950 ${fillClass[accent]}`}
       aria-hidden="true"
     >
       <svg
