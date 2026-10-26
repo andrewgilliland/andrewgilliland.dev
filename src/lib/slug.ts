@@ -1,7 +1,3 @@
-export function toSlug(id: string): string {
-  return id.replace(/\.mdx?$/, "");
-}
-
 /**
  * The view-transition-name shared by an article's card title and its page
  * heading, so the title morphs between the two pages.
