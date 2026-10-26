@@ -70,5 +70,10 @@
     "shiki": "^4.5.0",
     "typescript": "^5.4.5",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "@tailwindcss/typography": {
+      "postcss-selector-parser": "^6.1.5"
+    }
   }
 }
