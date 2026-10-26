@@ -6,8 +6,6 @@ export type HeadingElement = {
   tag: string;
 };
 
-export type Page = { href: string; title: string };
-
 export type FileNode = {
   name: string;
   title: string;

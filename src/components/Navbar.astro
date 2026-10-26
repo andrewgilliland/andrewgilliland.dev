@@ -1,14 +1,9 @@
 ---
 import MobileNavbar from "./MobileNavbar.astro";
 import DesktopNavbar from "./DesktopNavbar.astro";
-import type { Page } from "@/types";
+import { navLinks } from "@/lib/navigation";
 
-const pages: Page[] = [
-  { href: "/", title: "Home" },
-  { href: "/projects", title: "Projects" },
-  { href: "/articles", title: "Articles" },
-  { href: "/about", title: "About" },
-];
+const links = navLinks(Astro.url.pathname);
 ---
 
 <!-- z-40: the view-transition-name makes the header its own stacking
@@ -16,6 +11,6 @@ const pages: Page[] = [
      with translate animations form stacking contexts too and come later in
      the page, so without this they paint over the open menu. -->
 <header class="relative z-40 bg-neon-bg [view-transition-name:site-header]">
-  <MobileNavbar pages={pages} />
-  <DesktopNavbar pages={pages} />
+  <MobileNavbar links={links} />
+  <DesktopNavbar links={links} />
 </header>

@@ -1,16 +1,13 @@
 ---
 import Container from "./Container.astro";
 import HeaderHeading from "./HeaderHeading.astro";
-import type { Page } from "@/types";
-import { navState } from "@/lib/navigation";
+import type { NavLink } from "@/lib/navigation";
 
 interface Props {
-  pages: Page[];
+  links: NavLink[];
 }
 
-const { pages } = Astro.props;
-const currentPath = Astro.url.pathname;
-const stateFor = (href: string) => navState(href, currentPath);
+const { links } = Astro.props;
 ---
 
 <div class="hidden border-b-2 border-neutral-50 py-6 md:block">
@@ -56,20 +53,14 @@ const stateFor = (href: string) => navState(href, currentPath);
       </div>
 
       <nav aria-label="Main" class="flex gap-3">
-        {pages.map(({ href, title }) => (
+        {links.map(({ href, title, ariaCurrent, active }) => (
           <a
             href={href}
-            aria-current={
-              stateFor(href) === "page"
-                ? "page"
-                : stateFor(href)
-                  ? "true"
-                  : undefined
-            }
+            aria-current={ariaCurrent}
             data-foley-click="tap"
             class:list={[
               "border-2 px-3 py-1.5 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50",
-              stateFor(href)
+              active
                 ? "neo-shadow neo-press border-neutral-950 bg-neon-pink text-neutral-950 [--neo-color:theme(colors.neon.cyan)] [--neo-hover:2px] [--neo-offset:4px]"
                 : "neo-shadow neo-press border-transparent text-neutral-50 [--neo-color:theme(colors.neon.pink)] [--neo-hover:3px] [--neo-offset:0px] hover:border-neutral-50",
             ]}
