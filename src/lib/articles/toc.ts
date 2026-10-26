@@ -31,6 +31,11 @@ export function tocEntries(
 
 /** The top share of the viewport where a heading counts as being read. */
 const READING_ZONE = 0.3;
+/**
+ * A heading the browser has just scrolled to can land a fraction of a pixel
+ * above the viewport; it still counts as at the top, not as scrolled past.
+ */
+const AT_TOP_TOLERANCE = 1;
 
 /**
  * Which listed heading is the section being read, given each heading's
@@ -45,8 +50,8 @@ export function currentSectionIndex(
   const zoneBottom = viewportHeight * READING_ZONE;
   let lastPassed = -1;
   for (const [index, top] of headingTops.entries()) {
-    if (top >= 0 && top <= zoneBottom) return index;
-    if (top < 0) lastPassed = index;
+    if (top >= -AT_TOP_TOLERANCE && top <= zoneBottom) return index;
+    if (top < -AT_TOP_TOLERANCE) lastPassed = index;
   }
   return lastPassed;
 }

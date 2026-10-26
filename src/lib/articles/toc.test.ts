@@ -52,6 +52,13 @@ describe("currentSectionIndex", () => {
     expect(currentSectionIndex([], VIEWPORT)).toBe(-1);
   });
 
+  it("counts a heading the browser just scrolled to as at the top, despite sub-pixel rounding", () => {
+    // Measured after jumping to a heading: it sits a fraction of a pixel above 0.
+    expect(
+      currentSectionIndex([-5000, -0.046875, 55.9375, 900], VIEWPORT),
+    ).toBe(1);
+  });
+
   it("counts a heading on the zone's lower edge as inside it", () => {
     expect(currentSectionIndex([-50, 240], VIEWPORT)).toBe(1);
   });
