@@ -6,6 +6,8 @@ module.exports = {
     "./src/layouts/**/*.{js,ts,jsx,tsx,mdx,astro}",
     // Data files carry class names too (e.g. project logo sizes).
     "./src/data/**/*.{js,ts}",
+    // So do some lib modules (e.g. the accent classes in src/lib/accents.ts).
+    "./src/lib/**/*.{js,ts}",
   ],
   theme: {
     extend: {

@@ -10,17 +10,13 @@ import FormattedDate from "@/components/FormattedDate.astro";
 import { projects } from "@/data/projects";
 import { loadArticleCatalogue } from "@/lib/articles/loadCatalogue";
 import { topicUrl } from "@/lib/articles/urls";
+import { ACCENTS, fillClass } from "@/lib/accents";
 
 const catalogue = await loadArticleCatalogue();
 const [latest, ...moreArticles] = catalogue.articles.slice(0, 6);
 
 // Topic chips cycle through the accents; text on every fill is near-black.
-const chipFills = [
-  "bg-neon-pink",
-  "bg-neon-emerald",
-  "bg-neon-yellow",
-  "bg-neon-cyan",
-];
+const chipFills = ACCENTS.map((accent) => fillClass[accent]);
 const projectShadows = ["emerald", "yellow", "cyan"] as const;
 const eyebrow = "font-mono text-xs uppercase tracking-[0.2em]";
 ---

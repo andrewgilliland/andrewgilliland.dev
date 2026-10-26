@@ -3,19 +3,18 @@ import { createRequire } from "node:module";
 import satori from "satori";
 import sharp from "sharp";
 import { NEON } from "../neonPalette";
+import type { Accent } from "../accents";
 import { SHARE_IMAGE_SIZE } from "./shareImages";
 
 // Build-time only: renders the link-preview image for a page in the neon
 // brutalist style. Satori draws text as paths, so the result does not depend
 // on fonts installed on the build machine.
 
-export type ShareCardAccent = "pink" | "emerald" | "yellow" | "cyan";
-
 export interface ShareCard {
   /** Short mono line above the title, e.g. "Article · September 15, 2026". */
   eyebrow: string;
   title: string;
-  accent: ShareCardAccent;
+  accent: Accent;
 }
 
 const WHITE = "#fafafa";
