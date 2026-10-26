@@ -8,27 +8,11 @@ import ShapeDecoration from "@/components/ShapeDecoration.astro";
 import { DARK_SHAPE_STROKE } from "@/lib/shapeColors";
 import FormattedDate from "@/components/FormattedDate.astro";
 import { projects } from "@/data/projects";
-import { getCollection } from "astro:content";
-import { toSlug } from "@/lib/slug";
+import { loadArticleCatalogue } from "@/lib/articles/loadCatalogue";
 import { topicUrl } from "@/lib/articles/urls";
 
-const allArticles = await getCollection("articles", ({ data }) => !data.draft);
-
-const tagCounts = allArticles
-  .flatMap((a) => a.data.tags)
-  .reduce(
-    (acc, tag) => {
-      acc[tag] = (acc[tag] ?? 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
-const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
-
-const recentArticles = [...allArticles]
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 6);
-const [latest, ...moreArticles] = recentArticles;
+const catalogue = await loadArticleCatalogue();
+const [latest, ...moreArticles] = catalogue.articles.slice(0, 6);
 
 // Topic chips cycle through the accents; text on every fill is near-black.
 const chipFills = [
@@ -71,27 +55,30 @@ const eyebrow = "font-mono text-xs uppercase tracking-[0.2em]";
 
     {latest && (
       <BentoTile
-        href={`/articles/${toSlug(latest.id)}`}
+        href={latest.url}
         shadow="cyan"
         fill="pink"
         class="relative justify-between overflow-hidden md:col-span-2"
       >
-        <ShapeDecoration id={latest.id} stroke={DARK_SHAPE_STROKE} />
+        <ShapeDecoration id={latest.slug} stroke={DARK_SHAPE_STROKE} />
         <span class={`relative ${eyebrow} font-semibold`}>
           Latest article ·{" "}
-          <FormattedDate date={latest.data.date} class="font-mono" />
+          <FormattedDate date={latest.date} class="font-mono" />
         </span>
         <h2 class="relative mt-4 pr-24 text-3xl font-bold leading-tight">
-          {latest.data.title}
+          {latest.title}
         </h2>
       </BentoTile>
     )}
 
     <BentoTile href="/articles" shadow="pink" fill="yellow">
       <span class={`${eyebrow} font-semibold`}>Writing</span>
-      <CountUp value={allArticles.length} class="mt-3 text-6xl font-bold" />
+      <CountUp
+        value={catalogue.articles.length}
+        class="mt-3 text-6xl font-bold"
+      />
       <span class="font-mono text-sm">
-        articles · {sortedTags.length} topics
+        articles · {catalogue.topics.length} topics
       </span>
     </BentoTile>
 
@@ -108,14 +95,14 @@ const eyebrow = "font-mono text-xs uppercase tracking-[0.2em]";
         {moreArticles.map((article) => (
           <li>
             <a
-              href={`/articles/${toSlug(article.id)}`}
+              href={article.url}
               class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50"
             >
               <span class="block text-xl font-bold leading-snug group-hover:underline">
-                {article.data.title}
+                {article.title}
               </span>
               <FormattedDate
-                date={article.data.date}
+                date={article.date}
                 class="font-mono text-xs text-neutral-400"
               />
             </a>
@@ -127,7 +114,7 @@ const eyebrow = "font-mono text-xs uppercase tracking-[0.2em]";
     <BentoTile shadow="yellow" label="Browse by Topic" class="md:col-span-2">
       <h2 class={`${eyebrow} text-neutral-400`}>Browse by Topic</h2>
       <ul class="mt-4 flex flex-wrap gap-2">
-        {sortedTags.slice(0, 18).map(([tag, count], index) => (
+        {catalogue.topics.slice(0, 18).map(({ topic: tag, count }, index) => (
           <li>
             <a
               href={topicUrl(tag)}

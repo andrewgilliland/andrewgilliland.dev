@@ -1,6 +1,5 @@
 import rss from "@astrojs/rss";
-import { getCollection } from "astro:content";
-import { toSlug } from "@/lib/slug";
+import { loadArticleCatalogue } from "@/lib/articles/loadCatalogue";
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext) {
@@ -8,22 +7,18 @@ export async function GET(context: APIContext) {
     throw new Error("Site URL not configured in astro.config.mjs");
   }
 
-  const articles = await getCollection("articles", ({ data }) => !data.draft);
-
-  const sorted = articles.sort(
-    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-  );
+  const { articles } = await loadArticleCatalogue();
 
   return rss({
     title: "Andrew Gilliland",
     description:
       "A software engineer writing about AWS, Python, and building things on the web.",
     site: context.site,
-    items: sorted.map((article) => ({
-      title: article.data.title,
-      description: article.data.excerpt,
-      pubDate: article.data.date,
-      link: `/articles/${toSlug(article.id)}`,
+    items: articles.map((article) => ({
+      title: article.title,
+      description: article.excerpt,
+      pubDate: article.date,
+      link: article.url,
     })),
   });
 }

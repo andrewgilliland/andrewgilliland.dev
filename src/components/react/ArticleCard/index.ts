@@ -1,2 +1,2 @@
 export { default } from "./ArticleCard";
-export type { Accent, Article } from "./ArticleCard";
+export type { Accent } from "./ArticleCard";

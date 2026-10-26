@@ -9,13 +9,19 @@ import {
   waitFor,
 } from "@testing-library/react";
 import ArticleSearch from "./ArticleSearch";
-import type { Article } from "../ArticleCard";
+import type { ListingItem } from "../../../lib/articles/catalogue";
 
 vi.mock("../ArticleCard", () => ({
-  default: ({ article, featured }: { article: Article; featured: boolean }) => (
+  default: ({
+    article,
+    featured,
+  }: {
+    article: ListingItem;
+    featured: boolean;
+  }) => (
     <article
       data-testid="article-card"
-      data-id={article.id}
+      data-id={article.slug}
       data-featured={featured ? "true" : "false"}
     >
       {article.title}
@@ -23,27 +29,27 @@ vi.mock("../ArticleCard", () => ({
   ),
 }));
 
-const articles: Article[] = [
+const articles: ListingItem[] = [
   {
-    id: "intro-to-aws-lambda",
+    slug: "intro-to-aws-lambda",
     title: "Intro to AWS Lambda",
     excerpt: "A beginner's guide to serverless functions on AWS.",
     date: "2024-01-01",
-    tags: ["aws", "serverless"],
+    topics: ["aws", "serverless"],
   },
   {
-    id: "intro-to-dynamodb",
+    slug: "intro-to-dynamodb",
     title: "Intro to DynamoDB",
     excerpt: "NoSQL database fundamentals with DynamoDB.",
     date: "2024-02-01",
-    tags: ["aws", "dynamodb"],
+    topics: ["aws", "dynamodb"],
   },
   {
-    id: "intro-to-react",
+    slug: "intro-to-react",
     title: "Getting Started with React",
     excerpt: "Build UIs with React and TypeScript.",
     date: "2024-03-01",
-    tags: ["react", "typescript"],
+    topics: ["react", "typescript"],
   },
 ];
 

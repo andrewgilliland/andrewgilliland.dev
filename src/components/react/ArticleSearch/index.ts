@@ -1,2 +1,2 @@
 export { default } from "./ArticleSearch";
-export { filterArticles, getUniqueTags } from "./ArticleSearch";
+export { filterArticles, getUniqueTopics } from "./ArticleSearch";

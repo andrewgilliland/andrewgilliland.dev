@@ -1,8 +1,7 @@
 import type { APIRoute, GetStaticPaths } from "astro";
-import { getCollection } from "astro:content";
 import { projects } from "@/data/projects";
 import { formatArticleDate } from "@/lib/date";
-import { toSlug } from "@/lib/slug";
+import { loadArticleCatalogue } from "@/lib/articles/loadCatalogue";
 import { renderShareCard, type ShareCard } from "@/lib/og/shareCard";
 import { shareImageIds } from "@/lib/og/shareImages";
 
@@ -10,7 +9,7 @@ import { shareImageIds } from "@/lib/og/shareImages";
 // /og/articles/<slug>.png, and /og/projects/<slug>.png.
 
 export const getStaticPaths = (async () => {
-  const articles = await getCollection("articles", ({ data }) => !data.draft);
+  const { articles } = await loadArticleCatalogue();
 
   const cards: { path: string; card: ShareCard }[] = [
     {
@@ -22,10 +21,10 @@ export const getStaticPaths = (async () => {
       },
     },
     ...articles.map((article) => ({
-      path: shareImageIds.article(toSlug(article.id)),
+      path: article.shareImage.id,
       card: {
-        eyebrow: `Article · ${formatArticleDate(article.data.date)}`,
-        title: article.data.title,
+        eyebrow: `Article · ${formatArticleDate(article.date)}`,
+        title: article.title,
         accent: "cyan" as const,
       },
     })),
