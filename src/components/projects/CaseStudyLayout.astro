@@ -4,32 +4,25 @@ import BackLink from "@/components/BackLink.astro";
 import ColorDivider from "@/components/ColorDivider.astro";
 import Container from "@/components/Container.astro";
 import CaseStudySection from "./CaseStudySection.astro";
-import { projects } from "@/data/projects";
+import { projectBySlug, type ProjectSlug } from "@/data/projects";
 import { shareImageIds, shareImageUrl } from "@/lib/og/shareImages";
 
 interface Props {
-  title: string;
-  description: string;
-  /** The live project; rendered as the header's call to action. */
-  link: string;
-  linkLabel: string;
-  techStack: string[];
+  /** Which project this case study is about; its record supplies the header and tech stack. */
+  slug: ProjectSlug;
 }
 
-const { title, description, link, linkLabel, techStack } = Astro.props;
-// The share card is generated from src/data/projects.ts, so every case study
-// needs an entry there; fail the build rather than link a missing image.
-const path = Astro.url.pathname.replace(/(\/|\.html)$/, "");
-const project = projects.find((p) => p.href === path);
-if (!project) {
-  throw new Error(
-    `Case study ${path} has no entry in src/data/projects.ts, so it has no share image.`,
-  );
-}
+const project = projectBySlug(Astro.props.slug);
+const { title, description, link, linkLabel, techStack } = project;
 const image = shareImageUrl(shareImageIds.project(project.href));
 ---
 
-<BaseLayout title={`${title} - Andrew Gilliland`} image={image} plain>
+<BaseLayout
+  title={`${title} - Andrew Gilliland`}
+  description={description}
+  image={image}
+  plain
+>
   <Container class="pb-20 pt-14">
     <div class="mx-auto max-w-prose">
       <BackLink href="/projects" label="Back to Projects" />
