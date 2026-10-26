@@ -27,7 +27,7 @@ export default function ArticleSearch({
   articles: ListingItem[];
 }) {
   const [query, setQuery] = useState("");
-  const [selectedTag, setSelectedTag] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("");
   const [showAllTopics, setShowAllTopics] = useState(false);
   const [urlApplied, setUrlApplied] = useState(false);
 
@@ -39,7 +39,7 @@ export default function ArticleSearch({
         getUniqueTopics(articles),
       );
       setQuery(query);
-      setSelectedTag(topic);
+      setSelectedTopic(topic);
       setUrlApplied(true);
     };
     applyUrl();
@@ -55,34 +55,36 @@ export default function ArticleSearch({
 
   // Picking a topic or clearing is navigation, so it gets a history entry;
   // typing replaces the current entry so Back doesn't replay keystrokes.
-  const updateUrl = (q: string, tag: string, entry: "push" | "replace") => {
-    const url =
-      writeSearch({ query: q, topic: tag }) || window.location.pathname;
+  const updateUrl = (q: string, topic: string, entry: "push" | "replace") => {
+    const url = writeSearch({ query: q, topic }) || window.location.pathname;
     if (entry === "push") history.pushState(null, "", url);
     else history.replaceState(null, "", url);
   };
 
   const setQueryAndUrl = (value: string) => {
     setQuery(value);
-    updateUrl(value, selectedTag, "replace");
+    updateUrl(value, selectedTopic, "replace");
   };
 
-  const toggleTag = (tag: string) => {
-    const next = selectedTag === tag ? "" : tag;
-    setSelectedTag(next);
+  const toggleTopic = (topic: string) => {
+    const next = selectedTopic === topic ? "" : topic;
+    setSelectedTopic(next);
     updateUrl(query, next, "push");
   };
 
   const clearAll = () => {
     setQuery("");
-    setSelectedTag("");
+    setSelectedTopic("");
     updateUrl("", "", "push");
   };
 
-  const allTags = getUniqueTopics(articles);
-  const popularTags = getPopularTopics(articles, COLLAPSED_TOPIC_COUNT);
-  const canCollapse = allTags.length > COLLAPSED_TOPIC_COUNT;
-  const filtered = searchArticles(articles, { query, topic: selectedTag });
+  const allTopics = getUniqueTopics(articles);
+  const popularTopics = getPopularTopics(articles, COLLAPSED_TOPIC_COUNT);
+  const canCollapse = allTopics.length > COLLAPSED_TOPIC_COUNT;
+  const emptyLabel = [query.trim() && `“${query.trim()}”`, selectedTopic]
+    .filter(Boolean)
+    .join(" in ");
+  const filtered = searchArticles(articles, { query, topic: selectedTopic });
 
   return (
     <>
@@ -97,7 +99,7 @@ export default function ArticleSearch({
             data-foley-type="thock"
             className="w-full border-2 border-neutral-50 bg-neon-surface px-4 py-3 pr-12 font-mono text-sm text-neutral-50 placeholder-neutral-400 outline-none transition-shadow focus:shadow-[4px_4px_0_0_theme(colors.neon.pink)] [&::-webkit-search-cancel-button]:appearance-none"
           />
-          {(query || selectedTag) && (
+          {(query || selectedTopic) && (
             <button
               onClick={clearAll}
               aria-label="Clear search"
@@ -108,15 +110,15 @@ export default function ArticleSearch({
           )}
         </div>
         <div id="topic-filters" className="mt-5 flex flex-wrap gap-2.5">
-          {allTags.map((tag) => {
-            const pressed = selectedTag === tag;
+          {allTopics.map((topic) => {
+            const pressed = selectedTopic === topic;
             // display:none (not just clipped) so hidden topics are not focusable.
             const hiddenOnPhones =
-              !showAllTopics && !pressed && !popularTags.has(tag);
+              !showAllTopics && !pressed && !popularTopics.has(topic);
             return (
               <button
-                key={tag}
-                onClick={() => toggleTag(tag)}
+                key={topic}
+                onClick={() => toggleTopic(topic)}
                 aria-pressed={pressed}
                 className={`${hiddenOnPhones ? "max-sm:hidden" : ""} border-2 px-2.5 py-1 font-mono text-xs font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-50 ${
                   pressed
@@ -124,7 +126,7 @@ export default function ArticleSearch({
                     : "neo-shadow neo-press border-neutral-600 text-neutral-300 [--neo-color:theme(colors.neon.pink)] [--neo-hover:3px] [--neo-offset:0px] hover:border-neutral-50"
                 }`}
               >
-                {tag}
+                {topic}
               </button>
             );
           })}
@@ -139,7 +141,7 @@ export default function ArticleSearch({
           >
             {showAllTopics
               ? "Show fewer topics"
-              : `Show all topics (${allTags.length})`}
+              : `Show all topics (${allTopics.length})`}
           </button>
         )}
       </div>
@@ -152,13 +154,13 @@ export default function ArticleSearch({
                 key={article.slug}
                 article={article}
                 accent={CARD_ACCENTS[index % CARD_ACCENTS.length]}
-                featured={index === 0 && query.trim() === "" && !selectedTag}
+                featured={index === 0 && query.trim() === "" && !selectedTopic}
               />
             ))}
           </section>
         ) : (
           <p className="py-16 text-center font-mono text-sm text-neutral-400">
-            No articles match &ldquo;{selectedTag || query}&rdquo;
+            No articles match {emptyLabel}
           </p>
         )}
       </div>

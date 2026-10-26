@@ -2,9 +2,15 @@ import { test, expect } from "@playwright/test";
 
 test("article search filters by query", async ({ page }) => {
   await page.goto("/articles", { waitUntil: "networkidle" });
-  const input = page.getByPlaceholder("Search articles…");
-  await input.fill("lambda");
-  await expect(page.getByText(/lambda/i).first()).toBeVisible();
+  const cards = page.locator("article");
+  const total = await cards.count();
+
+  await page.getByPlaceholder("Search articles…").fill("lambda");
+  await expect(cards.first()).toBeVisible();
+  const matches = await cards.count();
+  expect(matches).toBeGreaterThan(0);
+  expect(matches).toBeLessThan(total);
+  await expect(cards.filter({ hasText: /lambda/i }).first()).toBeVisible();
 });
 
 test("article search filters by tag", async ({ page }) => {
@@ -72,11 +78,20 @@ test("search with no results shows empty state", async ({ page }) => {
 
 test("tag filter and search query work together", async ({ page }) => {
   await page.goto("/articles", { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: "cdk" }).click();
-  await page.getByPlaceholder("Search articles…").fill("lambda");
-  const articles = page.locator("article");
-  const count = await articles.count();
-  expect(count).toBeGreaterThanOrEqual(0);
+  const cards = page.locator("article");
+  const input = page.getByPlaceholder("Search articles…");
+
+  await input.fill("lambda");
+  const lambdaOnly = await cards.count();
+  await input.fill("");
+  await page.getByRole("button", { name: "cdk", exact: true }).click();
+  const cdkOnly = await cards.count();
+
+  await input.fill("lambda");
+  const both = await cards.count();
+  expect(both).toBeGreaterThan(0);
+  expect(both).toBeLessThanOrEqual(Math.min(lambdaOnly, cdkOnly));
+  expect(both).toBeLessThan(Math.max(lambdaOnly, cdkOnly));
 });
 
 test("?q= param pre-populates search input on load", async ({ page }) => {

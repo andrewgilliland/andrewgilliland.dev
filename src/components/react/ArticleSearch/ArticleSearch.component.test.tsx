@@ -243,6 +243,16 @@ describe("ArticleSearch component", () => {
     ]);
   });
 
+  it("names both filters when a query and a topic match nothing together", async () => {
+    window.history.replaceState(null, "", "/articles?q=lambda&tag=react");
+
+    render(<ArticleSearch articles={articles} />);
+
+    expect(
+      await screen.findByText("No articles match “lambda” in react"),
+    ).toBeTruthy();
+  });
+
   it("shows empty state when no articles match", () => {
     render(<ArticleSearch articles={articles} />);
 
