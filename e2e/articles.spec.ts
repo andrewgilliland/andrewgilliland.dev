@@ -164,3 +164,35 @@ test("Back steps through picked topics without leaving the page", async ({
   await expect(page).toHaveURL(/\/articles$/);
   await expect(topic("aws")).toHaveAttribute("aria-pressed", "false");
 });
+
+test.describe("arriving with filters in the URL", () => {
+  // Hold back the page's JS so the server-rendered (unfiltered) list is what
+  // the browser has until the search hydrates.
+  test.beforeEach(async ({ page }) => {
+    await page.route("**/_astro/*.js", async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await route.continue();
+    });
+  });
+
+  test("hides the unfiltered list until the filters apply", async ({
+    page,
+  }) => {
+    await page.goto("/articles?tag=cdk", { waitUntil: "commit" });
+    const results = page.locator("[data-article-results]");
+    await expect(results).toBeAttached();
+    await expect(results).toBeHidden();
+
+    await expect(results).toBeVisible({ timeout: 10_000 });
+    await expect(
+      page.getByRole("button", { name: "cdk", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("shows the list straight away when there are no filters", async ({
+    page,
+  }) => {
+    await page.goto("/articles", { waitUntil: "commit" });
+    await expect(page.locator("[data-article-results]")).toBeVisible();
+  });
+});

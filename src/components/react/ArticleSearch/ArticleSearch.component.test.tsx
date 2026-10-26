@@ -8,7 +8,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import ArticleSearch from "./ArticleSearch";
+import ArticleSearch, { PENDING_ATTRIBUTE } from "./ArticleSearch";
 import type { ListingItem } from "../../../lib/articles/catalogue";
 
 vi.mock("../ArticleCard", () => ({
@@ -204,6 +204,20 @@ describe("ArticleSearch component", () => {
           .getAttribute("aria-pressed"),
       ).toBe("false");
     });
+  });
+
+  it("reveals results that the page hid, once the URL's filters apply", async () => {
+    document.documentElement.setAttribute(PENDING_ATTRIBUTE, "");
+    window.history.replaceState(null, "", "/articles?tag=react");
+
+    render(<ArticleSearch articles={articles} />);
+
+    await waitFor(() => {
+      expect(document.documentElement.hasAttribute(PENDING_ATTRIBUTE)).toBe(
+        false,
+      );
+    });
+    expect(screen.getAllByTestId("article-card")).toHaveLength(1);
   });
 
   it("ignores a topic in the URL that no article has", async () => {

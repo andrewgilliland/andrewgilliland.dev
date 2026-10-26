@@ -17,6 +17,10 @@ const CARD_ACCENTS: Accent[] = ["cyan", "pink", "emerald", "yellow"];
 // On phones the topic list collapses to the most-used topics.
 const COLLAPSED_TOPIC_COUNT = 12;
 
+// Set by an inline script on the articles page when the URL has filters, so
+// the server-rendered (unfiltered) results stay hidden until they apply.
+export const PENDING_ATTRIBUTE = "data-article-search-pending";
+
 export default function ArticleSearch({
   articles,
 }: {
@@ -25,6 +29,7 @@ export default function ArticleSearch({
   const [query, setQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [showAllTopics, setShowAllTopics] = useState(false);
+  const [urlApplied, setUrlApplied] = useState(false);
 
   // The URL is the source of truth on load and on Back/Forward.
   useEffect(() => {
@@ -35,11 +40,18 @@ export default function ArticleSearch({
       );
       setQuery(query);
       setSelectedTag(topic);
+      setUrlApplied(true);
     };
     applyUrl();
     window.addEventListener("popstate", applyUrl);
     return () => window.removeEventListener("popstate", applyUrl);
   }, [articles]);
+
+  // Runs after the render that shows the URL's filters, so the results are
+  // revealed already filtered.
+  useEffect(() => {
+    if (urlApplied) document.documentElement.removeAttribute(PENDING_ATTRIBUTE);
+  }, [urlApplied]);
 
   // Picking a topic or clearing is navigation, so it gets a history entry;
   // typing replaces the current entry so Back doesn't replay keystrokes.
@@ -132,22 +144,24 @@ export default function ArticleSearch({
         )}
       </div>
 
-      {filtered.length > 0 ? (
-        <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((article, index) => (
-            <ArticleCard
-              key={article.slug}
-              article={article}
-              accent={CARD_ACCENTS[index % CARD_ACCENTS.length]}
-              featured={index === 0 && query.trim() === "" && !selectedTag}
-            />
-          ))}
-        </section>
-      ) : (
-        <p className="py-16 text-center font-mono text-sm text-neutral-400">
-          No articles match &ldquo;{selectedTag || query}&rdquo;
-        </p>
-      )}
+      <div data-article-results>
+        {filtered.length > 0 ? (
+          <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((article, index) => (
+              <ArticleCard
+                key={article.slug}
+                article={article}
+                accent={CARD_ACCENTS[index % CARD_ACCENTS.length]}
+                featured={index === 0 && query.trim() === "" && !selectedTag}
+              />
+            ))}
+          </section>
+        ) : (
+          <p className="py-16 text-center font-mono text-sm text-neutral-400">
+            No articles match &ldquo;{selectedTag || query}&rdquo;
+          </p>
+        )}
+      </div>
     </>
   );
 }
