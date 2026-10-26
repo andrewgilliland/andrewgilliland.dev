@@ -1,23 +1,24 @@
 ---
 import Container from "./Container.astro";
-import type { Page } from "@/types";
-import { navState } from "@/lib/navigation";
+import HeaderHeading from "./HeaderHeading.astro";
+import type { NavLink } from "@/lib/navigation";
 
 interface Props {
-  pages: Page[];
+  links: NavLink[];
 }
 
-const { pages } = Astro.props;
-const currentPath = Astro.url.pathname;
-const stateFor = (href: string) => navState(href, currentPath);
+const { links } = Astro.props;
 ---
 
 <div class="relative z-40 w-full border-b-2 border-neutral-50 bg-neon-bg py-6 md:hidden">
   <Container class="flex items-center justify-between">
-    <a href="/" aria-label="Andrew Gilliland - Home">
-      <span class="header-heading text-2xl font-bold"> Andrew Gilliland </span>
-    </a>
-    <button id="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+    <HeaderHeading />
+    <button
+      id="menu-toggle"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -53,11 +54,11 @@ const stateFor = (href: string) => navState(href, currentPath);
   </Container>
 </div>
 
+<!-- A disclosure, not a modal: closed, it is inert, so its links leave the
+     tab order and the accessibility tree until the toggle opens it. -->
 <div
   id="mobile-menu"
-  role="dialog"
-  aria-modal="true"
-  aria-label="Navigation menu"
+  inert
   class="absolute left-0 right-0 top-full z-30 -translate-y-full border-x-2 border-b-2 border-neutral-50 bg-neon-bg transition-all duration-300 md:hidden"
 >
   <Container>
@@ -65,20 +66,14 @@ const stateFor = (href: string) => navState(href, currentPath);
       aria-label="Main"
       class="my-10 flex h-full flex-col items-stretch gap-4"
     >
-      {pages.map(({ href, title }) => (
+      {links.map(({ href, title, ariaCurrent, active }) => (
         <a
           href={href}
-          aria-current={
-            stateFor(href) === "page"
-              ? "page"
-              : stateFor(href)
-                ? "true"
-                : undefined
-          }
+          aria-current={ariaCurrent}
           data-foley-click="tap"
           class:list={[
             "border-2 px-4 py-3 text-center text-3xl font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50",
-            stateFor(href)
+            active
               ? "neo-shadow neo-press border-neutral-950 bg-neon-pink text-neutral-950 [--neo-color:theme(colors.neon.cyan)] [--neo-offset:4px]"
               : "border-neutral-50 text-neutral-50",
           ]}
@@ -98,6 +93,7 @@ const stateFor = (href: string) => navState(href, currentPath);
     document.querySelectorAll(".menu-line");
 
   function closeMenu() {
+    menu.inert = true;
     menu.classList.remove("translate-y-0");
     menu.classList.add("-translate-y-full");
     toggle.setAttribute("aria-expanded", "false");
@@ -109,6 +105,7 @@ const stateFor = (href: string) => navState(href, currentPath);
   }
 
   function openMenu() {
+    menu.inert = false;
     menu.classList.add("translate-y-0");
     menu.classList.remove("-translate-y-full");
     toggle.setAttribute("aria-expanded", "true");
