@@ -3,30 +3,36 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import Container from "@/components/Container.astro";
 import PageHeader from "@/components/PageHeader.astro";
 import ArticleSearch from "@/components/react/ArticleSearch";
-import { getCollection } from "astro:content";
-import { toSlug } from "@/lib/slug";
+import { loadArticleCatalogue } from "@/lib/articles/loadCatalogue";
 
-const articles = await getCollection("articles", ({ data }) => !data.draft);
-const sorted = articles.sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
-
-const articleData = sorted.map((a) => ({
-  id: toSlug(a.id),
-  title: a.data.title,
-  excerpt: a.data.excerpt,
-  date: a.data.date.toISOString(),
-  tags: a.data.tags,
-}));
-const topicCount = new Set(articles.flatMap((a) => a.data.tags)).size;
+const catalogue = await loadArticleCatalogue();
 ---
 
 <BaseLayout title="Articles - Andrew Gilliland">
   <Container class="min-h-screen pb-14">
     <PageHeader
       title="Articles"
-      eyebrow={`Writing · ${articles.length} articles · ${topicCount} topics`}
+      eyebrow={`Writing · ${catalogue.articles.length} articles · ${catalogue.topics.length} topics`}
     />
-    <ArticleSearch articles={articleData} client:load />
+    <script is:inline>
+      // Runs before the results are parsed: with filters in the URL, hide the
+      // server-rendered (unfiltered) results until ArticleSearch applies them.
+      // The timeout keeps a failed hydration from hiding the list for good.
+      if (/[?&](q|tag)=[^&]/.test(location.search)) {
+        const root = document.documentElement;
+        root.setAttribute("data-article-search-pending", "");
+        setTimeout(
+          () => root.removeAttribute("data-article-search-pending"),
+          3000,
+        );
+      }
+    </script>
+    <ArticleSearch articles={catalogue.listing} client:load />
   </Container>
 </BaseLayout>
+
+<style is:global>
+  html[data-article-search-pending] [data-article-results] {
+    visibility: hidden;
+  }
+</style>

@@ -15,7 +15,23 @@ test("renders Browse by Topic with links to filtered articles", async ({
   const topics = page.getByRole("region", { name: "Browse by Topic" });
   await expect(topics.getByText("Browse by Topic")).toBeVisible();
   const firstTopic = topics.getByRole("link").first();
-  await expect(firstTopic).toHaveAttribute("href", /^\/articles\?q=/);
+  await expect(firstTopic).toHaveAttribute("href", /^\/articles\?tag=/);
+});
+
+test("a topic chip opens exactly that topic's articles", async ({ page }) => {
+  await page.goto("/");
+  const topics = page.getByRole("region", { name: "Browse by Topic" });
+  const chip = topics.getByRole("link").first();
+  const [, topic, count] = (await chip.innerText())
+    .trim()
+    .match(/^(.+?)\s+(\d+)$/)!;
+
+  await chip.click();
+  await expect(page).toHaveURL(/\/articles\?tag=/);
+  await expect(
+    page.getByRole("button", { name: topic, exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("article")).toHaveCount(Number(count));
 });
 
 test("recent articles section is present", async ({ page }) => {

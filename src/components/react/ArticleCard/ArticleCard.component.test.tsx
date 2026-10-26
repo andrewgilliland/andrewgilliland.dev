@@ -2,22 +2,23 @@
 
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import ArticleCard, { type Article } from "./ArticleCard";
+import ArticleCard from "./ArticleCard";
+import type { ListingItem } from "../../../lib/articles/catalogue";
 
-const article: Article = {
-  id: "intro-to-aws-lambda",
+const article: ListingItem = {
+  slug: "intro-to-aws-lambda",
   title: "Intro to AWS Lambda",
   excerpt: "A beginner's guide to serverless functions on AWS.",
   date: "2024-01-01",
-  tags: ["aws", "serverless"],
+  topics: ["aws", "serverless"],
 };
 
-const circleSeedArticle: Article = {
-  id: "intro-to-sqs",
+const circleSeedArticle: ListingItem = {
+  slug: "intro-to-sqs",
   title: "Intro to Amazon SQS",
   excerpt: "Queue-first event processing on AWS.",
   date: "2026-06-15",
-  tags: ["aws", "serverless"],
+  topics: ["aws", "serverless"],
 };
 
 describe("ArticleCard component", () => {
@@ -30,7 +31,7 @@ describe("ArticleCard component", () => {
     );
 
     const link = container.querySelector("article a");
-    expect(link?.getAttribute("href")).toBe(`/articles/${article.id}`);
+    expect(link?.getAttribute("href")).toBe(`/articles/${article.slug}`);
     expect(screen.getByRole("heading", { level: 2 }).textContent).toBe(
       article.title,
     );

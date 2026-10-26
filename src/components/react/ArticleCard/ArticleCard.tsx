@@ -6,14 +6,8 @@ import {
 } from "../../../lib/shapeColors";
 import { articleTitleTransitionName } from "../../../lib/slug";
 import { formatArticleDate } from "../../../lib/date";
-
-export type Article = {
-  id: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  tags: string[];
-};
+import type { ListingItem } from "../../../lib/articles/catalogue";
+import { articleUrl } from "../../../lib/articles/urls";
 
 export type Accent = "pink" | "emerald" | "yellow" | "cyan";
 
@@ -75,7 +69,7 @@ export default function ArticleCard({
   featured,
   accent = "pink",
 }: {
-  article: Article;
+  article: ListingItem;
   featured: boolean;
   /** Colour of the offset shadow. */
   accent?: Accent;
@@ -85,7 +79,7 @@ export default function ArticleCard({
   return (
     <article className={featured ? "sm:col-span-2" : ""}>
       <a
-        href={`/articles/${article.id}`}
+        href={articleUrl(article.slug)}
         className={`neo-shadow neo-press rise-in relative grid h-full overflow-hidden border-2 border-neutral-50 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50 ${SHADOW_COLORS[accent]} ${
           featured
             ? "min-h-[280px] bg-neon-pink text-neutral-950"
@@ -95,7 +89,7 @@ export default function ArticleCard({
         onMouseLeave={() => setHovered(false)}
       >
         <CardDecoration
-          id={article.id}
+          id={article.slug}
           hovered={hovered}
           stroke={featured ? DARK_SHAPE_STROKE : LIGHT_SHAPE_STROKE}
         />
@@ -103,7 +97,7 @@ export default function ArticleCard({
           <h2
             className={`flex-none pr-6 font-bold leading-tight ${featured ? "text-3xl md:text-4xl" : "text-2xl"}`}
             style={{
-              viewTransitionName: articleTitleTransitionName(article.id),
+              viewTransitionName: articleTitleTransitionName(article.slug),
             }}
           >
             {article.title}

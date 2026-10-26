@@ -8,14 +8,20 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import ArticleSearch from "./ArticleSearch";
-import type { Article } from "../ArticleCard";
+import ArticleSearch, { PENDING_ATTRIBUTE } from "./ArticleSearch";
+import type { ListingItem } from "../../../lib/articles/catalogue";
 
 vi.mock("../ArticleCard", () => ({
-  default: ({ article, featured }: { article: Article; featured: boolean }) => (
+  default: ({
+    article,
+    featured,
+  }: {
+    article: ListingItem;
+    featured: boolean;
+  }) => (
     <article
       data-testid="article-card"
-      data-id={article.id}
+      data-id={article.slug}
       data-featured={featured ? "true" : "false"}
     >
       {article.title}
@@ -23,27 +29,27 @@ vi.mock("../ArticleCard", () => ({
   ),
 }));
 
-const articles: Article[] = [
+const articles: ListingItem[] = [
   {
-    id: "intro-to-aws-lambda",
+    slug: "intro-to-aws-lambda",
     title: "Intro to AWS Lambda",
     excerpt: "A beginner's guide to serverless functions on AWS.",
     date: "2024-01-01",
-    tags: ["aws", "serverless"],
+    topics: ["aws", "serverless"],
   },
   {
-    id: "intro-to-dynamodb",
+    slug: "intro-to-dynamodb",
     title: "Intro to DynamoDB",
     excerpt: "NoSQL database fundamentals with DynamoDB.",
     date: "2024-02-01",
-    tags: ["aws", "dynamodb"],
+    topics: ["aws", "dynamodb"],
   },
   {
-    id: "intro-to-react",
+    slug: "intro-to-react",
     title: "Getting Started with React",
     excerpt: "Build UIs with React and TypeScript.",
     date: "2024-03-01",
-    tags: ["react", "typescript"],
+    topics: ["react", "typescript"],
   },
 ];
 
@@ -142,6 +148,109 @@ describe("ArticleSearch component", () => {
     for (const card of cards) {
       expect(card.getAttribute("data-featured")).toBe("false");
     }
+  });
+
+  describe("browser history", () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("adds a history entry when a topic is picked or cleared", () => {
+      const push = vi.spyOn(window.history, "pushState");
+      render(<ArticleSearch articles={articles} />);
+
+      fireEvent.click(screen.getByRole("button", { name: "aws" }));
+      expect(push).toHaveBeenLastCalledWith(null, "", "?tag=aws");
+
+      fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+      expect(push).toHaveBeenLastCalledWith(null, "", "/articles");
+      expect(push).toHaveBeenCalledTimes(2);
+    });
+
+    it("replaces the entry while typing, so Back doesn't replay keystrokes", () => {
+      const push = vi.spyOn(window.history, "pushState");
+      render(<ArticleSearch articles={articles} />);
+
+      const input = screen.getByRole("searchbox", { name: "Search articles" });
+      fireEvent.change(input, { target: { value: "la" } });
+      fireEvent.change(input, { target: { value: "lambda" } });
+
+      expect(push).not.toHaveBeenCalled();
+      expect(window.location.search).toBe("?q=lambda");
+    });
+
+    it("restores the filters from the URL on Back and Forward", async () => {
+      render(<ArticleSearch articles={articles} />);
+
+      window.history.pushState(null, "", "/articles?tag=react");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      await waitFor(() => {
+        expect(
+          screen
+            .getByRole("button", { name: "react" })
+            .getAttribute("aria-pressed"),
+        ).toBe("true");
+      });
+      expect(screen.getAllByTestId("article-card")).toHaveLength(1);
+
+      window.history.replaceState(null, "", "/articles");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      await waitFor(() => {
+        expect(screen.getAllByTestId("article-card")).toHaveLength(3);
+      });
+      expect(
+        screen
+          .getByRole("button", { name: "react" })
+          .getAttribute("aria-pressed"),
+      ).toBe("false");
+    });
+  });
+
+  it("reveals results that the page hid, once the URL's filters apply", async () => {
+    document.documentElement.setAttribute(PENDING_ATTRIBUTE, "");
+    window.history.replaceState(null, "", "/articles?tag=react");
+
+    render(<ArticleSearch articles={articles} />);
+
+    await waitFor(() => {
+      expect(document.documentElement.hasAttribute(PENDING_ATTRIBUTE)).toBe(
+        false,
+      );
+    });
+    expect(screen.getAllByTestId("article-card")).toHaveLength(1);
+  });
+
+  it("ignores a topic in the URL that no article has", async () => {
+    window.history.replaceState(null, "", "/articles?tag=not-a-topic");
+
+    render(<ArticleSearch articles={articles} />);
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId("article-card")).toHaveLength(3);
+    });
+    expect(screen.queryByRole("button", { name: "Clear search" })).toBeNull();
+  });
+
+  it("matches a query with surrounding spaces", () => {
+    render(<ArticleSearch articles={articles} />);
+
+    const input = screen.getByRole("searchbox", { name: "Search articles" });
+    fireEvent.change(input, { target: { value: "lambda " } });
+
+    const cards = screen.getAllByTestId("article-card");
+    expect(cards.map((c) => c.getAttribute("data-id"))).toEqual([
+      "intro-to-aws-lambda",
+    ]);
+  });
+
+  it("names both filters when a query and a topic match nothing together", async () => {
+    window.history.replaceState(null, "", "/articles?q=lambda&tag=react");
+
+    render(<ArticleSearch articles={articles} />);
+
+    expect(
+      await screen.findByText("No articles match “lambda” in react"),
+    ).toBeTruthy();
   });
 
   it("shows empty state when no articles match", () => {

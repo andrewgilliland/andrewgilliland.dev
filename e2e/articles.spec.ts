@@ -2,9 +2,15 @@ import { test, expect } from "@playwright/test";
 
 test("article search filters by query", async ({ page }) => {
   await page.goto("/articles", { waitUntil: "networkidle" });
-  const input = page.getByPlaceholder("Search articles…");
-  await input.fill("lambda");
-  await expect(page.getByText(/lambda/i).first()).toBeVisible();
+  const cards = page.locator("article");
+  const total = await cards.count();
+
+  await page.getByPlaceholder("Search articles…").fill("lambda");
+  await expect(cards.first()).toBeVisible();
+  const matches = await cards.count();
+  expect(matches).toBeGreaterThan(0);
+  expect(matches).toBeLessThan(total);
+  await expect(cards.filter({ hasText: /lambda/i }).first()).toBeVisible();
 });
 
 test("article search filters by tag", async ({ page }) => {
@@ -72,11 +78,20 @@ test("search with no results shows empty state", async ({ page }) => {
 
 test("tag filter and search query work together", async ({ page }) => {
   await page.goto("/articles", { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: "cdk" }).click();
-  await page.getByPlaceholder("Search articles…").fill("lambda");
-  const articles = page.locator("article");
-  const count = await articles.count();
-  expect(count).toBeGreaterThanOrEqual(0);
+  const cards = page.locator("article");
+  const input = page.getByPlaceholder("Search articles…");
+
+  await input.fill("lambda");
+  const lambdaOnly = await cards.count();
+  await input.fill("");
+  await page.getByRole("button", { name: "cdk", exact: true }).click();
+  const cdkOnly = await cards.count();
+
+  await input.fill("lambda");
+  const both = await cards.count();
+  expect(both).toBeGreaterThan(0);
+  expect(both).toBeLessThanOrEqual(Math.min(lambdaOnly, cdkOnly));
+  expect(both).toBeLessThan(Math.max(lambdaOnly, cdkOnly));
 });
 
 test("?q= param pre-populates search input on load", async ({ page }) => {
@@ -143,4 +158,56 @@ test("topic filters are all visible on wide screens", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: /show all topics/i }),
   ).toBeHidden();
+});
+
+test("Back steps through picked topics without leaving the page", async ({
+  page,
+}) => {
+  await page.goto("/articles", { waitUntil: "networkidle" });
+  const topic = (name: string) =>
+    page.getByRole("button", { name, exact: true });
+
+  await topic("aws").click();
+  await topic("cdk").click();
+  await expect(page).toHaveURL(/\?tag=cdk$/);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\?tag=aws$/);
+  await expect(topic("aws")).toHaveAttribute("aria-pressed", "true");
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/articles$/);
+  await expect(topic("aws")).toHaveAttribute("aria-pressed", "false");
+});
+
+test.describe("arriving with filters in the URL", () => {
+  // Hold back the page's JS so the server-rendered (unfiltered) list is what
+  // the browser has until the search hydrates.
+  test.beforeEach(async ({ page }) => {
+    await page.route("**/_astro/*.js", async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await route.continue();
+    });
+  });
+
+  test("hides the unfiltered list until the filters apply", async ({
+    page,
+  }) => {
+    await page.goto("/articles?tag=cdk", { waitUntil: "commit" });
+    const results = page.locator("[data-article-results]");
+    await expect(results).toBeAttached();
+    await expect(results).toBeHidden();
+
+    await expect(results).toBeVisible({ timeout: 10_000 });
+    await expect(
+      page.getByRole("button", { name: "cdk", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("shows the list straight away when there are no filters", async ({
+    page,
+  }) => {
+    await page.goto("/articles", { waitUntil: "commit" });
+    await expect(page.locator("[data-article-results]")).toBeVisible();
+  });
 });
