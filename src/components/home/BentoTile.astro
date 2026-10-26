@@ -1,5 +1,10 @@
 ---
-type Accent = "pink" | "emerald" | "yellow" | "cyan";
+import {
+  fillClass,
+  neoColorClass,
+  shadowClass,
+  type Accent,
+} from "@/lib/accents";
 
 interface Props {
   /** Colour of the offset shadow. */
@@ -15,30 +20,12 @@ interface Props {
 
 const { shadow, fill, href, label, class: className = "" } = Astro.props;
 
-// Full class names so Tailwind can see them.
-const shadows: Record<Accent, string> = {
-  pink: "shadow-[8px_8px_0_0_theme(colors.neon.pink)]",
-  emerald: "shadow-[8px_8px_0_0_theme(colors.neon.emerald)]",
-  yellow: "shadow-[8px_8px_0_0_theme(colors.neon.yellow)]",
-  cyan: "shadow-[8px_8px_0_0_theme(colors.neon.cyan)]",
-};
-const neoColors: Record<Accent, string> = {
-  pink: "[--neo-color:theme(colors.neon.pink)]",
-  emerald: "[--neo-color:theme(colors.neon.emerald)]",
-  yellow: "[--neo-color:theme(colors.neon.yellow)]",
-  cyan: "[--neo-color:theme(colors.neon.cyan)]",
-};
-const fills: Record<Accent, string> = {
-  pink: "bg-neon-pink text-neutral-950",
-  emerald: "bg-neon-emerald text-neutral-950",
-  yellow: "bg-neon-yellow text-neutral-950",
-  cyan: "bg-neon-cyan text-neutral-950",
-};
-
 const classes = [
   "flex flex-col border-2 border-neutral-50 p-6",
-  fill ? fills[fill] : "bg-neon-surface text-neutral-50",
-  href ? `neo-shadow neo-press ${neoColors[shadow]}` : shadows[shadow],
+  fill
+    ? `${fillClass[fill]} text-neutral-950`
+    : "bg-neon-surface text-neutral-50",
+  href ? `neo-shadow neo-press ${neoColorClass[shadow]}` : shadowClass[shadow],
   href &&
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50",
   className,

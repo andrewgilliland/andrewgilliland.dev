@@ -8,16 +8,7 @@ import { articleTitleTransitionName } from "../../../lib/slug";
 import { formatArticleDate } from "../../../lib/date";
 import type { ListingItem } from "../../../lib/articles/catalogue";
 import { articleUrl } from "../../../lib/articles/urls";
-
-export type Accent = "pink" | "emerald" | "yellow" | "cyan";
-
-// Full class names so Tailwind can see them.
-const SHADOW_COLORS: Record<Accent, string> = {
-  pink: "[--neo-color:theme(colors.neon.pink)]",
-  emerald: "[--neo-color:theme(colors.neon.emerald)]",
-  yellow: "[--neo-color:theme(colors.neon.yellow)]",
-  cyan: "[--neo-color:theme(colors.neon.cyan)]",
-};
+import { neoColorClass, type Accent } from "../../../lib/accents";
 
 function CardDecoration({
   id,
@@ -80,7 +71,7 @@ export default function ArticleCard({
     <article className={featured ? "sm:col-span-2" : ""}>
       <a
         href={articleUrl(article.slug)}
-        className={`neo-shadow neo-press rise-in relative grid h-full overflow-hidden border-2 border-neutral-50 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50 ${SHADOW_COLORS[accent]} ${
+        className={`neo-shadow neo-press rise-in relative grid h-full overflow-hidden border-2 border-neutral-50 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50 ${neoColorClass[accent]} ${
           featured
             ? "min-h-[280px] bg-neon-pink text-neutral-950"
             : "min-h-[220px] bg-neon-surface text-neutral-50"
