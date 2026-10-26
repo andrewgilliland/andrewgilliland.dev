@@ -14,6 +14,25 @@ const catalogue = await loadArticleCatalogue();
       title="Articles"
       eyebrow={`Writing · ${catalogue.articles.length} articles · ${catalogue.topics.length} topics`}
     />
+    <script is:inline>
+      // Runs before the results are parsed: with filters in the URL, hide the
+      // server-rendered (unfiltered) results until ArticleSearch applies them.
+      // The timeout keeps a failed hydration from hiding the list for good.
+      if (/[?&](q|tag)=[^&]/.test(location.search)) {
+        const root = document.documentElement;
+        root.setAttribute("data-article-search-pending", "");
+        setTimeout(
+          () => root.removeAttribute("data-article-search-pending"),
+          3000,
+        );
+      }
+    </script>
     <ArticleSearch articles={catalogue.listing} client:load />
   </Container>
 </BaseLayout>
+
+<style is:global>
+  html[data-article-search-pending] [data-article-results] {
+    visibility: hidden;
+  }
+</style>
