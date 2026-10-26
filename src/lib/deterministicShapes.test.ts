@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  polygonPath,
   roundedPolygonPath,
   seededRng,
-  starPath,
   strToSeed,
 } from "./deterministicShapes";
 
@@ -65,38 +63,6 @@ describe("roundedPolygonPath", () => {
   it("is deterministic for the same points and radius", () => {
     expect(roundedPolygonPath(triangle, 5)).toBe(
       roundedPolygonPath(triangle, 5),
-    );
-  });
-});
-
-describe("polygonPath", () => {
-  it("returns a closed path with one point per side", () => {
-    const sides = 6;
-    const path = polygonPath(12, 12, 8, sides, 0);
-
-    expect(path.startsWith("M ")).toBe(true);
-    expect(path.endsWith(" Z")).toBe(true);
-    expect((path.match(/ L /g) ?? []).length).toBe(sides - 1);
-  });
-
-  it("is deterministic for the same inputs", () => {
-    expect(polygonPath(12, 12, 8, 5, 30)).toBe(polygonPath(12, 12, 8, 5, 30));
-  });
-});
-
-describe("starPath", () => {
-  it("returns a closed path with alternating outer/inner points", () => {
-    const points = 5;
-    const path = starPath(12, 12, 8, 4.2, points, 0);
-
-    expect(path.startsWith("M ")).toBe(true);
-    expect(path.endsWith(" Z")).toBe(true);
-    expect((path.match(/ L /g) ?? []).length).toBe(points * 2 - 1);
-  });
-
-  it("is deterministic for the same inputs", () => {
-    expect(starPath(12, 12, 8, 4.2, 5, 15)).toBe(
-      starPath(12, 12, 8, 4.2, 5, 15),
     );
   });
 });

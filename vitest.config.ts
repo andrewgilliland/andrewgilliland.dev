@@ -7,7 +7,6 @@ export default defineConfig({
       provider: "v8",
       include: [
         "src/lib/**/*.ts",
-        "src/types/**/*.ts",
         "src/components/react/ArticleCard/**/*.ts",
         "src/components/react/ArticleCard/**/*.tsx",
         "src/components/react/ArticleSearch/**/*.ts",

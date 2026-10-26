@@ -11,7 +11,7 @@ import {
 import ArticleSearch, { PENDING_ATTRIBUTE } from "./ArticleSearch";
 import type { ListingItem } from "../../../lib/articles/catalogue";
 
-vi.mock("../ArticleCard", () => ({
+vi.mock("../ArticleCard/ArticleCard", () => ({
   default: ({
     article,
     featured,
