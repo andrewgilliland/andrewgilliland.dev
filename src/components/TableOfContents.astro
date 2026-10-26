@@ -1,72 +1,19 @@
 ---
-import type { MarkdownHeading } from "astro";
+// The desktop table of contents, in the article page's sidebar. The page only
+// renders it when tocEntries() found something to list.
+import TocList from "@/components/TocList.astro";
+import type { TocEntry } from "@/lib/articles/toc";
 
 interface Props {
-  headings: MarkdownHeading[];
+  entries: TocEntry[];
 }
 
-const { headings } = Astro.props;
-const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+const { entries } = Astro.props;
 ---
 
-{filtered.length > 0 && (
-  <nav aria-label="Table of contents">
-    <p class="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-neutral-400">
-      Table of Contents
-    </p>
-    <ul class="flex flex-col border-l-2 border-neutral-700">
-      {filtered.map((heading) => (
-        <li>
-          <a
-            href={`#${heading.slug}`}
-            class:list={[
-              "toc-link block py-1 text-sm text-neutral-400 transition-colors hover:text-neutral-50",
-              heading.depth === 2 ? "pl-4" : "pl-7",
-            ]}
-          >
-            {heading.text}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </nav>
-)}
-
-<script is:inline>
-  const links = document.querySelectorAll(".toc-link");
-  if (links.length) {
-    const headingEls = Array.from(links)
-      .map((l) => document.getElementById(l.getAttribute("href").slice(1)))
-      .filter(Boolean);
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            links.forEach((l) =>
-              l.classList.remove(
-                "text-neutral-50",
-                "border-l-2",
-                "border-neon-pink",
-                "-ml-0.5",
-              ),
-            );
-            const active = document.querySelector(
-              `.toc-link[href="#${entry.target.id}"]`,
-            );
-            if (active)
-              active.classList.add(
-                "text-neutral-50",
-                "border-l-2",
-                "border-neon-pink",
-                "-ml-0.5",
-              );
-          }
-        });
-      },
-      { rootMargin: "0px 0px -70% 0px" },
-    );
-
-    headingEls.forEach((el) => observer.observe(el));
-  }
-</script>
+<nav id="toc-sidebar" aria-label="Table of contents">
+  <p class="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-neutral-400">
+    Table of Contents
+  </p>
+  <TocList entries={entries} />
+</nav>

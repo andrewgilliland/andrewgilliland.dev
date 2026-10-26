@@ -1,0 +1,67 @@
+---
+// The list of a table of contents, shared by the desktop sidebar
+// (TableOfContents) and the mobile sheet (MobileTOC).
+import type { TocEntry } from "@/lib/articles/toc";
+
+interface Props {
+  entries: TocEntry[];
+  /** Taller rows, for touch. */
+  roomy?: boolean;
+}
+
+const { entries, roomy = false } = Astro.props;
+---
+
+<ul class="flex flex-col border-l-2 border-neutral-700">
+  {entries.map((entry) => (
+    <li>
+      <a
+        href={`#${entry.slug}`}
+        data-toc-link
+        class:list={[
+          "block text-sm text-neutral-400 transition-colors hover:text-neutral-50",
+          "aria-[current=location]:-ml-0.5 aria-[current=location]:border-l-2 aria-[current=location]:border-neon-pink aria-[current=location]:text-neutral-50",
+          roomy ? "py-2" : "py-1",
+          entry.nested ? "pl-7" : "pl-4",
+        ]}
+      >
+        {entry.text}
+      </a>
+    </li>
+  ))}
+</ul>
+
+<script>
+  // One tracker for every TOC list on the page (desktop sidebar and mobile
+  // sheet): the links of the section being read get aria-current="location".
+  import { currentSectionIndex } from "@/lib/articles/toc";
+
+  const links = [
+    ...document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"),
+  ];
+  const headings = [...new Set(links.map((l) => l.hash.slice(1)))]
+    .map((id) => document.getElementById(id))
+    .filter((el): el is HTMLElement => el !== null);
+
+  const update = () => {
+    const index = currentSectionIndex(
+      headings.map((h) => h.getBoundingClientRect().top),
+      window.innerHeight,
+    );
+    const current = index >= 0 ? `#${headings[index].id}` : null;
+    for (const link of links) {
+      if (link.hash === current) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    }
+  };
+
+  if (headings.length > 0) {
+    let frame = 0;
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(() => ((frame = 0), update()));
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    update();
+  }
+</script>
