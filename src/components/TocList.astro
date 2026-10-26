@@ -1,0 +1,31 @@
+---
+// The list of a table of contents, shared by the desktop sidebar
+// (TableOfContents) and the mobile sheet (MobileTOC).
+import type { TocEntry } from "@/lib/articles/toc";
+
+interface Props {
+  entries: TocEntry[];
+  /** Taller rows, for touch. */
+  roomy?: boolean;
+}
+
+const { entries, roomy = false } = Astro.props;
+---
+
+<ul class="flex flex-col border-l-2 border-neutral-700">
+  {entries.map((entry) => (
+    <li>
+      <a
+        href={`#${entry.slug}`}
+        data-toc-link
+        class:list={[
+          "block text-sm text-neutral-400 transition-colors hover:text-neutral-50",
+          roomy ? "py-2" : "py-1",
+          entry.nested ? "pl-7" : "pl-4",
+        ]}
+      >
+        {entry.text}
+      </a>
+    </li>
+  ))}
+</ul>
