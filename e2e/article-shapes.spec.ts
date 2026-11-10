@@ -29,12 +29,14 @@ test("the latest article tile shows that article's shapes", async ({
 
 test("the shapes float and scatter on hover", async ({ page }) => {
   await page.goto("/");
-  const shapes = latestTile(page).locator(".shape");
+  const shapes = latestTile(page).locator(".article-shape");
   const floating = await shapes.evaluateAll((els) =>
     els.filter((el) =>
       el
         .getAnimations()
-        .some((a) => (a as CSSAnimation).animationName === "shape-float"),
+        .some(
+          (a) => (a as CSSAnimation).animationName === "article-shape-drift",
+        ),
     ),
   );
   expect(floating).toHaveLength(4);
@@ -54,7 +56,7 @@ test("the shapes stay still with reduced motion", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const running = await latestTile(page)
-    .locator(".shape")
+    .locator(".article-shape")
     .evaluateAll(
       (els) => els.filter((el) => el.getAnimations().length > 0).length,
     );

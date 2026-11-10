@@ -1,0 +1,28 @@
+---
+import { articleShapes, type ArticleShapesOptions } from "@/lib/articleShapes";
+
+// An article's shapes, drawn in Astro (ArticleCard draws the same ones in
+// React). Place it as the first child of a `relative` element: the shapes
+// scatter when that element is hovered or focused.
+interface Props extends ArticleShapesOptions {
+  slug: string;
+}
+
+const { slug, ...options } = Astro.props;
+const { className, size, shapes } = articleShapes(slug, options);
+---
+
+<svg
+  class={`${className} pointer-events-none absolute bottom-0 right-0 select-none`}
+  width={size}
+  height={size}
+  viewBox={`0 0 ${size} ${size}`}
+  overflow="visible"
+  aria-hidden="true"
+>
+  {shapes.map(({ tag: Shape, attrs, fill, stroke, style }) => (
+    <g class="article-shape" style={style}>
+      <Shape {...attrs} fill={fill} stroke={stroke} />
+    </g>
+  ))}
+</svg>

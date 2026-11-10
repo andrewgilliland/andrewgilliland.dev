@@ -1,6 +1,6 @@
-/* Motion shared across pages: hover springs, page transitions, and the
-   home tile entrance and scroll rise. All of it is skipped with reduced
-   motion. */
+/* Motion shared across pages: hover springs, page transitions, the home
+   tile entrance and scroll rise, and article shapes. All of it is skipped
+   with reduced motion. */
 
 /* Spring on hover: the site name in the header, and "Andrew!" on the home
    page. Skipped with reduced motion. */
@@ -163,5 +163,32 @@
   from {
     translate: 0 32px;
     box-shadow: none;
+  }
+}
+
+/* Article shapes (src/lib/articleShapes.ts sets each shape's --dx/--dy,
+   --fx/--fy and loop timing). They scatter when their parent card or tile is
+   hovered or keyboard-focused; with the drift class they also drift slowly
+   on their own loops. The drift is skipped with reduced motion. */
+.article-shapes .article-shape {
+  stroke-width: 2;
+  transition: transform 0.3s ease;
+}
+
+:hover > .article-shapes .article-shape,
+:focus-visible > .article-shapes .article-shape {
+  transform: translate(var(--dx), var(--dy));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .article-shapes--drift .article-shape {
+    animation: article-shape-drift var(--float-duration) ease-in-out
+      var(--float-delay) infinite alternate;
+  }
+}
+
+@keyframes article-shape-drift {
+  to {
+    translate: var(--fx) var(--fy);
   }
 }

@@ -4,8 +4,7 @@ import BentoTile from "@/components/home/BentoTile.astro";
 import ColorDivider from "@/components/ColorDivider.astro";
 import Container from "@/components/Container.astro";
 import CountUp from "@/components/CountUp.astro";
-import ShapeDecoration from "@/components/ShapeDecoration.astro";
-import { DARK_SHAPE_STROKE } from "@/lib/shapeColors";
+import ArticleShapes from "@/components/ArticleShapes.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import { projects } from "@/data/projects";
 import { loadArticleCatalogue } from "@/lib/articles/loadCatalogue";
@@ -56,7 +55,7 @@ const eyebrow = "font-mono text-xs uppercase tracking-[0.2em]";
         fill="pink"
         class="relative justify-between overflow-hidden md:col-span-2"
       >
-        <ShapeDecoration id={latest.slug} stroke={DARK_SHAPE_STROKE} />
+        <ArticleShapes slug={latest.slug} tone="dark" drift />
         <span class={`relative ${eyebrow} font-semibold`}>
           Latest article ·{" "}
           <FormattedDate date={latest.date} class="font-mono" />
