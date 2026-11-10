@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import ArticleCard from "../ArticleCard/ArticleCard";
 import type { Accent } from "../../../lib/accents";
-import type { ListingItem } from "../../../lib/articles/catalogue";
+import type { Listing } from "../../../lib/articles/catalogue";
 import {
-  getPopularTopics,
-  getUniqueTopics,
   readSearch,
   searchArticles,
   writeSearch,
@@ -22,11 +20,14 @@ const COLLAPSED_TOPIC_COUNT = 12;
 // the server-rendered (unfiltered) results stay hidden until they apply.
 export const PENDING_ATTRIBUTE = "data-article-search-pending";
 
-export default function ArticleSearch({
-  articles,
-}: {
-  articles: ListingItem[];
-}) {
+export default function ArticleSearch({ listing }: { listing: Listing }) {
+  const { articles, topics } = listing;
+  // Filter buttons are alphabetical; on phones only the most-used show.
+  const allTopics = topics.map(({ topic }) => topic).sort();
+  const popularTopics = new Set(
+    topics.slice(0, COLLAPSED_TOPIC_COUNT).map(({ topic }) => topic),
+  );
+
   const [query, setQuery] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
   const [showAllTopics, setShowAllTopics] = useState(false);
@@ -37,7 +38,7 @@ export default function ArticleSearch({
     const applyUrl = () => {
       const { query, topic } = readSearch(
         window.location.search,
-        getUniqueTopics(articles),
+        topics.map(({ topic }) => topic),
       );
       setQuery(query);
       setSelectedTopic(topic);
@@ -46,7 +47,7 @@ export default function ArticleSearch({
     applyUrl();
     window.addEventListener("popstate", applyUrl);
     return () => window.removeEventListener("popstate", applyUrl);
-  }, [articles]);
+  }, [topics]);
 
   // Runs after the render that shows the URL's filters, so the results are
   // revealed already filtered.
@@ -79,8 +80,6 @@ export default function ArticleSearch({
     updateUrl("", "", "push");
   };
 
-  const allTopics = getUniqueTopics(articles);
-  const popularTopics = getPopularTopics(articles, COLLAPSED_TOPIC_COUNT);
   const canCollapse = allTopics.length > COLLAPSED_TOPIC_COUNT;
   const emptyLabel = [query.trim() && `“${query.trim()}”`, selectedTopic]
     .filter(Boolean)

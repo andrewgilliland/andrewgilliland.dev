@@ -9,7 +9,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import ArticleSearch, { PENDING_ATTRIBUTE } from "./ArticleSearch";
-import type { ListingItem } from "../../../lib/articles/catalogue";
+import type { Listing, ListingItem } from "../../../lib/articles/catalogue";
 
 vi.mock("../ArticleCard/ArticleCard", () => ({
   default: ({
@@ -59,6 +59,18 @@ const articles: ListingItem[] = [
   },
 ];
 
+// Ranked as the catalogue ranks them: most-used first, ties alphabetical.
+const listing: Listing = {
+  articles,
+  topics: [
+    { topic: "aws", count: 2 },
+    { topic: "dynamodb", count: 1 },
+    { topic: "react", count: 1 },
+    { topic: "serverless", count: 1 },
+    { topic: "typescript", count: 1 },
+  ],
+};
+
 describe("ArticleSearch component", () => {
   afterEach(() => {
     cleanup();
@@ -71,7 +83,7 @@ describe("ArticleSearch component", () => {
   it("hydrates query and tag state from URL params", async () => {
     window.history.replaceState(null, "", "/articles?q=lambda&tag=aws");
 
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     const input = screen.getByRole("searchbox", { name: "Search articles" });
 
@@ -87,7 +99,7 @@ describe("ArticleSearch component", () => {
   it("hydrates only tag from URL when query is absent", async () => {
     window.history.replaceState(null, "", "/articles?tag=aws");
 
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     const input = screen.getByRole("searchbox", { name: "Search articles" });
     await waitFor(() => {
@@ -100,14 +112,14 @@ describe("ArticleSearch component", () => {
   });
 
   it("adds the Foley typing cue to the search input", () => {
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     const input = screen.getByRole("searchbox", { name: "Search articles" });
     expect(input.getAttribute("data-foley-type")).toBe("thock");
   });
 
   it("updates URL when typing query and clears all filters", () => {
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     const input = screen.getByRole("searchbox", { name: "Search articles" });
     fireEvent.change(input, { target: { value: "lambda" } });
@@ -121,7 +133,7 @@ describe("ArticleSearch component", () => {
   });
 
   it("toggles tag filter and URL param on repeated click", () => {
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     const awsTag = screen.getByRole("button", { name: "aws" });
 
@@ -136,7 +148,7 @@ describe("ArticleSearch component", () => {
   });
 
   it("marks only the first card as featured when no filters are active", () => {
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     const cards = screen.getAllByTestId("article-card");
     expect(cards[0].getAttribute("data-featured")).toBe("true");
@@ -145,7 +157,7 @@ describe("ArticleSearch component", () => {
   });
 
   it("removes featured flag when search query is active", () => {
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     const input = screen.getByRole("searchbox", { name: "Search articles" });
     fireEvent.change(input, { target: { value: "aws" } });
@@ -163,7 +175,7 @@ describe("ArticleSearch component", () => {
 
     it("adds a history entry when a topic is picked or cleared", () => {
       const push = vi.spyOn(window.history, "pushState");
-      render(<ArticleSearch articles={articles} />);
+      render(<ArticleSearch listing={listing} />);
 
       fireEvent.click(screen.getByRole("button", { name: "aws" }));
       expect(push).toHaveBeenLastCalledWith(null, "", "?tag=aws");
@@ -175,7 +187,7 @@ describe("ArticleSearch component", () => {
 
     it("replaces the entry while typing, so Back doesn't replay keystrokes", () => {
       const push = vi.spyOn(window.history, "pushState");
-      render(<ArticleSearch articles={articles} />);
+      render(<ArticleSearch listing={listing} />);
 
       const input = screen.getByRole("searchbox", { name: "Search articles" });
       fireEvent.change(input, { target: { value: "la" } });
@@ -186,7 +198,7 @@ describe("ArticleSearch component", () => {
     });
 
     it("restores the filters from the URL on Back and Forward", async () => {
-      render(<ArticleSearch articles={articles} />);
+      render(<ArticleSearch listing={listing} />);
 
       window.history.pushState(null, "", "/articles?tag=react");
       window.dispatchEvent(new PopStateEvent("popstate"));
@@ -216,7 +228,7 @@ describe("ArticleSearch component", () => {
     document.documentElement.setAttribute(PENDING_ATTRIBUTE, "");
     window.history.replaceState(null, "", "/articles?tag=react");
 
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     await waitFor(() => {
       expect(document.documentElement.hasAttribute(PENDING_ATTRIBUTE)).toBe(
@@ -229,7 +241,7 @@ describe("ArticleSearch component", () => {
   it("ignores a topic in the URL that no article has", async () => {
     window.history.replaceState(null, "", "/articles?tag=not-a-topic");
 
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     await waitFor(() => {
       expect(screen.getAllByTestId("article-card")).toHaveLength(3);
@@ -238,7 +250,7 @@ describe("ArticleSearch component", () => {
   });
 
   it("matches a query with surrounding spaces", () => {
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     const input = screen.getByRole("searchbox", { name: "Search articles" });
     fireEvent.change(input, { target: { value: "lambda " } });
@@ -252,7 +264,7 @@ describe("ArticleSearch component", () => {
   it("names both filters when a query and a topic match nothing together", async () => {
     window.history.replaceState(null, "", "/articles?q=lambda&tag=react");
 
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     expect(
       await screen.findByText("No articles match “lambda” in react"),
@@ -260,7 +272,7 @@ describe("ArticleSearch component", () => {
   });
 
   it("shows empty state when no articles match", () => {
-    render(<ArticleSearch articles={articles} />);
+    render(<ArticleSearch listing={listing} />);
 
     const input = screen.getByRole("searchbox", { name: "Search articles" });
     fireEvent.change(input, { target: { value: "not-a-real-article" } });

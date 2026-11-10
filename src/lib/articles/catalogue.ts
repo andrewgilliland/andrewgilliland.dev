@@ -49,6 +49,14 @@ export interface ListingItem {
   topics: string[];
 }
 
+/** Everything the article search shows. Serializable for the client. */
+export interface Listing {
+  /** Published articles, newest first. */
+  articles: ListingItem[];
+  /** Their topics, most-used first, ties alphabetical. */
+  topics: TopicCount[];
+}
+
 export interface ArticleCatalogue<E extends ArticleEntry = ArticleEntry> {
   /** Published articles, newest first. */
   articles: PublishedArticle<E>[];
@@ -56,8 +64,8 @@ export interface ArticleCatalogue<E extends ArticleEntry = ArticleEntry> {
   topics: TopicCount[];
   /** Up to `limit` other published articles, most shared topics first, then newest. */
   related(article: PublishedArticle<E>, limit: number): PublishedArticle<E>[];
-  /** `articles` as listing items, in the same order. */
-  listing: ListingItem[];
+  /** What the article search shows: `articles` as listing items, and `topics`. */
+  listing: Listing;
 }
 
 const toPublished = <E extends ArticleEntry>(entry: E): PublishedArticle<E> => {
@@ -110,14 +118,17 @@ export function createArticleCatalogue<E extends ArticleEntry>(
         .slice(0, limit)
         .map(({ candidate }) => candidate);
     },
-    listing: articles.map((a) => ({
-      slug: a.slug,
-      url: a.url,
-      title: a.title,
-      excerpt: a.excerpt,
-      date: a.date.toISOString(),
-      formattedDate: formatArticleDate(a.date),
-      topics: a.topics,
-    })),
+    listing: {
+      articles: articles.map((a) => ({
+        slug: a.slug,
+        url: a.url,
+        title: a.title,
+        excerpt: a.excerpt,
+        date: a.date.toISOString(),
+        formattedDate: formatArticleDate(a.date),
+        topics: a.topics,
+      })),
+      topics,
+    },
   };
 }

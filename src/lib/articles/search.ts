@@ -38,27 +38,6 @@ export function searchArticles(
   return result;
 }
 
-/** Every topic in the listing, once each, alphabetically. */
-export function getUniqueTopics(articles: ListingItem[]): string[] {
-  return [...new Set(articles.flatMap((a) => a.topics))].sort();
-}
-
-/** The `limit` most-used topics, ties broken alphabetically. */
-export function getPopularTopics(
-  articles: ListingItem[],
-  limit: number,
-): Set<string> {
-  const counts = new Map<string, number>();
-  for (const topic of articles.flatMap((a) => a.topics)) {
-    counts.set(topic, (counts.get(topic) ?? 0) + 1);
-  }
-  const ranked = [...counts.entries()]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, limit)
-    .map(([topic]) => topic);
-  return new Set(ranked);
-}
-
 /**
  * Reads the filters from a location search string. A topic outside
  * `knownTopics` (when given) is dropped, so a stale link shows every article
