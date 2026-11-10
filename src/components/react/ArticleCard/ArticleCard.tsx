@@ -1,56 +1,36 @@
-import { useState } from "react";
-import { cardDecoration } from "../../../lib/cardDecoration";
-import {
-  DARK_SHAPE_STROKE,
-  LIGHT_SHAPE_STROKE,
-} from "../../../lib/shapeColors";
+import type { CSSProperties } from "react";
+import { articleShapes } from "../../../lib/articleShapes";
 import { articleTitleTransitionName } from "../../../lib/slug";
 import { formatArticleDate } from "../../../lib/date";
 import type { ListingItem } from "../../../lib/articles/catalogue";
 import { articleUrl } from "../../../lib/articles/urls";
 import { neoColorClass, type Accent } from "../../../lib/accents";
 
-function CardDecoration({
-  id,
-  hovered,
-  stroke,
+// The article's shapes, as ArticleShapes.astro draws them. They scatter on
+// hover and focus because the SVG is the card link's direct child.
+function ArticleShapes({
+  slug,
+  tone,
 }: {
-  id: string;
-  hovered: boolean;
-  stroke: string;
+  slug: string;
+  tone: "dark" | "light";
 }) {
-  const shapes = cardDecoration(id);
+  const { className, size, shapes } = articleShapes(slug, { tone });
 
   return (
     <svg
-      className="pointer-events-none absolute bottom-0 right-0 select-none"
-      width="120"
-      height="120"
-      viewBox="0 0 120 120"
+      className={`${className} pointer-events-none absolute bottom-0 right-0 select-none`}
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
       overflow="visible"
       aria-hidden="true"
     >
-      {shapes.map(({ element, fill, offset }, i) => {
-        const Shape = element.tag;
-        return (
-          <g
-            key={i}
-            style={{
-              transition: "transform 0.3s ease",
-              transform: hovered
-                ? `translate(${offset.dx.toFixed(1)}px, ${offset.dy.toFixed(1)}px)`
-                : "translate(0px, 0px)",
-            }}
-          >
-            <Shape
-              {...element.attrs}
-              fill={fill}
-              stroke={stroke}
-              strokeWidth={2}
-            />
-          </g>
-        );
-      })}
+      {shapes.map(({ tag: Shape, attrs, fill, stroke, style }, i) => (
+        <g key={i} className="article-shape" style={style as CSSProperties}>
+          <Shape {...attrs} fill={fill} stroke={stroke} />
+        </g>
+      ))}
     </svg>
   );
 }
@@ -65,8 +45,6 @@ export default function ArticleCard({
   /** Colour of the offset shadow. */
   accent?: Accent;
 }) {
-  const [hovered, setHovered] = useState(false);
-
   return (
     <article className={featured ? "sm:col-span-2" : ""}>
       <a
@@ -76,14 +54,8 @@ export default function ArticleCard({
             ? "min-h-[280px] bg-neon-pink text-neutral-950"
             : "min-h-[220px] bg-neon-surface text-neutral-50"
         }`}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
       >
-        <CardDecoration
-          id={article.slug}
-          hovered={hovered}
-          stroke={featured ? DARK_SHAPE_STROKE : LIGHT_SHAPE_STROKE}
-        />
+        <ArticleShapes slug={article.slug} tone={featured ? "dark" : "light"} />
         <div className="flex h-full grow flex-col space-y-2 p-6">
           <h2
             className={`flex-none pr-6 font-bold leading-tight ${featured ? "text-3xl md:text-4xl" : "text-2xl"}`}

@@ -1,7 +1,8 @@
 /** @vitest-environment jsdom */
 
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
+import colors from "tailwindcss/colors";
 import ArticleCard from "./ArticleCard";
 import type { ListingItem } from "../../../lib/articles/catalogue";
 
@@ -10,14 +11,6 @@ const article: ListingItem = {
   title: "Intro to AWS Lambda",
   excerpt: "A beginner's guide to serverless functions on AWS.",
   date: "2024-01-01",
-  topics: ["aws", "serverless"],
-};
-
-const circleSeedArticle: ListingItem = {
-  slug: "intro-to-sqs",
-  title: "Intro to Amazon SQS",
-  excerpt: "Queue-first event processing on AWS.",
-  date: "2026-06-15",
   topics: ["aws", "serverless"],
 };
 
@@ -54,39 +47,19 @@ describe("ArticleCard component", () => {
     expect(rootArticle?.className).toContain("sm:col-span-2");
   });
 
-  it("updates decoration transform on hover and resets on mouse leave", () => {
-    const { container } = render(
-      <ArticleCard article={article} featured={false} />,
-    );
+  it("outlines its article's shapes dark when featured, light otherwise", () => {
+    const strokes = (featured: boolean) => {
+      const { container } = render(
+        <ArticleCard article={article} featured={featured} />,
+      );
+      const values = [
+        ...container.querySelectorAll(".article-shapes [stroke]"),
+      ].map((shape) => shape.getAttribute("stroke"));
+      cleanup();
+      return values;
+    };
 
-    const link = container.querySelector("article a") as HTMLAnchorElement;
-    const firstShape = container.querySelector("svg g") as SVGGElement;
-
-    expect(firstShape.style.transform).toBe("translate(0px, 0px)");
-
-    fireEvent.mouseEnter(link);
-    expect(firstShape.style.transform).not.toBe("translate(0px, 0px)");
-
-    fireEvent.mouseLeave(link);
-    expect(firstShape.style.transform).toBe("translate(0px, 0px)");
-  });
-
-  it("renders deterministic decoration for the same article id", () => {
-    const first = render(<ArticleCard article={article} featured={false} />);
-    const firstSvg = first.container.querySelector("svg")?.innerHTML;
-    first.unmount();
-
-    const second = render(<ArticleCard article={article} featured={false} />);
-    const secondSvg = second.container.querySelector("svg")?.innerHTML;
-
-    expect(firstSvg).toBe(secondSvg);
-  });
-
-  it("renders at least one circle for a known seeded article id", () => {
-    const { container } = render(
-      <ArticleCard article={circleSeedArticle} featured={false} />,
-    );
-
-    expect(container.querySelectorAll("svg circle").length).toBeGreaterThan(0);
+    expect(strokes(true)).toEqual(Array(4).fill(colors.black));
+    expect(strokes(false)).toEqual(Array(4).fill(colors.white));
   });
 });
