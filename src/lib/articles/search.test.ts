@@ -1,34 +1,33 @@
 import { describe, expect, it } from "vitest";
 import type { ListingItem } from "./catalogue";
-import {
-  NO_FILTERS,
-  getPopularTopics,
-  getUniqueTopics,
-  readSearch,
-  searchArticles,
-  writeSearch,
-} from "./search";
+import { NO_FILTERS, readSearch, searchArticles, writeSearch } from "./search";
 
 const articles: ListingItem[] = [
   {
     slug: "intro-to-aws-lambda",
+    url: "/articles/intro-to-aws-lambda",
     title: "Intro to AWS Lambda",
     excerpt: "A beginner's guide to serverless functions on AWS.",
     date: "2024-01-01",
+    formattedDate: "January 1, 2024",
     topics: ["aws", "serverless"],
   },
   {
     slug: "intro-to-dynamodb",
+    url: "/articles/intro-to-dynamodb",
     title: "Intro to DynamoDB",
     excerpt: "NoSQL database fundamentals with DynamoDB.",
     date: "2024-02-01",
+    formattedDate: "February 1, 2024",
     topics: ["aws", "dynamodb"],
   },
   {
     slug: "intro-to-react",
+    url: "/articles/intro-to-react",
     title: "Getting Started with React",
     excerpt: "Build UIs with React and TypeScript.",
     date: "2024-03-01",
+    formattedDate: "March 1, 2024",
     topics: ["react", "typescript"],
   },
 ];
@@ -84,37 +83,6 @@ describe("searchArticles", () => {
       expect(slugs(search("lambda", "aws"))).toEqual(["intro-to-aws-lambda"]);
       expect(search("aws", "serverless")).toHaveLength(1);
     });
-  });
-});
-
-describe("getUniqueTopics", () => {
-  it("lists each topic once, alphabetically", () => {
-    expect(getUniqueTopics(articles)).toEqual([
-      "aws",
-      "dynamodb",
-      "react",
-      "serverless",
-      "typescript",
-    ]);
-  });
-
-  it("is empty for no articles", () => {
-    expect(getUniqueTopics([])).toEqual([]);
-  });
-});
-
-describe("getPopularTopics", () => {
-  it("returns the most-used topics, ties alphabetical", () => {
-    // aws is used twice; the rest once, so ties fall back to a-z.
-    expect([...getPopularTopics(articles, 3)]).toEqual([
-      "aws",
-      "dynamodb",
-      "react",
-    ]);
-  });
-
-  it("returns every topic when the limit exceeds the topic count", () => {
-    expect(getPopularTopics(articles, 50).size).toBe(5);
   });
 });
 

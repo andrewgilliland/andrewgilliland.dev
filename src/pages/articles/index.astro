@@ -27,7 +27,7 @@ const catalogue = await loadArticleCatalogue();
         );
       }
     </script>
-    <ArticleSearch articles={catalogue.listing} client:load />
+    <ArticleSearch listing={catalogue.listing} client:load />
   </Container>
 </BaseLayout>
 

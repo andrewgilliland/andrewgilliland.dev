@@ -13,10 +13,4 @@ describe("formatArticleDate", () => {
       "September 16, 2026",
     );
   });
-
-  it("accepts the ISO strings passed to client components", () => {
-    expect(formatArticleDate("2026-09-16T00:00:00.000Z")).toBe(
-      "September 16, 2026",
-    );
-  });
 });

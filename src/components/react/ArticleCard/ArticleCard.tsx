@@ -1,9 +1,7 @@
 import type { CSSProperties } from "react";
 import { articleShapes } from "../../../lib/articleShapes";
 import { articleTitleTransitionName } from "../../../lib/slug";
-import { formatArticleDate } from "../../../lib/date";
 import type { ListingItem } from "../../../lib/articles/catalogue";
-import { articleUrl } from "../../../lib/articles/urls";
 import { neoColorClass, type Accent } from "../../../lib/accents";
 
 // The article's shapes, as ArticleShapes.astro draws them. They scatter on
@@ -48,7 +46,7 @@ export default function ArticleCard({
   return (
     <article className={featured ? "sm:col-span-2" : ""}>
       <a
-        href={articleUrl(article.slug)}
+        href={article.url}
         className={`neo-shadow neo-press rise-in relative grid h-full overflow-hidden border-2 border-neutral-50 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-50 ${neoColorClass[accent]} ${
           featured
             ? "min-h-[280px] bg-neon-pink text-neutral-950"
@@ -70,9 +68,7 @@ export default function ArticleCard({
             className={`flex-none font-mono text-xs uppercase tracking-[0.2em] ${featured ? "text-neutral-900" : "text-neutral-400"}`}
           >
             {featured && "Latest · "}
-            <time dateTime={article.date}>
-              {formatArticleDate(article.date)}
-            </time>
+            <time dateTime={article.date}>{article.formattedDate}</time>
           </div>
         </div>
       </a>
