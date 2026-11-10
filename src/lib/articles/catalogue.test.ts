@@ -73,12 +73,20 @@ describe("article catalogue", () => {
   it("produces the listing items the article search shows, newest first", () => {
     expect(catalogue.listing[0]).toEqual({
       slug: "intro-to-lambda",
+      url: "/articles/intro-to-lambda",
       title: "Title of intro-to-lambda",
       excerpt: "Excerpt of intro-to-lambda",
       date: "2024-05-01T00:00:00.000Z",
+      formattedDate: "May 1, 2024",
       topics: ["aws", "serverless"],
     });
     expect(slugs(catalogue.listing)).toEqual(slugs(catalogue.articles));
+  });
+
+  it("sends the article search plain data it can serialize", () => {
+    expect(JSON.parse(JSON.stringify(catalogue.listing))).toEqual(
+      catalogue.listing,
+    );
   });
 
   describe("related articles", () => {

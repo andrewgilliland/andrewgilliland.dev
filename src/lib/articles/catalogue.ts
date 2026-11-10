@@ -3,6 +3,7 @@
 // Pure: built from raw collection entries, so tests can pass fixtures. Pages
 // get it through loadArticleCatalogue() in ./loadCatalogue.ts.
 
+import { formatArticleDate } from "../date";
 import { shareImageIds, shareImageUrl } from "../og/shareImages";
 import { articleUrl } from "./urls";
 
@@ -38,10 +39,13 @@ export interface TopicCount {
 /** What the article search shows for each article. Serializable for the client. */
 export interface ListingItem {
   slug: string;
+  url: string;
   title: string;
   excerpt: string;
-  /** ISO 8601 timestamp. */
+  /** ISO 8601 timestamp, for `<time datetime>`. */
   date: string;
+  /** The date as readers see it ("September 16, 2026"). */
+  formattedDate: string;
   topics: string[];
 }
 
@@ -89,9 +93,11 @@ export function createArticleCatalogue<E extends ArticleEntry>(
     .map(toPublished)
     .sort((a, b) => b.date.getTime() - a.date.getTime());
 
+  const topics = rankTopics(articles);
+
   return {
     articles,
-    topics: rankTopics(articles),
+    topics,
     related(article, limit) {
       // Shared topics dominate; the date term only breaks ties between them.
       const score = (candidate: PublishedArticle<E>) =>
@@ -106,9 +112,11 @@ export function createArticleCatalogue<E extends ArticleEntry>(
     },
     listing: articles.map((a) => ({
       slug: a.slug,
+      url: a.url,
       title: a.title,
       excerpt: a.excerpt,
       date: a.date.toISOString(),
+      formattedDate: formatArticleDate(a.date),
       topics: a.topics,
     })),
   };

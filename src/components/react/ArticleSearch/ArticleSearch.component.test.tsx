@@ -32,23 +32,29 @@ vi.mock("../ArticleCard/ArticleCard", () => ({
 const articles: ListingItem[] = [
   {
     slug: "intro-to-aws-lambda",
+    url: "/articles/intro-to-aws-lambda",
     title: "Intro to AWS Lambda",
     excerpt: "A beginner's guide to serverless functions on AWS.",
     date: "2024-01-01",
+    formattedDate: "January 1, 2024",
     topics: ["aws", "serverless"],
   },
   {
     slug: "intro-to-dynamodb",
+    url: "/articles/intro-to-dynamodb",
     title: "Intro to DynamoDB",
     excerpt: "NoSQL database fundamentals with DynamoDB.",
     date: "2024-02-01",
+    formattedDate: "February 1, 2024",
     topics: ["aws", "dynamodb"],
   },
   {
     slug: "intro-to-react",
+    url: "/articles/intro-to-react",
     title: "Getting Started with React",
     excerpt: "Build UIs with React and TypeScript.",
     date: "2024-03-01",
+    formattedDate: "March 1, 2024",
     topics: ["react", "typescript"],
   },
 ];

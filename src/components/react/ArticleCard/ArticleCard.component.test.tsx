@@ -8,9 +8,11 @@ import type { ListingItem } from "../../../lib/articles/catalogue";
 
 const article: ListingItem = {
   slug: "intro-to-aws-lambda",
+  url: "/articles/intro-to-aws-lambda",
   title: "Intro to AWS Lambda",
   excerpt: "A beginner's guide to serverless functions on AWS.",
   date: "2024-01-01",
+  formattedDate: "January 1, 2024",
   topics: ["aws", "serverless"],
 };
 
@@ -24,7 +26,7 @@ describe("ArticleCard component", () => {
     );
 
     const link = container.querySelector("article a");
-    expect(link?.getAttribute("href")).toBe(`/articles/${article.slug}`);
+    expect(link?.getAttribute("href")).toBe(article.url);
     expect(screen.getByRole("heading", { level: 2 }).textContent).toBe(
       article.title,
     );
@@ -37,7 +39,7 @@ describe("ArticleCard component", () => {
 
     const time = container.querySelector("time");
     expect(time?.getAttribute("datetime")).toBe(article.date);
-    expect((time?.textContent ?? "").length).toBeGreaterThan(0);
+    expect(time?.textContent).toBe(article.formattedDate);
   });
 
   it("applies featured layout class when featured is true", () => {
